@@ -29,7 +29,7 @@ namespace Mastodon
 
 			account(const web::json::object& object)
 			{
-				acct = object.at(U("acct")).as_string();
+				/*acct = object.at(U("acct")).as_string();
 				avatar = object.at(U("avatar")).as_string();
 				created_at = object.at(U("created_at")).as_string();
 				display_name = object.at(U("display_name")).as_string();
@@ -41,7 +41,7 @@ namespace Mastodon
 				note = object.at(U("note")).as_string();
 				statuses_count = object.at(U("statuses_count")).as_integer();
 				url = object.at(U("url")).as_string();
-				username = object.at(U("username")).as_string();
+				username = object.at(U("username")).as_string();*/
 			}
 		};
 
@@ -57,8 +57,8 @@ namespace Mastodon
 	{
 		const std::string base_url{ "https://oc.todon.fr" };
 		std::string api_base_url;
-		const std::string client_id;
-		const std::string client_secret;
+		const utility::string_t client_id;
+		const utility::string_t client_secret;
 		std::string access_token;
 		size_t debug_requests;
 		size_t ratelimit_method;
@@ -84,7 +84,7 @@ namespace Mastodon
 		By default, a timeout of 300 seconds is used for all requests.If you wish to change this,
 		pass the desired timeout(in seconds) as request_timeout.
 		*/
-		InstanceConnexion(const std::string& _client_id, const std::string& _client_secret) :
+		InstanceConnexion(const utility::string_t& _client_id, const utility::string_t& _client_secret) :
 			client_id(_client_id), client_secret(_client_secret)
 		{
 
@@ -103,7 +103,7 @@ namespace Mastodon
 		Returns client_id and client_secret.
 		*/
 		static
-			auto create_app(const std::string& client_name)
+			auto create_app(const  utility::string_t& client_name)
 		{
 			web::http::client::http_client client(U("https://oc.todon.fr"));
 
@@ -139,7 +139,7 @@ namespace Mastodon
 
 		Returns the access_token.
 		*/
-		auto log_in(const std::string& username, const std::string& password)
+		auto log_in(const utility::string_t& username, const utility::string_t& password)
 		{
 			web::http::client::http_client client(U("https://oc.todon.fr"));
 			// Build request URI and start the request.
@@ -172,17 +172,17 @@ namespace Mastodon
 
 		Returns a list of toot dicts.
 		*/
-		auto timeline(const std::string& timeline, size_t max_id, size_t since_id, const std::string& access_token)
+		auto timeline(const utility::string_t& timeline, size_t max_id, size_t since_id, const  utility::string_t& access_token)
 		{
 			// Open stream to output file.
 			web::http::client::http_client client(U("https://oc.todon.fr"));
 
 			// Build request URI and start the request.
-			web::uri_builder builder(U("/api/v1/timelines/") + timeline);
-			//builder.append_query(U("timeline"), timeline);
+			web::uri_builder builder(U("/api/v1/timelines/"));
+			builder.append_query(U("timeline"), timeline);
 			builder.append_query(U("access_token"), access_token);
 
-			if (timeline == "local")
+			if (timeline == U("local"))
 			{
 				builder.append_query(U("local"), U("True"));
 			}
@@ -211,9 +211,9 @@ namespace Mastodon
 
 		Returns a list of toot dicts.
 		*/
-		auto timeline_home(size_t max_id, size_t since_id, const std::string& access_token)
+		auto timeline_home(size_t max_id, size_t since_id, const utility::string_t& access_token)
 		{
-			return timeline("home", max_id, since_id, access_token);
+			return timeline(U("home"), max_id, since_id, access_token);
 		}
 
 		/**
@@ -221,9 +221,9 @@ namespace Mastodon
 
 		Returns a list of toot dicts.
 		*/
-		auto timeline_mentions(size_t max_id, size_t since_id, const std::string& access_token)
+		auto timeline_mentions(size_t max_id, size_t since_id, const utility::string_t& access_token)
 		{
-			return timeline("mentions", max_id, since_id, access_token);
+			return timeline(U("mentions"), max_id, since_id, access_token);
 		}
 
 		/**
@@ -231,9 +231,9 @@ namespace Mastodon
 
 		Returns a list of toot dicts.
 		*/
-		auto timeline_local(size_t max_id, size_t since_id, const std::string& access_token)
+		auto timeline_local(size_t max_id, size_t since_id, const utility::string_t& access_token)
 		{
-			return timeline("local", max_id, since_id, access_token);
+			return timeline(U("local"), max_id, since_id, access_token);
 		}
 
 		/**
@@ -241,9 +241,9 @@ namespace Mastodon
 
 		Returns a list of toot dicts.
 		*/
-		auto timeline_public(size_t max_id, size_t since_id, const std::string& access_token)
+		auto timeline_public(size_t max_id, size_t since_id, const utility::string_t& access_token)
 		{
-			return timeline("public", max_id, since_id, access_token);
+			return timeline(U("public"), max_id, since_id, access_token);
 		}
 
 		/**
@@ -251,9 +251,9 @@ namespace Mastodon
 
 		Returns a list of toot dicts.
 		*/
-		auto timeline_hashtag(const std::string& hashtag, size_t max_id, size_t since_id, const std::string& access_token)
+		auto timeline_hashtag(const utility::string_t& hashtag, size_t max_id, size_t since_id, const utility::string_t& access_token)
 		{
-			return timeline("tag/" + hashtag, max_id, since_id, access_token);
+			return timeline(U("tag/") + hashtag, max_id, since_id, access_token);
 		}
 
 		auto status()
