@@ -54,5 +54,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="MainPage.xaml" />
+    <Page Include="ConnectedPage.xaml" />
   </ItemGroup>
 </Project>

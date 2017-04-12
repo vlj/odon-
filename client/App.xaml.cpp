@@ -91,12 +91,11 @@ void App::OnLaunched(Windows::ApplicationModel::Activation::LaunchActivatedEvent
     }
 
     auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-    if (localSettings->Values->Lookup("client_id") == nullptr)
+/*    if (localSettings->Values->Lookup("client_id") == nullptr)
     {
-		const auto& id_secret = Mastodon::InstanceConnexion::create_app(U("odon++client")).get();
-		localSettings->Values->Insert("client_id", ref new Platform::String(std::get<0>(id_secret).c_str()));
-		localSettings->Values->Insert("client_secret", ref new String(std::get<1>(id_secret).c_str()));
-    }
+
+
+    }*/
 }
 
 /// <summary>

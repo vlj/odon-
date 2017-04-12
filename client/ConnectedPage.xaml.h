@@ -1,0 +1,21 @@
+﻿//
+// ConnectedPage.xaml.h
+// Déclaration de la classe ConnectedPage
+//
+
+#pragma once
+
+#include "ConnectedPage.g.h"
+
+namespace client
+{
+	/// <summary>
+	/// Une page vide peut être utilisée seule ou constituer une page de destination au sein d'un frame.
+	/// </summary>
+	[Windows::Foundation::Metadata::WebHostHidden]
+	public ref class ConnectedPage sealed
+	{
+	public:
+		ConnectedPage();
+	};
+}
