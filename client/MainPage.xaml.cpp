@@ -32,11 +32,11 @@ void client::MainPage::Button_Click(Platform::Object^ sender, Windows::UI::Xaml:
 {
 	InstanceTokenRing->IsActive = true;
 	Mastodon::InstanceConnexion::create_app(U("odon++client"))
-		.then([this, e](const std::tuple<utility::string_t, utility::string_t>& id_secret)
+		.then([this](const std::tuple<utility::string_t, utility::string_t>& id_secret)
 		{
 			this->Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
-				ref new Windows::UI::Core::DispatchedHandler([this, e]() {
-					this->Frame->Navigate(Interop::TypeName(ConnectedPage::typeid), e);
+				ref new Windows::UI::Core::DispatchedHandler([this, id_secret]() {
+					this->Frame->Navigate(Interop::TypeName(ConnectedPage::typeid), ref new String(std::get<0>(id_secret).c_str()));
 				}));
 		});
 

@@ -25,3 +25,9 @@ ConnectedPage::ConnectedPage()
 {
 	InitializeComponent();
 }
+
+void client::ConnectedPage::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs ^ e)
+{
+	auto str = dynamic_cast<String^>(e->Parameter);
+	this->client_id->Text = str;
+}
