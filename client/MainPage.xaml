@@ -9,7 +9,7 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <StackPanel>
-            <TextBox Text="URL" Header="Url" PlaceholderText="https://oc.todon.fr" />
+            <TextBox Header="Url" InputScope="Url" />
             <ProgressRing x:Name="InstanceTokenRing"/>
             <Button Content="Validate" Click="Button_Click" />
         </StackPanel>

@@ -28,6 +28,23 @@ ConnectedPage::ConnectedPage()
 
 void client::ConnectedPage::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs ^ e)
 {
-	auto str = dynamic_cast<String^>(e->Parameter);
-	this->client_id->Text = str;
+}
+
+
+void client::ConnectedPage::Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
+	ring->IsActive = true;
+	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
+	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
+		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data());
+	instance.log_in(username->Text->Data(), password->Text->Data())
+		.then([this](const utility::string_t& tok)
+		{
+			Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
+				ref new Windows::UI::Core::DispatchedHandler([this, tok]()
+				{
+					Token->Text = ref new String(tok.c_str());
+				})
+			);
+		});
 }

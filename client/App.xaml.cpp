@@ -5,7 +5,7 @@
 
 #include "pch.h"
 #include "MainPage.xaml.h"
-#include <experimental\resumable>
+#include "ConnectedPage.xaml.h"
 
 using namespace client;
 
@@ -66,7 +66,11 @@ void App::OnLaunched(Windows::ApplicationModel::Activation::LaunchActivatedEvent
                 // Quand la pile de navigation n'est pas restaurée, accédez à la première page,
                 // puis configurez la nouvelle page en transmettant les informations requises en tant que
                 // paramètre
-                rootFrame->Navigate(TypeName(MainPage::typeid), e->Arguments);
+				auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
+				if (localSettings->Values->Lookup("client_id") == nullptr)
+					rootFrame->Navigate(TypeName(MainPage::typeid), e->Arguments);
+				else
+					rootFrame->Navigate(TypeName(ConnectedPage::typeid), e->Arguments);
             }
             // Placez le frame dans la fenêtre active
             Window::Current->Content = rootFrame;
@@ -83,19 +87,16 @@ void App::OnLaunched(Windows::ApplicationModel::Activation::LaunchActivatedEvent
                 // Quand la pile de navigation n'est pas restaurée, accédez à la première page,
                 // puis configurez la nouvelle page en transmettant les informations requises en tant que
                 // paramètre
-                rootFrame->Navigate(TypeName(MainPage::typeid), e->Arguments);
+				auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
+				if (localSettings->Values->Lookup("client_id") == nullptr)
+					rootFrame->Navigate(TypeName(MainPage::typeid), e->Arguments);
+				else
+					rootFrame->Navigate(TypeName(ConnectedPage::typeid), e->Arguments);
             }
             // Vérifiez que la fenêtre actuelle est active
             Window::Current->Activate();
         }
     }
-
-    auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-/*    if (localSettings->Values->Lookup("client_id") == nullptr)
-    {
-
-
-    }*/
 }
 
 /// <summary>

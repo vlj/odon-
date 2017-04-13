@@ -7,7 +7,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock x:Name="client_id">CONGRAT</TextBlock>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel>
+            <TextBlock x:Name="Token" />
+            <TextBox x:Name="username" Header="Id (email)" InputScope="EmailSmtpAddress" />
+            <TextBox x:Name="password" Header="Password" InputScope="Password" />
+            <ProgressRing x:Name="ring" />
+            <Button Content="Validate" HorizontalAlignment="Center" Click="Button_Click" />
+        </StackPanel>
     </Grid>
 </Page>
