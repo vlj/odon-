@@ -37,14 +37,26 @@ void client::ConnectedPage::Button_Click(Platform::Object^ sender, Windows::UI::
 	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
 		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data());
-	instance.log_in(username->Text->Data(), password->Text->Data())
-		.then([this](const utility::string_t& tok)
-		{
-			Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
-				ref new Windows::UI::Core::DispatchedHandler([this, tok]()
-				{
-					Token->Text = ref new String(tok.c_str());
-				})
-			);
+		instance.log_in(username->Text->Data(), password->Text->Data())
+			.then([this](const concurrency::task<utility::string_t>& tok_task)
+			{
+			try {
+				const auto& str = tok_task.get();
+				Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
+					ref new Windows::UI::Core::DispatchedHandler([this, str]()
+					{
+						Token->Text = ref new String(str.c_str());
+					})
+				);
+			}
+			catch (...)
+			{
+				Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
+					ref new Windows::UI::Core::DispatchedHandler([this]()
+					{
+						ring->IsActive = false;
+					})
+				);
+			}
 		});
 }
