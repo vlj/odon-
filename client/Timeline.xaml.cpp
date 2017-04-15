@@ -24,6 +24,7 @@ using namespace Windows::UI::Xaml::Navigation;
 Timeline::Timeline()
 {
 	InitializeComponent();
+	this->timelinesection->DataContext = this;
 	_tootscol = ref new Platform::Collections::Vector<Toot^>();
 	_tootscol->Append(ref new Toot("test"));
 	_tootscol->Append(ref new Toot("test"));

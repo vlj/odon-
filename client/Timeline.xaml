@@ -19,14 +19,24 @@
                 <Button>test</Button>
             </StackPanel>
         </SplitView.Pane>
-        <ListView x:Name="toots" ItemsSource="{x:Bind tootscol}" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="local:Toot">
+        <Hub Header="Mastodon">
+            <HubSection x:Name="timelinesection" Header="Timeline" MinWidth="500">
+                <DataTemplate x:DataType="local:Timeline">
                     <StackPanel>
-                        <TextBlock Text="{x:Bind Title}" />
+                        <ListView ItemsSource="{x:Bind tootscol}" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="local:Toot">
+                                    <StackPanel>
+                                        <TextBlock Text="{x:Bind Title}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
                     </StackPanel>
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            </HubSection>
+            <HubSection Header="Mentions">
+            </HubSection>
+        </Hub>
     </SplitView>
 </Page>
