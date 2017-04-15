@@ -5,6 +5,7 @@
 
 #include "pch.h"
 #include "ConnectedPage.xaml.h"
+#include "Timeline.xaml.h"
 
 using namespace client;
 
@@ -41,11 +42,12 @@ void client::ConnectedPage::Button_Click(Platform::Object^ sender, Windows::UI::
 			.then([this](const concurrency::task<utility::string_t>& tok_task)
 			{
 			try {
-				const auto& str = tok_task.get();
+				String^ access_token = ref new String(tok_task.get().c_str());
+				Windows::Storage::ApplicationData::Current->LocalSettings->Values->Insert("access_token", PropertyValue::CreateString(access_token));
 				Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
-					ref new Windows::UI::Core::DispatchedHandler([this, str]()
+					ref new Windows::UI::Core::DispatchedHandler([this]()
 					{
-						Token->Text = ref new String(str.c_str());
+						this->Frame->Navigate(Interop::TypeName(Timeline::typeid), nullptr);
 					})
 				);
 			}

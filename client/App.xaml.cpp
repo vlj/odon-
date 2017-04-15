@@ -6,6 +6,7 @@
 #include "pch.h"
 #include "MainPage.xaml.h"
 #include "ConnectedPage.xaml.h"
+#include "Timeline.xaml.h"
 
 using namespace client;
 
@@ -69,8 +70,10 @@ void App::OnLaunched(Windows::ApplicationModel::Activation::LaunchActivatedEvent
 				auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 				if (localSettings->Values->Lookup("client_id") == nullptr)
 					rootFrame->Navigate(TypeName(MainPage::typeid), e->Arguments);
-				else
+				else if (localSettings->Values->Lookup("access_token") == nullptr)
 					rootFrame->Navigate(TypeName(ConnectedPage::typeid), e->Arguments);
+				else
+					rootFrame->Navigate(TypeName(Timeline::typeid), e->Arguments);
             }
             // Placez le frame dans la fenêtre active
             Window::Current->Content = rootFrame;
@@ -87,11 +90,11 @@ void App::OnLaunched(Windows::ApplicationModel::Activation::LaunchActivatedEvent
                 // Quand la pile de navigation n'est pas restaurée, accédez à la première page,
                 // puis configurez la nouvelle page en transmettant les informations requises en tant que
                 // paramètre
-				auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-				if (localSettings->Values->Lookup("client_id") == nullptr)
+/*				auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
+				if (localSettings->Values->Lookup("client_id") == nullptr)*/
 					rootFrame->Navigate(TypeName(MainPage::typeid), e->Arguments);
-				else
-					rootFrame->Navigate(TypeName(ConnectedPage::typeid), e->Arguments);
+				/*else
+					rootFrame->Navigate(TypeName(ConnectedPage::typeid), e->Arguments);*/
             }
             // Vérifiez que la fenêtre actuelle est active
             Window::Current->Activate();
