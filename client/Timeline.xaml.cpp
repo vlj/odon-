@@ -56,3 +56,9 @@ void client::Timeline::paneOpened_Click(Platform::Object^ sender, Windows::UI::X
 {
 	this->Pane->IsPaneOpen = !this->Pane->IsPaneOpen;
 }
+
+
+void client::Timeline::Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
+
+}

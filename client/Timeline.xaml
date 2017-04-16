@@ -10,13 +10,25 @@
     <Page.TopAppBar>
         <CommandBar>
             <AppBarButton Icon="OpenPane" Click="paneOpened_Click" />
+            <AppBarButton Icon="Find">
+                <AppBarButton.Flyout>
+                    <Flyout>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox x:Name="SearchBox" />
+                            <Button Content="Ok" Click="Button_Click" />
+                        </StackPanel>
+                        
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+            <AppBarButton Icon="Refresh" />
         </CommandBar>
     </Page.TopAppBar>
 
-    <SplitView x:Name="Pane">
+    <SplitView x:Name="Pane" DisplayMode="CompactOverlay">
         <SplitView.Pane>
             <StackPanel>
-                <Button>test</Button>
+                <Button Content="Find"/>
             </StackPanel>
         </SplitView.Pane>
         <Hub Header="Mastodon">
