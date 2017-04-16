@@ -25,10 +25,23 @@ Timeline::Timeline()
 {
 	InitializeComponent();
 	this->timelinesection->DataContext = this;
-	_tootscol = ref new Platform::Collections::Vector<Toot^>();
-	_tootscol->Append(ref new Toot("test"));
-	_tootscol->Append(ref new Toot("test"));
-	_tootscol->Append(ref new Toot("test"));
+
+	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
+	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
+		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data());
+
+	instance.timeline_home(0, 0, dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data())
+		.then([this](const std::vector<Mastodon::Toot>& v)
+		{
+			_tootscol = ref new Platform::Collections::Vector<Toot^>();
+			for (const auto& toot : v)
+			{
+				_tootscol->Append(ref new Toot(
+					ref new String(toot._account.username.c_str()),
+					ref new String(toot.content.c_str())
+				));
+			}
+		});
 }
 
 

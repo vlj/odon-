@@ -13,23 +13,23 @@ namespace Mastodon
 	{
 		struct account
 		{
-			std::string acct;
-			std::string avatar;
-			std::string created_at;
-			std::string display_name;
+			utility::string_t acct;
+			utility::string_t avatar;
+			utility::string_t created_at;
+			utility::string_t display_name;
 			size_t followers_count;
 			size_t following_count;
-			std::string header;
+			utility::string_t header;
 			size_t id;
 			bool locked;
-			std::string note;
+			utility::string_t note;
 			size_t statuses_count;
-			std::string url;
-			std::string username;
+			utility::string_t url;
+			utility::string_t username;
 
 			account(const web::json::object& object)
 			{
-				/*acct = object.at(U("acct")).as_string();
+				acct = object.at(U("acct")).as_string();
 				avatar = object.at(U("avatar")).as_string();
 				created_at = object.at(U("created_at")).as_string();
 				display_name = object.at(U("display_name")).as_string();
@@ -41,15 +41,49 @@ namespace Mastodon
 				note = object.at(U("note")).as_string();
 				statuses_count = object.at(U("statuses_count")).as_integer();
 				url = object.at(U("url")).as_string();
-				username = object.at(U("username")).as_string();*/
+				username = object.at(U("username")).as_string();
 			}
 		};
 
 		account _account;
+		size_t id;
+		utility::string_t in_reply_to_id;
+		utility::string_t created_at;
+		utility::string_t in_reply_to_account_id;
+		bool sensitive;
+		utility::string_t spoiler_text;
+		utility::string_t visibility;
+		utility::string_t application;
+		std::vector<utility::string_t> media_attachments;
+		std::vector<utility::string_t> mentions;
+		std::vector<utility::string_t> tags;
+		utility::string_t uri;
+		utility::string_t content;
+		utility::string_t url;
+		size_t reblogs_count;
+		size_t favourites_count;
+		utility::string_t reblog;
+		utility::string_t favorited;
+		utility::string_t reblogged;
 
 		Toot(const web::json::value& v) : _account(v.at(U("account")).as_object())
 		{
-
+			id = v.at(U("id")).as_integer();
+			//in_reply_to_id = v.at(U("in_reply_to_id")).as_string();
+			//in_reply_to_account_id = v.at(U("in_reply_to_account_id")).as_string();
+			created_at = v.at(U("created_at")).as_string();
+			sensitive = v.at(U("sensitive")).as_bool();
+			//spoiler_text = v.at(U("spoiler_text")).as_string();
+			visibility = v.at(U("visibility")).as_string();
+			//application = v.at(U("application")).as_string();
+			uri = v.at(U("uri")).as_string();
+			content = v.at(U("content")).as_string();
+			url = v.at(U("url")).as_string();
+			reblogs_count = v.at(U("reblogs_count")).as_integer();
+			favourites_count = v.at(U("favourites_count")).as_integer();
+			//reblog = v.at(U("reblog")).as_string();
+			//favorited = v.at(U("favorited")).as_string();
+			//reblogged = v.at(U("reblogged")).as_string();
 		}
 	};
 
@@ -179,7 +213,7 @@ namespace Mastodon
 
 			// Build request URI and start the request.
 			web::uri_builder builder(U("/api/v1/timelines/"));
-			builder.append_query(U("timeline"), timeline);
+			builder.append_path(timeline);
 			builder.append_query(U("access_token"), access_token);
 
 			if (timeline == U("local"))
@@ -190,6 +224,7 @@ namespace Mastodon
 				// Handle response headers arriving.
 				.then([=](const web::http::http_response& response)
 			{
+				const auto& status = response.status_code();
 				printf("Received response status code:%u\n", response.status_code());
 
 				return response.extract_json();

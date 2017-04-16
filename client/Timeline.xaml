@@ -27,7 +27,8 @@
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="local:Toot">
                                     <StackPanel>
-                                        <TextBlock Text="{x:Bind Title}" />
+                                        <TextBlock Text="{x:Bind Username}" />
+                                        <TextBlock Text="{x:Bind Content}" />
                                     </StackPanel>
                                 </DataTemplate>
                             </ListView.ItemTemplate>

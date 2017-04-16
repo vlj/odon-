@@ -4,19 +4,29 @@ namespace client
 {
 	public ref class Toot sealed
 	{
-		Platform::String^ str;
+		Platform::String^ _username;
+		Platform::String^ _content;
 	public:
-		property Platform::String^ Title
+		property Platform::String^ Username
 		{
 			Platform::String^ get()
 			{
-				return this->str;
+				return  _username;
 			}
 		}
 
-		Toot(Platform::String^ _str)
+		property Platform::String^ Content
 		{
-			this->str = _str;
+			Platform::String^ get()
+			{
+				return _content;
+			}
+		}
+
+		Toot(Platform::String^ username, Platform::String^ content)
+		{
+			_username = username;
+			_content = content;
 		}
 	};
 }
