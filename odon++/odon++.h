@@ -3,56 +3,65 @@
 
 #include <string>
 #include <memory>
+#include <optional>
 #include <cpprest/http_client.h>
 #include <cpprest/filestream.h>
 #include <cpprest/json.h>
 
 namespace Mastodon
 {
-	struct Toot
+	struct Account
 	{
-		struct account
-		{
-			utility::string_t acct;
-			utility::string_t avatar;
-			utility::string_t created_at;
-			utility::string_t display_name;
-			size_t followers_count;
-			size_t following_count;
-			utility::string_t header;
-			size_t id;
-			bool locked;
-			utility::string_t note;
-			size_t statuses_count;
-			utility::string_t url;
-			utility::string_t username;
-
-			account(const web::json::object& object)
-			{
-				acct = object.at(U("acct")).as_string();
-				avatar = object.at(U("avatar")).as_string();
-				created_at = object.at(U("created_at")).as_string();
-				display_name = object.at(U("display_name")).as_string();
-				followers_count = object.at(U("followers_count")).as_integer();
-				following_count = object.at(U("following_count")).as_integer();
-				header = object.at(U("header")).as_string();
-				id = object.at(U("id")).as_integer();
-				locked = object.at(U("locked")).as_bool();
-				note = object.at(U("note")).as_string();
-				statuses_count = object.at(U("statuses_count")).as_integer();
-				url = object.at(U("url")).as_string();
-				username = object.at(U("username")).as_string();
-			}
-		};
-
-		account _account;
-		size_t id;
-		utility::string_t in_reply_to_id;
+		utility::string_t acct;
+		utility::string_t avatar;
 		utility::string_t created_at;
-		utility::string_t in_reply_to_account_id;
+		utility::string_t display_name;
+		size_t followers_count;
+		size_t following_count;
+		utility::string_t header;
+		size_t id;
+		bool locked;
+		utility::string_t note;
+		size_t statuses_count;
+		utility::string_t url;
+		utility::string_t username;
+
+		Account(const web::json::object& object)
+		{
+			acct = object.at(U("acct")).as_string();
+			avatar = object.at(U("avatar")).as_string();
+			created_at = object.at(U("created_at")).as_string();
+			display_name = object.at(U("display_name")).as_string();
+			followers_count = object.at(U("followers_count")).as_integer();
+			following_count = object.at(U("following_count")).as_integer();
+			header = object.at(U("header")).as_string();
+			id = object.at(U("id")).as_integer();
+			locked = object.at(U("locked")).as_bool();
+			note = object.at(U("note")).as_string();
+			statuses_count = object.at(U("statuses_count")).as_integer();
+			url = object.at(U("url")).as_string();
+			username = object.at(U("username")).as_string();
+		}
+	};
+
+	enum class visibility_level
+	{
+		public_level,
+		unlisted_level,
+		private_level,
+		direct_level
+	};
+
+	struct Status
+	{
+		Account _account;
+		size_t id;
+		std::optional<utility::string_t> in_reply_to_id;
+		utility::string_t created_at;
+		std::optional<utility::string_t> in_reply_to_account_id;
 		bool sensitive;
-		utility::string_t spoiler_text;
-		utility::string_t visibility;
+		std::optional<utility::string_t> spoiler_text;
+		visibility_level visibility;
 		utility::string_t application;
 		std::vector<utility::string_t> media_attachments;
 		std::vector<utility::string_t> mentions;
@@ -62,11 +71,11 @@ namespace Mastodon
 		utility::string_t url;
 		size_t reblogs_count;
 		size_t favourites_count;
-		utility::string_t reblog;
+		std::optional<utility::string_t> reblog;
 		utility::string_t favorited;
 		utility::string_t reblogged;
 
-		Toot(const web::json::value& v) : _account(v.at(U("account")).as_object())
+		Status(const web::json::value& v) : _account(v.at(U("account")).as_object())
 		{
 			id = v.at(U("id")).as_integer();
 			//in_reply_to_id = v.at(U("in_reply_to_id")).as_string();
@@ -74,7 +83,18 @@ namespace Mastodon
 			created_at = v.at(U("created_at")).as_string();
 			sensitive = v.at(U("sensitive")).as_bool();
 			//spoiler_text = v.at(U("spoiler_text")).as_string();
-			visibility = v.at(U("visibility")).as_string();
+			visibility = [](const auto& v)
+			{
+				if (v == U("public"))
+					return visibility_level::public_level;
+				if (v == U("private"))
+					return visibility_level::private_level;
+				if (v == U("unlisted"))
+					return visibility_level::unlisted_level;
+				if (v == U("direct"))
+					return visibility_level::direct_level;
+				throw;
+			}(v.at(U("visibility")).as_string());
 			//application = v.at(U("application")).as_string();
 			uri = v.at(U("uri")).as_string();
 			content = v.at(U("content")).as_string();
@@ -93,9 +113,27 @@ namespace Mastodon
 		std::string api_base_url;
 		const utility::string_t client_id;
 		const utility::string_t client_secret;
-		std::string access_token;
+		const utility::string_t access_token;
 		size_t debug_requests;
 		size_t ratelimit_method;
+
+	private:
+		auto __api_request(web::uri_builder uri)
+		{
+			web::http::client::http_client client(U("https://oc.todon.fr"));
+			uri.append_query(U("access_token"), access_token);
+			return client.request(web::http::methods::GET, uri.to_string())
+				// Handle response headers arriving.
+				.then([=](const web::http::http_response& response)
+				{
+					const auto& status = response.status_code();
+					printf("Received response status code:%u\n", response.status_code());
+
+					return response.extract_json();
+				});
+		}
+
+	public:
 
 		/**
 		Create a new API wrapper instance based on the given client_secret and client_id.If you
@@ -120,6 +158,13 @@ namespace Mastodon
 		*/
 		InstanceConnexion(const utility::string_t& _client_id, const utility::string_t& _client_secret) :
 			client_id(_client_id), client_secret(_client_secret)
+		{
+
+		}
+
+		InstanceConnexion(const utility::string_t& _client_id, const utility::string_t& _client_secret,
+			const utility::string_t& _access_token) :
+			client_id(_client_id), client_secret(_client_secret), access_token(_access_token)
 		{
 
 		}
@@ -206,39 +251,28 @@ namespace Mastodon
 
 		Returns a list of toot dicts.
 		*/
-		auto timeline(const utility::string_t& timeline, size_t max_id, size_t since_id, const  utility::string_t& access_token)
+		auto timeline(const utility::string_t& timeline, size_t max_id, size_t since_id)
 		{
-			// Open stream to output file.
-			web::http::client::http_client client(U("https://oc.todon.fr"));
-
 			// Build request URI and start the request.
 			web::uri_builder builder(U("/api/v1/timelines/"));
 			builder.append_path(timeline);
-			builder.append_query(U("access_token"), access_token);
 
 			if (timeline == U("local"))
 			{
 				builder.append_query(U("local"), U("True"));
 			}
-			return client.request(web::http::methods::GET, builder.to_string())
-				// Handle response headers arriving.
-				.then([=](const web::http::http_response& response)
-			{
-				const auto& status = response.status_code();
-				printf("Received response status code:%u\n", response.status_code());
 
-				return response.extract_json();
-			})
+			return __api_request(builder)
 				.then([=](const web::json::value& v)
-			{
-				const auto& json_array = v.as_array();
-				auto&& result = std::vector<Toot>{};
-				for (const auto& json_v : json_array)
 				{
-					result.emplace_back(Toot{ json_v });
-				}
-				return result;
-			});
+					const auto& json_array = v.as_array();
+					auto&& result = std::vector<Status>{};
+					for (const auto& json_v : json_array)
+					{
+						result.emplace_back(Status{ json_v });
+					}
+					return result;
+				});
 		}
 
 		/**
@@ -246,9 +280,9 @@ namespace Mastodon
 
 		Returns a list of toot dicts.
 		*/
-		auto timeline_home(size_t max_id, size_t since_id, const utility::string_t& access_token)
+		auto timeline_home(size_t max_id, size_t since_id)
 		{
-			return timeline(U("home"), max_id, since_id, access_token);
+			return timeline(U("home"), max_id, since_id);
 		}
 
 		/**
@@ -256,9 +290,9 @@ namespace Mastodon
 
 		Returns a list of toot dicts.
 		*/
-		auto timeline_mentions(size_t max_id, size_t since_id, const utility::string_t& access_token)
+		auto timeline_mentions(size_t max_id, size_t since_id)
 		{
-			return timeline(U("mentions"), max_id, since_id, access_token);
+			return timeline(U("mentions"), max_id, since_id);
 		}
 
 		/**
@@ -266,9 +300,9 @@ namespace Mastodon
 
 		Returns a list of toot dicts.
 		*/
-		auto timeline_local(size_t max_id, size_t since_id, const utility::string_t& access_token)
+		auto timeline_local(size_t max_id, size_t since_id)
 		{
-			return timeline(U("local"), max_id, since_id, access_token);
+			return timeline(U("local"), max_id, since_id);
 		}
 
 		/**
@@ -276,9 +310,9 @@ namespace Mastodon
 
 		Returns a list of toot dicts.
 		*/
-		auto timeline_public(size_t max_id, size_t since_id, const utility::string_t& access_token)
+		auto timeline_public(size_t max_id, size_t since_id)
 		{
-			return timeline(U("public"), max_id, since_id, access_token);
+			return timeline(U("public"), max_id, since_id);
 		}
 
 		/**
@@ -286,9 +320,9 @@ namespace Mastodon
 
 		Returns a list of toot dicts.
 		*/
-		auto timeline_hashtag(const utility::string_t& hashtag, size_t max_id, size_t since_id, const utility::string_t& access_token)
+		auto timeline_hashtag(const utility::string_t& hashtag, size_t max_id, size_t since_id)
 		{
-			return timeline(U("tag/") + hashtag, max_id, since_id, access_token);
+			return timeline(U("tag/") + hashtag, max_id, since_id);
 		}
 
 		auto status()
@@ -351,6 +385,22 @@ namespace Mastodon
 
 		}
 
+		auto account_search(const utility::string_t& search_term)
+		{
+			auto&& uri = web::uri_builder(U("/api/v1/search"));
+			uri.append_query(U("q"), search_term);
+			return __api_request(uri)
+				.then([](const web::json::value& v)
+				{
+					auto&& result = std::vector<Account>{};
+					for (const auto& json_v : v.at(U("accounts")).as_array())
+					{
+						result.emplace_back(Account{ json_v.as_object() });
+					}
+					return result;
+				});
+		}
+
 		auto follow_request_authorize()
 		{
 
@@ -368,11 +418,6 @@ namespace Mastodon
 
 	private:
 		auto __datetime_to_epoch()
-		{
-
-		}
-
-		auto __api_request()
 		{
 
 		}

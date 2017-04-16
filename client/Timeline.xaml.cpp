@@ -29,10 +29,11 @@ Timeline::Timeline()
 
 	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
-		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data());
+		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
+		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
 
-	instance.timeline_home(0, 0, dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data())
-		.then([this](const std::vector<Mastodon::Toot>& v)
+	instance.timeline_home(0, 0)
+		.then([this](const std::vector<Mastodon::Status>& v)
 		{
 			_tootscol = ref new Platform::Collections::Vector<Toot^>();
 			for (const auto& toot : v)
