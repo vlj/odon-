@@ -26,9 +26,16 @@
                         <ListView ItemsSource="{x:Bind tootscol}" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="local:Toot">
-                                    <StackPanel>
-                                        <TextBlock Text="{x:Bind Username}" />
-                                        <TextBlock Text="{x:Bind Content}" />
+                                    <StackPanel Orientation="Horizontal" BorderBrush="Black" BorderThickness="1">
+                                        <Image Source="{x:Bind Avatar}" Width="100" Height="100" />
+                                        <StackPanel>
+                                            <TextBlock Text="{x:Bind Username}" />
+                                            <RichTextBlock Width="500">
+                                                <Paragraph>
+                                                    <Run Text="{x:Bind Content}" />
+                                                </Paragraph>
+                                            </RichTextBlock>
+                                        </StackPanel>
                                     </StackPanel>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
