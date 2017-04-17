@@ -14,10 +14,9 @@
                 <AppBarButton.Flyout>
                     <Flyout>
                         <StackPanel Orientation="Horizontal">
-                            <TextBox x:Name="SearchBox" />
-                            <Button Content="Ok" Click="Button_Click" />
+                            <TextBox x:Name="SearchBox" IsTabStop="true"/>
+                            <Button Content="Ok" Click="Button_Click" IsTabStop="True" />
                         </StackPanel>
-                        
                     </Flyout>
                 </AppBarButton.Flyout>
             </AppBarButton>
@@ -31,32 +30,50 @@
                 <Button Content="Find"/>
             </StackPanel>
         </SplitView.Pane>
-        <Hub Header="Mastodon">
-            <HubSection x:Name="timelinesection" Header="Timeline" MinWidth="500">
-                <DataTemplate x:DataType="local:Timeline">
-                    <StackPanel>
-                        <ListView ItemsSource="{x:Bind tootscol}" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid x:Name="rootGrid">
+            <Hub Header="Mastodon" x:Name="hub">
+                <FlyoutBase.AttachedFlyout>
+                    <Flyout Placement="Full">
+                        <ListView x:Name="displaySearch" ItemsSource="{Binding}">
                             <ListView.ItemTemplate>
-                                <DataTemplate x:DataType="local:Toot">
-                                    <StackPanel Orientation="Horizontal" BorderBrush="Black" BorderThickness="1">
-                                        <Image Source="{x:Bind Avatar}" Width="100" Height="100" />
-                                        <StackPanel>
-                                            <TextBlock Text="{x:Bind Username}" />
-                                            <RichTextBlock Width="500">
-                                                <Paragraph>
-                                                    <Run Text="{x:Bind Content}" />
-                                                </Paragraph>
-                                            </RichTextBlock>
-                                        </StackPanel>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="{Binding Avatar}" Width="100" Height="100" />
+                                        <TextBlock Text="{Binding Username}" />
                                     </StackPanel>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
-                    </StackPanel>
-                </DataTemplate>
-            </HubSection>
-            <HubSection Header="Mentions">
-            </HubSection>
-        </Hub>
+                    </Flyout>
+                </FlyoutBase.AttachedFlyout>
+                <HubSection x:Name="timelinesection" Header="Timeline" MinWidth="500">
+                    <DataTemplate x:DataType="local:Timeline">
+                        <StackPanel>
+                            <ListView ItemsSource="{x:Bind tootscol}" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" ScrollViewer.VerticalScrollBarVisibility="Visible">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="local:Toot">
+                                        <StackPanel Orientation="Horizontal" BorderBrush="Black" BorderThickness="1">
+                                            <Image Source="{x:Bind Author.Avatar}" Width="100" Height="100" />
+                                            <StackPanel>
+                                                <TextBlock Text="{x:Bind Author.Username}" />
+                                                <RichTextBlock Width="500">
+                                                    <Paragraph>
+                                                        <Run Text="{x:Bind Content}" />
+                                                    </Paragraph>
+                                                </RichTextBlock>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
+                    </DataTemplate>
+                </HubSection>
+                <HubSection Header="Mentions">
+                    <DataTemplate>
+                    </DataTemplate>
+                </HubSection>
+            </Hub>
+        </Grid>
     </SplitView>
 </Page>

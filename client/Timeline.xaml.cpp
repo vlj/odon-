@@ -42,11 +42,12 @@ Timeline::Timeline()
 					std::regex_replace(
 						std::regex_replace(toot.content, std::wregex(L"(<p>)"), L""),
 						std::wregex(L"(</p>)"), L"");
-				_tootscol->Append(ref new Toot(
+				Account^ acc = ref new Account(
 					ref new String(toot._account.username.c_str()),
-					ref new String(content.c_str()),
 					ref new String(toot._account.avatar.c_str())
-				));
+					);
+				Toot^ t = ref new Toot(acc, ref new String(content.c_str()));
+				_tootscol->Append(t);
 			}
 		});
 }
@@ -60,5 +61,26 @@ void client::Timeline::paneOpened_Click(Platform::Object^ sender, Windows::UI::X
 
 void client::Timeline::Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
+	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
+	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
+		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
+		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
 
+	instance.account_search(SearchBox->Text->Data())
+		.then([this](const std::vector<Mastodon::Account>& results)
+		{
+			auto list = ref new Platform::Collections::Vector<Account^>();
+			for (const auto& acc : results)
+			{
+				list->Append(ref new Account(
+					ref new String(acc.username.c_str()),
+					ref new String(acc.avatar.c_str())
+				));
+			}
+			Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low, ref new Windows::UI::Core::DispatchedHandler([this, list]()
+			{
+				this->displaySearch->DataContext = list;
+				FlyoutBase::ShowAttachedFlyout(this->hub);
+			}));
+		});
 }
