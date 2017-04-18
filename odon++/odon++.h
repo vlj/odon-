@@ -118,11 +118,11 @@ namespace Mastodon
 		size_t ratelimit_method;
 
 	private:
-		auto __api_request(web::uri_builder uri)
+		auto __api_request(web::uri_builder uri, const web::http::method& method = web::http::methods::GET)
 		{
 			web::http::client::http_client client(U("https://oc.todon.fr"));
 			uri.append_query(U("access_token"), access_token);
-			return client.request(web::http::methods::GET, uri.to_string())
+			return client.request(method, uri.to_string())
 				// Handle response headers arriving.
 				.then([=](const web::http::http_response& response)
 				{
@@ -189,6 +189,7 @@ namespace Mastodon
 			// Build request URI and start the request.
 			web::uri_builder builder(U("/api/v1/apps"));
 			builder.append_query(U("client_name"), client_name);
+			builder.append_query(U("scopes"), U("read write follow"));
 			builder.append_query(U("redirect_uris"), U("urn:ietf:wg:oauth:2.0:oob"));
 			return client.request(web::http::methods::POST, builder.to_string())
 				// Handle response headers arriving.
@@ -227,6 +228,7 @@ namespace Mastodon
 			builder.append_query(U("password"), password);
 			builder.append_query(U("client_id"), client_id);
 			builder.append_query(U("client_secret"), client_secret);
+			builder.append_query(U("scope"), U("read write follow"));
 			builder.append_query(U("grant_type"), U("password"));
 			return client.request(web::http::methods::POST, builder.to_string())
 				// Handle response headers arriving.
@@ -239,6 +241,7 @@ namespace Mastodon
 			})
 				.then([=](web::json::value v)
 			{
+				const auto& str = v.serialize();
 				return v[U("access_token")].as_string();
 			});
 		}
@@ -358,6 +361,14 @@ namespace Mastodon
 		auto account_verify_credentials()
 		{
 
+		}
+
+		auto account_follow(const size_t& id)
+		{
+			web::uri_builder uri(U("/api/v1/accounts/"));
+			uri.append_path(std::to_wstring(id));
+			uri.append_path(U("/follow"));
+			return __api_request(uri, web::http::methods::POST);
 		}
 
 		auto account_unfollow()

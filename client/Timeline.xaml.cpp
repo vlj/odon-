@@ -44,7 +44,8 @@ Timeline::Timeline()
 						std::wregex(L"(</p>)"), L"");
 				Account^ acc = ref new Account(
 					ref new String(toot._account.username.c_str()),
-					ref new String(toot._account.avatar.c_str())
+					ref new String(toot._account.avatar.c_str()),
+					toot._account.id
 					);
 				Toot^ t = ref new Toot(acc, ref new String(content.c_str()));
 				_tootscol->Append(t);
@@ -74,7 +75,8 @@ void client::Timeline::Button_Click(Platform::Object^ sender, Windows::UI::Xaml:
 			{
 				list->Append(ref new Account(
 					ref new String(acc.username.c_str()),
-					ref new String(acc.avatar.c_str())
+					ref new String(acc.avatar.c_str()),
+					acc.id
 				));
 			}
 			Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low, ref new Windows::UI::Core::DispatchedHandler([this, list]()
