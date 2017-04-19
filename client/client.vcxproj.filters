@@ -61,5 +61,6 @@
     <Page Include="MainPage.xaml" />
     <Page Include="ConnectedPage.xaml" />
     <Page Include="Timeline.xaml" />
+    <Page Include="datatemplates.xaml" />
   </ItemGroup>
 </Project>

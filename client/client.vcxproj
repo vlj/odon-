@@ -141,6 +141,9 @@
     <ClInclude Include="ConnectedPage.xaml.h">
       <DependentUpon>ConnectedPage.xaml</DependentUpon>
     </ClInclude>
+    <ClInclude Include="datatemplates.xaml.h">
+      <DependentUpon>datatemplates.xaml</DependentUpon>
+    </ClInclude>
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.xaml.h">
       <DependentUpon>App.xaml</DependentUpon>
@@ -158,6 +161,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="ConnectedPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="datatemplates.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="MainPage.xaml">
@@ -189,6 +195,9 @@
     </ClCompile>
     <ClCompile Include="ConnectedPage.xaml.cpp">
       <DependentUpon>ConnectedPage.xaml</DependentUpon>
+    </ClCompile>
+    <ClCompile Include="datatemplates.xaml.cpp">
+      <DependentUpon>datatemplates.xaml</DependentUpon>
     </ClCompile>
     <ClCompile Include="MainPage.xaml.cpp">
       <DependentUpon>MainPage.xaml</DependentUpon>

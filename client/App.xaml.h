@@ -5,9 +5,10 @@
 
 #pragma once
 
+#include "App.g.h"
 #include "odon++.h"
 #include "toot.h"
-#include "App.g.h"
+
 
 namespace client
 {

@@ -7,22 +7,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Page.Resources>
-        <DataTemplate x:Key="toot_template" x:DataType="local:Toot">
-            <StackPanel Orientation="Horizontal" BorderBrush="Black" BorderThickness="1">
-                <Image Source="{x:Bind Author.Avatar}" Width="100" Height="100" />
-                <StackPanel>
-                    <TextBlock Text="{x:Bind Author.Username}" />
-                    <RichTextBlock Width="500">
-                        <Paragraph>
-                            <Run Text="{x:Bind Content}" />
-                        </Paragraph>
-                    </RichTextBlock>
-                </StackPanel>
-            </StackPanel>
-        </DataTemplate>
-    </Page.Resources>
-
     <Page.TopAppBar>
         <CommandBar>
             <AppBarButton Icon="OpenPane" Click="paneOpened_Click" />
@@ -50,17 +34,7 @@
             <Hub Header="Mastodon" x:Name="hub">
                 <FlyoutBase.AttachedFlyout>
                     <Flyout Placement="Full">
-                        <ListView x:Name="displaySearch" ItemsSource="{Binding}">
-                            <ListView.ItemTemplate>
-                                <DataTemplate x:DataType="local:Account">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Image Source="{x:Bind Avatar}" Width="100" Height="100" />
-                                        <TextBlock Text="{Binding Username}" />
-                                        <Button Content="Fav" Command="{x:Bind OnClick}" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
+                        <ListView x:Name="displaySearch" ItemsSource="{Binding}" ItemTemplate="{StaticResource account_template}" />
                     </Flyout>
                 </FlyoutBase.AttachedFlyout>
                 <HubSection x:Name="timelinesection" Header="Timeline" MinWidth="500">
