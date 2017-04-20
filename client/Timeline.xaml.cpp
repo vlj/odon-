@@ -52,37 +52,3 @@ Timeline::Timeline()
 			}
 		});
 }
-
-
-void client::Timeline::paneOpened_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
-{
-	this->Pane->IsPaneOpen = !this->Pane->IsPaneOpen;
-}
-
-
-void client::Timeline::Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
-{
-	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
-		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
-		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
-
-	instance.account_search(SearchBox->Text->Data())
-		.then([this](const std::vector<Mastodon::Account>& results)
-		{
-			auto list = ref new Platform::Collections::Vector<Account^>();
-			for (const auto& acc : results)
-			{
-				list->Append(ref new Account(
-					ref new String(acc.username.c_str()),
-					ref new String(acc.avatar.c_str()),
-					acc.id
-				));
-			}
-			Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low, ref new Windows::UI::Core::DispatchedHandler([this, list]()
-			{
-				this->displaySearch->DataContext = list;
-				FlyoutBase::ShowAttachedFlyout(this->hub);
-			}));
-		});
-}

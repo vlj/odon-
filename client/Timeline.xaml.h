@@ -22,15 +22,12 @@ namespace client
 	public:
 		Timeline();
 
-		property Windows::Foundation::Collections::IVector<Toot^>^ tootscol
+		property Windows::Foundation::Collections::IObservableVector<Toot^>^ tootscol
 		{
-			Windows::Foundation::Collections::IVector<Toot^>^ get()
+			Windows::Foundation::Collections::IObservableVector<Toot^>^ get()
 			{
 				return _tootscol;
 			}
 		}
-	private:
-		void paneOpened_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
-		void Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
 	};
 }

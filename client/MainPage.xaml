@@ -5,7 +5,7 @@
     xmlns:local="using:client"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" MaxWidth="100" MaxHeight="100">
+    mc:Ignorable="d">
 
     <Page.Transitions>
         <TransitionCollection>
@@ -15,11 +15,29 @@
         </TransitionCollection>
     </Page.Transitions>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <StackPanel>
-            <TextBox Header="Url" InputScope="Url" />
-            <ProgressRing x:Name="InstanceTokenRing"/>
-            <Button Content="Validate" Click="Button_Click" />
-        </StackPanel>
-    </Grid>
+    <Page.TopAppBar>
+        <CommandBar>
+            <AppBarButton Icon="OpenPane" Click="paneOpened_Click" />
+            <AppBarButton Icon="Find">
+                <AppBarButton.Flyout>
+                    <Flyout>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox x:Name="SearchBox" IsTabStop="true"/>
+                            <Button Content="Ok" Click="Button_Click" IsTabStop="True" />
+                        </StackPanel>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+            <AppBarButton Icon="Refresh" />
+        </CommandBar>
+    </Page.TopAppBar>
+
+    <SplitView x:Name="Pane" DisplayMode="CompactOverlay">
+        <SplitView.Pane>
+            <Button Content="Find"/>
+        </SplitView.Pane>
+        <Frame x:Name="contentFrame">
+            <Page />
+        </Frame>
+    </SplitView>
 </Page>

@@ -18,6 +18,7 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="ConnectedPage.xaml.cpp" />
     <ClCompile Include="Timeline.xaml.cpp" />
+    <ClCompile Include="datatemplates.xaml.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -26,6 +27,7 @@
     <ClInclude Include="ConnectedPage.xaml.h" />
     <ClInclude Include="Timeline.xaml.h" />
     <ClInclude Include="toot.h" />
+    <ClInclude Include="datatemplates.xaml.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\LockScreenLogo.scale-200.png">
@@ -62,5 +64,6 @@
     <Page Include="ConnectedPage.xaml" />
     <Page Include="Timeline.xaml" />
     <Page Include="datatemplates.xaml" />
+    <Page Include="Login.xaml" />
   </ItemGroup>
 </Project>

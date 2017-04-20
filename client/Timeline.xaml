@@ -7,51 +7,26 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Page.TopAppBar>
-        <CommandBar>
-            <AppBarButton Icon="OpenPane" Click="paneOpened_Click" />
-            <AppBarButton Icon="Find">
-                <AppBarButton.Flyout>
-                    <Flyout>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBox x:Name="SearchBox" IsTabStop="true"/>
-                            <Button Content="Ok" Click="Button_Click" IsTabStop="True" />
-                        </StackPanel>
-                    </Flyout>
-                </AppBarButton.Flyout>
-            </AppBarButton>
-            <AppBarButton Icon="Refresh" />
-        </CommandBar>
-    </Page.TopAppBar>
 
-    <SplitView x:Name="Pane" DisplayMode="CompactOverlay">
-        <SplitView.Pane>
-            <StackPanel>
-                <Button Content="Find"/>
-            </StackPanel>
-        </SplitView.Pane>
-        <Grid x:Name="rootGrid">
-            <Hub Header="Mastodon" x:Name="hub">
-                <FlyoutBase.AttachedFlyout>
-                    <Flyout Placement="Full">
-                        <ListView x:Name="displaySearch" ItemsSource="{Binding}" ItemTemplate="{StaticResource account_template}" />
-                    </Flyout>
-                </FlyoutBase.AttachedFlyout>
-                <HubSection x:Name="timelinesection" Header="Timeline" MinWidth="500">
-                    <DataTemplate x:DataType="local:Timeline">
-                        <StackPanel>
-                            <ListView ItemsSource="{x:Bind tootscol}"
+    <Hub Header="Mastodon" x:Name="hub">
+        <FlyoutBase.AttachedFlyout>
+            <Flyout Placement="Full">
+                <ListView x:Name="displaySearch" ItemsSource="{Binding}" ItemTemplate="{StaticResource account_template}" />
+            </Flyout>
+        </FlyoutBase.AttachedFlyout>
+        <HubSection x:Name="timelinesection" Header="Timeline" MinWidth="500">
+            <DataTemplate x:DataType="local:Timeline">
+                <StackPanel>
+                    <ListView ItemsSource="{x:Bind tootscol}"
                                       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                                       ScrollViewer.VerticalScrollBarVisibility="Visible"
                                       ItemTemplate="{StaticResource toot_template}"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </HubSection>
-                <HubSection Header="Mentions">
-                    <DataTemplate>
-                    </DataTemplate>
-                </HubSection>
-            </Hub>
-        </Grid>
-    </SplitView>
+                </StackPanel>
+            </DataTemplate>
+        </HubSection>
+        <HubSection Header="Mentions">
+            <DataTemplate>
+            </DataTemplate>
+        </HubSection>
+    </Hub>
 </Page>

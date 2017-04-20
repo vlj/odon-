@@ -5,7 +5,9 @@
 
 #include "pch.h"
 #include "MainPage.xaml.h"
+#include "Login.xaml.h"
 #include "ConnectedPage.xaml.h"
+#include "Timeline.xaml.h"
 
 using namespace client;
 
@@ -25,22 +27,44 @@ using namespace Windows::UI::Xaml::Navigation;
 MainPage::MainPage()
 {
 	InitializeComponent();
+	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
+	if (localSettings->Values->Lookup("client_id") == nullptr)
+		contentFrame->Navigate(Windows::UI::Xaml::Interop::TypeName(Login::typeid), nullptr);
+	if (localSettings->Values->Lookup("access_token") == nullptr)
+		contentFrame->Navigate(Windows::UI::Xaml::Interop::TypeName(ConnectedPage::typeid), nullptr);
+	else
+		contentFrame->Navigate(Windows::UI::Xaml::Interop::TypeName(Timeline::typeid), nullptr);
 }
 
+void client::MainPage::paneOpened_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
+	Pane->IsPaneOpen = !this->Pane->IsPaneOpen;
+}
 
 void client::MainPage::Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
-	InstanceTokenRing->IsActive = true;
-	Mastodon::InstanceConnexion::create_app(U("odon++client"))
-		.then([this](const std::tuple<utility::string_t, utility::string_t>& id_secret)
-		{
-			auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings->Values;
-			localSettings->Insert("client_id", PropertyValue::CreateString(ref new String(std::get<0>(id_secret).c_str())));
-			localSettings->Insert("client_secret", PropertyValue::CreateString(ref new String(std::get<1>(id_secret).c_str())));
-			this->Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
-				ref new Windows::UI::Core::DispatchedHandler([this, id_secret]() {
-					this->Frame->Navigate(Interop::TypeName(ConnectedPage::typeid), nullptr);
-				}));
-		});
+	/*	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
+	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
+	dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
+	dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
 
+	instance.account_search(SearchBox->Text->Data())
+	.then([this](const std::vector<Mastodon::Account>& results)
+	{
+	auto list = ref new Platform::Collections::Vector<Account^>();
+	for (const auto& acc : results)
+	{
+	list->Append(ref new Account(
+	ref new String(acc.username.c_str()),
+	ref new String(acc.avatar.c_str()),
+	acc.id
+	));
+	}
+	Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low, ref new Windows::UI::Core::DispatchedHandler([this, list]()
+	{
+	this->displaySearch->DataContext = list;
+	FlyoutBase::ShowAttachedFlyout(this->hub);
+	}));
+	});*/
 }
+
