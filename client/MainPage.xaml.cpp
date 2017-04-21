@@ -30,7 +30,7 @@ MainPage::MainPage()
 	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 	if (localSettings->Values->Lookup("client_id") == nullptr)
 		contentFrame->Navigate(Windows::UI::Xaml::Interop::TypeName(Login::typeid), nullptr);
-	if (localSettings->Values->Lookup("access_token") == nullptr)
+	else if (localSettings->Values->Lookup("access_token") == nullptr)
 		contentFrame->Navigate(Windows::UI::Xaml::Interop::TypeName(ConnectedPage::typeid), nullptr);
 	else
 		contentFrame->Navigate(Windows::UI::Xaml::Interop::TypeName(Timeline::typeid), nullptr);

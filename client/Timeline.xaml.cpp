@@ -35,7 +35,7 @@ Timeline::Timeline()
 	instance.timeline_home(0, 0)
 		.then([this](const std::vector<Mastodon::Status>& v)
 		{
-			_tootscol = ref new Platform::Collections::Vector<Toot^>();
+		_tootscol = ref new Platform::Collections::Vector<Toot^>();
 			for (const auto& toot : v)
 			{
 				const auto& content =

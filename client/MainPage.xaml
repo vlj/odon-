@@ -15,26 +15,24 @@
         </TransitionCollection>
     </Page.Transitions>
 
-    <Page.TopAppBar>
-        <CommandBar>
-            <AppBarButton Icon="OpenPane" Click="paneOpened_Click" />
-            <AppBarButton Icon="Find">
-                <AppBarButton.Flyout>
-                    <Flyout>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBox x:Name="SearchBox" IsTabStop="true"/>
-                            <Button Content="Ok" Click="Button_Click" IsTabStop="True" />
-                        </StackPanel>
-                    </Flyout>
-                </AppBarButton.Flyout>
-            </AppBarButton>
-            <AppBarButton Icon="Refresh" />
-        </CommandBar>
-    </Page.TopAppBar>
-
-    <SplitView x:Name="Pane" DisplayMode="CompactOverlay">
+    <SplitView x:Name="Pane" DisplayMode="CompactOverlay" CompactPaneLength="68">
         <SplitView.Pane>
-            <Button Content="Find"/>
+            <StackPanel>
+                <AppBarButton Icon="OpenPane" Click="paneOpened_Click" />
+                <AppBarButton Icon="Home" />
+                <AppBarButton Icon="Find" >
+                    <AppBarButton.Flyout>
+                        <Flyout>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBox x:Name="SearchBox" IsTabStop="true"/>
+                                <Button Content="Ok" Click="Button_Click" IsTabStop="True" />
+                            </StackPanel>
+                        </Flyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
+                <AppBarButton Icon="Refresh" Label="Refresh" HorizontalAlignment="Left" />
+                <AppBarButton Icon="Edit" Label="New Toot" />
+            </StackPanel>
         </SplitView.Pane>
         <Frame x:Name="contentFrame">
             <Page />

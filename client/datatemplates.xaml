@@ -9,12 +9,12 @@
 
     <DataTemplate x:Key="toot_template" x:DataType="local:Toot">
             <StackPanel Orientation="Horizontal" BorderBrush="Black" BorderThickness="1">
-                <Image Source="{x:Bind Author.Avatar}" Width="100" Height="100" />
+                <Image Source="{x:Bind Author.Avatar, Mode=OneWay}" Width="100" Height="100" />
                 <StackPanel>
-                    <TextBlock Text="{x:Bind Author.Username}" />
+                <TextBlock Text="{x:Bind Author.Username, Mode=OneWay}" />
                     <RichTextBlock Width="500">
                         <Paragraph>
-                            <Run Text="{x:Bind Content}" />
+                        <Run Text="{x:Bind Content, Mode=OneWay}" />
                         </Paragraph>
                     </RichTextBlock>
                 </StackPanel>

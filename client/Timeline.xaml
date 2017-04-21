@@ -14,14 +14,11 @@
                 <ListView x:Name="displaySearch" ItemsSource="{Binding}" ItemTemplate="{StaticResource account_template}" />
             </Flyout>
         </FlyoutBase.AttachedFlyout>
-        <HubSection x:Name="timelinesection" Header="Timeline" MinWidth="500">
+        <HubSection x:Name="timelinesection" Header="Timeline">
             <DataTemplate x:DataType="local:Timeline">
-                <StackPanel>
-                    <ListView ItemsSource="{x:Bind tootscol}"
+                <ListView ItemsSource="{x:Bind tootscol, Mode=OneWay}"
                                       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                                      ScrollViewer.VerticalScrollBarVisibility="Visible"
                                       ItemTemplate="{StaticResource toot_template}"/>
-                </StackPanel>
             </DataTemplate>
         </HubSection>
         <HubSection Header="Mentions">

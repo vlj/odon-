@@ -68,6 +68,7 @@ namespace client
 
 	};
 
+	[Windows::UI::Xaml::Data::Bindable]
 	public ref class Toot sealed
 	{
 	internal:
