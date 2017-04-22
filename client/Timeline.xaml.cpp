@@ -5,7 +5,6 @@
 
 #include "pch.h"
 #include "Timeline.xaml.h"
-#include <regex>
 
 using namespace client;
 
@@ -38,17 +37,7 @@ Timeline::Timeline()
 		_tootscol = ref new Platform::Collections::Vector<Toot^>();
 			for (const auto& toot : v)
 			{
-				const auto& content =
-					std::regex_replace(
-						std::regex_replace(toot.content, std::wregex(L"(<p>)"), L""),
-						std::wregex(L"(</p>)"), L"");
-				Account^ acc = ref new Account(
-					ref new String(toot._account.username.c_str()),
-					ref new String(toot._account.avatar.c_str()),
-					toot._account.id
-					);
-				Toot^ t = ref new Toot(acc, ref new String(content.c_str()));
-				_tootscol->Append(t);
+				_tootscol->Append(ref new Toot(toot));
 			}
 		});
 }

@@ -82,7 +82,9 @@ namespace Mastodon
 			//in_reply_to_account_id = v.at(U("in_reply_to_account_id")).as_string();
 			created_at = v.at(U("created_at")).as_string();
 			sensitive = v.at(U("sensitive")).as_bool();
-			//spoiler_text = v.at(U("spoiler_text")).as_string();
+			const auto& spoiler = v.at(U("spoiler_text"));
+			if (!spoiler.is_null())
+				spoiler_text = spoiler.as_string();
 			visibility = [](const auto& v)
 			{
 				if (v == U("public"))

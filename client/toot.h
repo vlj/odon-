@@ -1,4 +1,5 @@
 #pragma once
+#include <regex>
 
 namespace client
 {
@@ -72,11 +73,51 @@ namespace client
 	public ref class Toot sealed
 	{
 	internal:
-		std::vector<float> test;
+		Toot(const Mastodon::Status& _status)
+		{
+			const auto& content =
+				std::regex_replace(
+					std::regex_replace(_status.content, std::wregex(L"(<p>)"), L""),
+					std::wregex(L"(</p>)"), L"");
+			_content = ref new Platform::String(content.c_str());
+			_account = ref new Account(
+				ref new Platform::String(_status._account.username.c_str()),
+				ref new Platform::String(_status._account.avatar.c_str()),
+				_status._account.id
+			);
+			if (_status.spoiler_text)
+				_spoiler_text = ref new Platform::String(_status.spoiler_text->c_str());
+			_sensitive = _status.sensitive;
+		}
 	private:
 		Account^ _account;
 		Platform::String^ _content;
+		Platform::String^ _spoiler_text;
+		bool _sensitive;
 	public:
+		property bool Sensitive
+		{
+			bool get()
+			{
+				return _spoiler_text != nullptr;
+			}
+		}
+
+		property bool NotSensitive
+		{
+			bool get()
+			{
+				return _spoiler_text == nullptr;
+			}
+		}
+
+		property Platform::String^ SpoilerText
+		{
+			Platform::String^ get()
+			{
+				return _spoiler_text;
+			}
+		}
 
 		property Platform::String^ Content
 		{

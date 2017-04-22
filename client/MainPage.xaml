@@ -18,7 +18,11 @@
     <SplitView x:Name="Pane" DisplayMode="CompactOverlay" CompactPaneLength="68">
         <SplitView.Pane>
             <StackPanel>
-                <AppBarButton Icon="OpenPane" Click="paneOpened_Click" />
+                <AppBarButton Click="paneOpened_Click" >
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE700;" FontSize="32" Margin="0,-8,0,0"/>
+                    </AppBarButton.Icon>
+                </AppBarButton>
                 <AppBarButton Icon="Home" />
                 <AppBarButton Icon="Find" >
                     <AppBarButton.Flyout>

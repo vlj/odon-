@@ -8,18 +8,29 @@
     mc:Ignorable="d">
 
     <DataTemplate x:Key="toot_template" x:DataType="local:Toot">
+        <UserControl>
             <StackPanel Orientation="Horizontal" BorderBrush="Black" BorderThickness="1">
                 <Image Source="{x:Bind Author.Avatar, Mode=OneWay}" Width="100" Height="100" />
-                <StackPanel>
+                <StackPanel Orientation="Vertical">
                 <TextBlock Text="{x:Bind Author.Username, Mode=OneWay}" />
-                    <RichTextBlock Width="500">
+                <RichTextBlock Width="500">
+                    <Paragraph>
+                        <Run Text="{x:Bind SpoilerText}" />
+                    </Paragraph>
+                </RichTextBlock>
+                    <StackPanel Orientation="Horizontal">
+                    <ToggleSwitch x:Name="toggle" OffContent="" OnContent=""
+                                  Visibility="{x:Bind Sensitive}" IsOn="{x:Bind NotSensitive}" />
+                    <RichTextBlock Width="300" Visibility="{Binding IsOn, ElementName=toggle}">
                         <Paragraph>
-                        <Run Text="{x:Bind Content, Mode=OneWay}" />
+                            <Run Text="{x:Bind Content}" />
                         </Paragraph>
                     </RichTextBlock>
                 </StackPanel>
             </StackPanel>
-        </DataTemplate>
+            </StackPanel>
+        </UserControl>
+    </DataTemplate>
 
     <DataTemplate x:DataType="local:Account" x:Key="account_template">
         <StackPanel Orientation="Horizontal">
