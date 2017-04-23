@@ -81,7 +81,7 @@ namespace Mastodon
 			//in_reply_to_id = v.at(U("in_reply_to_id")).as_string();
 			//in_reply_to_account_id = v.at(U("in_reply_to_account_id")).as_string();
 			created_at = v.at(U("created_at")).as_string();
-			sensitive = v.at(U("sensitive")).as_bool();
+//			sensitive = v.at(U("sensitive")).as_bool();
 			const auto& spoiler = v.at(U("spoiler_text"));
 			if (!spoiler.is_null())
 				spoiler_text = spoiler.as_string();
@@ -348,6 +348,13 @@ namespace Mastodon
 		auto status_favourited_by()
 		{
 
+		}
+
+		auto status_post(const utility::string_t& content)
+		{
+			auto&& uri = web::uri_builder{ U("/api/v1/statuses") };
+			uri.append_query(U("status"), content);
+			return __api_request(uri, web::http::methods::POST);
 		}
 
 		auto notifications()

@@ -35,7 +35,16 @@
                     </AppBarButton.Flyout>
                 </AppBarButton>
                 <AppBarButton Icon="Refresh" Label="Refresh" HorizontalAlignment="Left" />
-                <AppBarButton Icon="Edit" Label="New Toot" />
+                <AppBarButton Icon="Edit" Label="New Toot">
+                    <AppBarButton.Flyout>
+                        <Flyout Placement="Bottom">
+                            <StackPanel Orientation="Horizontal" Width="300">
+                                <TextBox x:Name="NewToot" Width="250"/>
+                                <AppBarButton Icon="Send" Click="AppBarButton_Click" />
+                            </StackPanel>
+                        </Flyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
             </StackPanel>
         </SplitView.Pane>
         <Frame x:Name="contentFrame">

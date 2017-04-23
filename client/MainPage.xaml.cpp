@@ -68,3 +68,14 @@ void client::MainPage::Button_Click(Platform::Object^ sender, Windows::UI::Xaml:
 	});*/
 }
 
+
+
+void client::MainPage::AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
+	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
+	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
+		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
+		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
+
+	instance.status_post(NewToot->Text->Data());
+}
