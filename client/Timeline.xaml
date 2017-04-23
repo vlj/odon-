@@ -9,11 +9,6 @@
 
 
     <Hub Header="Mastodon" x:Name="hub">
-        <FlyoutBase.AttachedFlyout>
-            <Flyout Placement="Full">
-                <ListView x:Name="displaySearch" ItemsSource="{Binding}" ItemTemplate="{StaticResource account_template}" />
-            </Flyout>
-        </FlyoutBase.AttachedFlyout>
         <HubSection x:Name="timelinesection" Header="Timeline">
             <DataTemplate x:DataType="local:Timeline">
                 <ListView ItemsSource="{x:Bind tootscol, Mode=OneWay}"

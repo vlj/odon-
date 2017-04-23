@@ -109,9 +109,45 @@ namespace Mastodon
 		}
 	};
 
-	struct InstanceConnexion
+	struct InstanceAnonymous
 	{
-		const std::string base_url{ "https://oc.todon.fr" };
+	protected:
+		auto __api_request(web::uri_builder uri, const web::http::method& method) const
+		{
+			web::http::client::http_client client(base_url);
+			return client.request(method, uri.to_string())
+				// Handle response headers arriving.
+				.then([=](const web::http::http_response& response)
+			{
+				const auto& status = response.status_code();
+				printf("Received response status code:%u\n", response.status_code());
+
+				return response.extract_json();
+			});
+		}
+
+	public:
+		const utility::string_t base_url{ U("https://oc.todon.fr") };
+
+		auto account_search(const utility::string_t& search_term) const
+		{
+			auto&& uri = web::uri_builder(U("/api/v1/search"));
+			uri.append_query(U("q"), search_term);
+			return __api_request(uri, web::http::methods::GET)
+				.then([](const web::json::value& v)
+			{
+				auto&& result = std::vector<Account>{};
+				for (const auto& json_v : v.at(U("accounts")).as_array())
+				{
+					result.emplace_back(Account{ json_v.as_object() });
+				}
+				return result;
+			});
+		}
+	};
+
+	struct InstanceConnexion : public InstanceAnonymous
+	{
 		std::string api_base_url;
 		const utility::string_t client_id;
 		const utility::string_t client_secret;
@@ -119,24 +155,13 @@ namespace Mastodon
 		size_t debug_requests;
 		size_t ratelimit_method;
 
-	private:
-		auto __api_request(web::uri_builder uri, const web::http::method& method = web::http::methods::GET)
+	protected:
+		auto __api_request(web::uri_builder uri, const web::http::method& method = web::http::methods::GET) const
 		{
-			web::http::client::http_client client(U("https://oc.todon.fr"));
 			uri.append_query(U("access_token"), access_token);
-			return client.request(method, uri.to_string())
-				// Handle response headers arriving.
-				.then([=](const web::http::http_response& response)
-				{
-					const auto& status = response.status_code();
-					printf("Received response status code:%u\n", response.status_code());
-
-					return response.extract_json();
-				});
+			return InstanceAnonymous::__api_request(uri, method);
 		}
-
 	public:
-
 		/**
 		Create a new API wrapper instance based on the given client_secret and client_id.If you
 		give a client_id and it is not a file, you must also give a secret.
@@ -403,22 +428,6 @@ namespace Mastodon
 		auto account_unmute()
 		{
 
-		}
-
-		auto account_search(const utility::string_t& search_term)
-		{
-			auto&& uri = web::uri_builder(U("/api/v1/search"));
-			uri.append_query(U("q"), search_term);
-			return __api_request(uri)
-				.then([](const web::json::value& v)
-				{
-					auto&& result = std::vector<Account>{};
-					for (const auto& json_v : v.at(U("accounts")).as_array())
-					{
-						result.emplace_back(Account{ json_v.as_object() });
-					}
-					return result;
-				});
 		}
 
 		auto follow_request_authorize()

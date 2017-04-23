@@ -24,7 +24,7 @@
                     </AppBarButton.Icon>
                 </AppBarButton>
                 <AppBarButton Icon="Home" />
-                <AppBarButton Icon="Find" >
+                <AppBarButton Icon="Find" AllowFocusOnInteraction="True">
                     <AppBarButton.Flyout>
                         <Flyout>
                             <StackPanel Orientation="Horizontal">
@@ -35,19 +35,18 @@
                     </AppBarButton.Flyout>
                 </AppBarButton>
                 <AppBarButton Icon="Refresh" Label="Refresh" HorizontalAlignment="Left" />
-                <AppBarButton Icon="Edit" Label="New Toot">
-                    <AppBarButton.Flyout>
-                        <Flyout Placement="Bottom">
-                            <StackPanel Orientation="Horizontal" Width="300">
-                                <TextBox x:Name="NewToot" Width="250"/>
-                                <AppBarButton Icon="Send" Click="AppBarButton_Click" />
-                            </StackPanel>
-                        </Flyout>
-                    </AppBarButton.Flyout>
-                </AppBarButton>
+                <AppBarButton Icon="Edit" Label="New Toot" Click="AppBarButton_Click_1"  />
             </StackPanel>
         </SplitView.Pane>
         <Frame x:Name="contentFrame">
+                <FlyoutBase.AttachedFlyout>
+                    <Flyout Placement="Bottom">
+                        <StackPanel Orientation="Horizontal" Width="300">
+                            <TextBox x:Name="NewToot" Width="250"/>
+                            <AppBarButton Icon="Send" Click="AppBarButton_Click" />
+                        </StackPanel>
+                    </Flyout>
+                </FlyoutBase.AttachedFlyout>
             <Page />
         </Frame>
     </SplitView>

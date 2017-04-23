@@ -8,6 +8,7 @@
 #include "Login.xaml.h"
 #include "ConnectedPage.xaml.h"
 #include "Timeline.xaml.h"
+#include "Search.xaml.h"
 
 using namespace client;
 
@@ -43,32 +44,8 @@ void client::MainPage::paneOpened_Click(Platform::Object^ sender, Windows::UI::X
 
 void client::MainPage::Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
-	/*	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
-	dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
-	dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
-
-	instance.account_search(SearchBox->Text->Data())
-	.then([this](const std::vector<Mastodon::Account>& results)
-	{
-	auto list = ref new Platform::Collections::Vector<Account^>();
-	for (const auto& acc : results)
-	{
-	list->Append(ref new Account(
-	ref new String(acc.username.c_str()),
-	ref new String(acc.avatar.c_str()),
-	acc.id
-	));
-	}
-	Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low, ref new Windows::UI::Core::DispatchedHandler([this, list]()
-	{
-	this->displaySearch->DataContext = list;
-	FlyoutBase::ShowAttachedFlyout(this->hub);
-	}));
-	});*/
+	contentFrame->Navigate(Windows::UI::Xaml::Interop::TypeName(Search::typeid), SearchBox->Text);
 }
-
-
 
 void client::MainPage::AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
@@ -78,4 +55,10 @@ void client::MainPage::AppBarButton_Click(Platform::Object^ sender, Windows::UI:
 		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
 
 	instance.status_post(NewToot->Text->Data());
+}
+
+
+void client::MainPage::AppBarButton_Click_1(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
+	FlyoutBase::ShowAttachedFlyout(contentFrame);
 }
