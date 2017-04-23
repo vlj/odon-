@@ -109,6 +109,26 @@ namespace Mastodon
 		}
 	};
 
+	struct Relationship
+	{
+		size_t id;
+		bool following;
+		bool followed_by;
+		bool blocking;
+		bool muting;
+		bool requested;
+
+		Relationship(const web::json::value& v)
+		{
+			id = v.at(U("id")).as_integer();
+			following = v.at(U("following")).as_bool();
+			followed_by = v.at(U("followed_by")).as_bool();
+			blocking = v.at(U("blocking")).as_bool();
+			muting = v.at(U("muting")).as_bool();
+			requested = v.at(U("requested")).as_bool();
+		}
+	};
+
 	struct InstanceAnonymous
 	{
 	protected:
@@ -214,6 +234,15 @@ namespace Mastodon
 		{
 			uri.append_query(U("access_token"), access_token);
 			return InstanceAnonymous::__api_request(uri, method);
+		}
+
+		auto __relationship_update(const size_t& id, const utility::string_t& key) const
+		{
+			web::uri_builder uri(U("/api/v1/accounts/"));
+			uri.append_path(std::to_wstring(id));
+			uri.append_path(key);
+			return __api_request(uri, web::http::methods::POST)
+				.then([](const web::json::value& v) { return Relationship(v); });
 		}
 	public:
 		/**
@@ -393,35 +422,32 @@ namespace Mastodon
 
 		auto account_follow(const size_t& id)
 		{
-			web::uri_builder uri(U("/api/v1/accounts/"));
-			uri.append_path(std::to_wstring(id));
-			uri.append_path(U("/follow"));
-			return __api_request(uri, web::http::methods::POST);
+			return __relationship_update(id, U("follow"));
 		}
 
-		auto account_unfollow()
+		auto account_unfollow(const size_t& id)
 		{
-
+			return __relationship_update(id, U("unfollow"));
 		}
 
-		auto account_block()
+		auto account_block(const size_t& id)
 		{
-
+			return __relationship_update(id, U("block"));
 		}
 
-		auto account_unblock()
+		auto account_unblock(const size_t& id)
 		{
-
+			return __relationship_update(id, U("unblock"));
 		}
 
-		auto account_mute()
+		auto account_mute(const size_t& id)
 		{
-
+			return __relationship_update(id, U("mute"));
 		}
 
-		auto account_unmute()
+		auto account_unmute(const size_t& id)
 		{
-
+			return __relationship_update(id, U("unmute"));
 		}
 
 		auto follow_request_authorize()
