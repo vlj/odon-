@@ -26,6 +26,8 @@ namespace Mastodon
 		utility::string_t url;
 		utility::string_t username;
 
+		Account() = default;
+
 		Account(const web::json::object& object)
 		{
 			acct = object.at(U("acct")).as_string();
@@ -107,6 +109,8 @@ namespace Mastodon
 			//favorited = v.at(U("favorited")).as_string();
 			//reblogged = v.at(U("reblogged")).as_string();
 		}
+
+		Status(const Status& in) = default;
 	};
 
 	struct Relationship
@@ -118,6 +122,8 @@ namespace Mastodon
 		bool muting;
 		bool requested;
 
+		Relationship() = default;
+
 		Relationship(const web::json::value& v)
 		{
 			id = v.at(U("id")).as_integer();
@@ -126,6 +132,37 @@ namespace Mastodon
 			blocking = v.at(U("blocking")).as_bool();
 			muting = v.at(U("muting")).as_bool();
 			requested = v.at(U("requested")).as_bool();
+		}
+	};
+
+	enum class NotificationType
+	{
+		mention,
+		reblog,
+		favourite,
+		follow,
+	};
+
+	struct Notifications
+	{
+		size_t id;
+		NotificationType type;
+		utility::string_t created_at;
+		Account account;
+		std::optional<Status> status;
+
+		Notifications(const web::json::value& v) : account(v.at(U("account")).as_object())
+		{
+			id = v.at(U("id")).as_integer();
+			type = [](const auto& t) {
+				if (t == U("mention")) return NotificationType::mention;
+				if (t == U("reblog")) return NotificationType::reblog;
+				if (t == U("favourite")) return NotificationType::favourite;
+				if (t == U("follow")) return NotificationType::follow;
+				throw;
+			} (v.at(U("type")).as_string());
+			if (!v.at(U("status")).is_null())
+				status = Status{ v.at(U("status")) };
 		}
 	};
 
@@ -178,6 +215,13 @@ namespace Mastodon
 	public:
 		const utility::string_t base_url{ U("https://oc.todon.fr") };
 
+		auto account(const size_t& id)
+		{
+			auto&& uri = web::uri_builder{ U("/api/v1/accounts/") + std::to_wstring(id) };
+			return __api_request(uri, web::http::methods::GET)
+				.then([](const web::json::value& v) { return Account{ v.as_object() }; });
+		}
+
 		auto account_search(const utility::string_t& search_term) const
 		{
 			auto&& uri = web::uri_builder(U("/api/v1/search"));
@@ -219,6 +263,20 @@ namespace Mastodon
 				return uri;
 			});
 		}
+
+		auto statuses(const size_t& id) const
+		{
+			auto&& uri = web::uri_builder{ U("/api/v1/accounts/") + std::to_wstring(id) + U("/statuses") };
+			return __api_request(uri, web::http::methods::GET)
+				.then([](const web::json::value& v) {
+					auto&& result = std::vector<Status>{};
+					for (const auto& s : v.as_array())
+					{
+						result.emplace_back(s);
+					}
+					return result;
+				});
+		}
 	};
 
 	struct InstanceConnexion : public InstanceAnonymous
@@ -242,7 +300,7 @@ namespace Mastodon
 			uri.append_path(std::to_wstring(id));
 			uri.append_path(key);
 			return __api_request(uri, web::http::methods::POST)
-				.then([](const web::json::value& v) { return Relationship(v); });
+				.then([](const web::json::value& v) { return Relationship{ v }; });
 		}
 	public:
 		/**
@@ -343,19 +401,17 @@ namespace Mastodon
 			return client.request(web::http::methods::POST, builder.to_string())
 				// Handle response headers arriving.
 				.then([=](const web::http::http_response& response)
-			{
-				printf("Received response status code:%u\n", response.status_code());
+				{
+					printf("Received response status code:%u\n", response.status_code());
 
-				// Write response body into the file.
-				return response.extract_json();
-			})
+					// Write response body into the file.
+					return response.extract_json();
+				})
 				.then([=](web::json::value v)
-			{
-				const auto& str = v.serialize();
-				return v[U("access_token")].as_string();
-			});
+				{
+					return v[U("access_token")].as_string();
+				});
 		}
-
 
 		/**
 		Fetch the authenticated users home timeline (i.e. followed users and self).
@@ -377,7 +433,7 @@ namespace Mastodon
 		*/
 
 
-		auto status()
+		auto statuses() const
 		{
 
 		}
@@ -405,14 +461,18 @@ namespace Mastodon
 			return __api_request(uri, web::http::methods::POST);
 		}
 
-		auto notifications()
+		auto notifications() const
 		{
-
-		}
-
-		auto account()
-		{
-
+			auto&& uri = web::uri_builder{ U("/api/v1/notifications") };
+			return __api_request(uri, web::http::methods::GET)
+				.then([](const web::json::value& v) {
+					auto&& result = std::vector<Relationship>{};
+					for (const auto& relation : v.as_array())
+					{
+						result.emplace_back(relation);
+					}
+					return result;
+				});
 		}
 
 		auto account_verify_credentials()

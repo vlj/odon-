@@ -12,22 +12,22 @@
             <StackPanel Orientation="Horizontal" BorderBrush="Black" BorderThickness="1">
                 <Image Source="{x:Bind Author.Avatar, Mode=OneWay}" Width="100" Height="100" />
                 <StackPanel Orientation="Vertical">
-                <TextBlock Text="{x:Bind Author.Username, Mode=OneWay}" />
-                <RichTextBlock Width="500">
-                    <Paragraph>
-                        <Run Text="{x:Bind SpoilerText}" />
-                    </Paragraph>
-                </RichTextBlock>
-                    <StackPanel Orientation="Horizontal">
-                    <ToggleSwitch x:Name="toggle" OffContent="" OnContent=""
-                                  Visibility="{x:Bind Sensitive}" IsOn="{x:Bind NotSensitive}" />
-                    <RichTextBlock Width="300" Visibility="{Binding IsOn, ElementName=toggle}">
+                    <TextBlock Text="{x:Bind Author.Username, Mode=OneWay}" />
+                    <StackPanel Orientation="Horizontal" Visibility="{x:Bind Sensitive}" >
+                        <RichTextBlock Width="300">
+                            <Paragraph>
+                                <Run Text="{x:Bind SpoilerText}" />
+                            </Paragraph>
+                        </RichTextBlock>
+                        <ToggleSwitch x:Name="toggle" OffContent="" OnContent=""
+                                  IsOn="{x:Bind NotSensitive}" />
+                    </StackPanel>
+                    <RichTextBlock Width="500" Visibility="{Binding IsOn, ElementName=toggle}">
                         <Paragraph>
                             <Run Text="{x:Bind Content}" />
                         </Paragraph>
                     </RichTextBlock>
                 </StackPanel>
-            </StackPanel>
             </StackPanel>
         </UserControl>
     </DataTemplate>
