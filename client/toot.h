@@ -13,7 +13,7 @@ namespace client
 		}
 		// Inherited via ICommand
 		virtual event Windows::Foundation::EventHandler<Platform::Object ^> ^ CanExecuteChanged;
-		virtual bool CanExecute(Platform::Object ^parameter) 
+		virtual bool CanExecute(Platform::Object ^parameter)
 		{
 			return true;
 		}

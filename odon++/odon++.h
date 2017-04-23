@@ -118,13 +118,42 @@ namespace Mastodon
 			return client.request(method, uri.to_string())
 				// Handle response headers arriving.
 				.then([=](const web::http::http_response& response)
-			{
-				const auto& status = response.status_code();
-				printf("Received response status code:%u\n", response.status_code());
+				{
+					const auto& status = response.status_code();
+					printf("Received response status code:%u\n", response.status_code());
 
-				return response.extract_json();
-			});
+					return response.extract_json();
+				});
 		}
+
+		/**
+		Fetch statuses, most recent ones first.Timeline can be home, mentions, local,
+		public, or tag / hashtag.See the following functions documentation for what those do.
+
+		The default timeline is the "home" timeline.
+
+		Returns a list of toot dicts.
+		*/
+		template<typename URIFixFunction>
+		auto timeline(const utility::string_t& timeline, URIFixFunction&& f) const
+		{
+			// Build request URI and start the request.
+			auto&& builder = web::uri_builder(U("/api/v1/timelines/"));
+			builder.append_path(timeline);
+
+			return __api_request(f(std::move(builder)), web::http::methods::GET)
+				.then([=](const web::json::value& v)
+				{
+					const auto& json_array = v.as_array();
+					auto&& result = std::vector<Status>{};
+					for (const auto& json_v : json_array)
+					{
+						result.emplace_back(Status{ json_v });
+					}
+					return result;
+				});
+		}
+
 
 	public:
 		const utility::string_t base_url{ U("https://oc.todon.fr") };
@@ -144,11 +173,36 @@ namespace Mastodon
 				return result;
 			});
 		}
+
+		/**
+		Fetches the public / visible-network timeline.
+
+		Returns a list of toot dicts.
+		*/
+		auto timeline_public(const bool& local) const
+		{
+			return timeline(U("public"), [local](auto&& uri) {
+				if (local) uri.append_query(U("local"), U("true"));
+				return uri;
+			});
+		}
+
+		/**
+		Fetch a timeline of toots with a given hashtag.
+
+		Returns a list of toot dicts.
+		*/
+		auto timeline_hashtag(const utility::string_t& hashtag, const bool& local) const
+		{
+			return timeline(U("tag/") + hashtag, [local](auto&& uri) {
+				if (local) uri.append_query(U("local"), U("true"));
+				return uri;
+			});
+		}
 	};
 
 	struct InstanceConnexion : public InstanceAnonymous
 	{
-		std::string api_base_url;
 		const utility::string_t client_id;
 		const utility::string_t client_secret;
 		const utility::string_t access_token;
@@ -209,7 +263,7 @@ namespace Mastodon
 		Returns client_id and client_secret.
 		*/
 		static
-			auto create_app(const  utility::string_t& client_name)
+		auto create_app(const  utility::string_t& client_name)
 		{
 			web::http::client::http_client client(U("https://oc.todon.fr"));
 
@@ -273,46 +327,18 @@ namespace Mastodon
 			});
 		}
 
-		/**
-		Fetch statuses, most recent ones first.Timeline can be home, mentions, local,
-		public, or tag / hashtag.See the following functions documentation for what those do.
-
-		The default timeline is the "home" timeline.
-
-		Returns a list of toot dicts.
-		*/
-		auto timeline(const utility::string_t& timeline, size_t max_id, size_t since_id)
-		{
-			// Build request URI and start the request.
-			web::uri_builder builder(U("/api/v1/timelines/"));
-			builder.append_path(timeline);
-
-			if (timeline == U("local"))
-			{
-				builder.append_query(U("local"), U("True"));
-			}
-
-			return __api_request(builder)
-				.then([=](const web::json::value& v)
-				{
-					const auto& json_array = v.as_array();
-					auto&& result = std::vector<Status>{};
-					for (const auto& json_v : json_array)
-					{
-						result.emplace_back(Status{ json_v });
-					}
-					return result;
-				});
-		}
 
 		/**
 		Fetch the authenticated users home timeline (i.e. followed users and self).
 
 		Returns a list of toot dicts.
 		*/
-		auto timeline_home(size_t max_id, size_t since_id)
+		auto timeline_home() const
 		{
-			return timeline(U("home"), max_id, since_id);
+			return Mastodon::InstanceAnonymous::timeline(U("home"),
+				[this](auto&& uri) {
+					uri.append_query(U("access_token"), access_token);
+					return uri; });
 		}
 
 		/**
@@ -320,40 +346,7 @@ namespace Mastodon
 
 		Returns a list of toot dicts.
 		*/
-		auto timeline_mentions(size_t max_id, size_t since_id)
-		{
-			return timeline(U("mentions"), max_id, since_id);
-		}
 
-		/**
-		Fetches the local / instance-wide timeline.
-
-		Returns a list of toot dicts.
-		*/
-		auto timeline_local(size_t max_id, size_t since_id)
-		{
-			return timeline(U("local"), max_id, since_id);
-		}
-
-		/**
-		Fetches the public / visible-network timeline.
-
-		Returns a list of toot dicts.
-		*/
-		auto timeline_public(size_t max_id, size_t since_id)
-		{
-			return timeline(U("public"), max_id, since_id);
-		}
-
-		/**
-		Fetch a timeline of toots with a given hashtag.
-
-		Returns a list of toot dicts.
-		*/
-		auto timeline_hashtag(const utility::string_t& hashtag, size_t max_id, size_t since_id)
-		{
-			return timeline(U("tag/") + hashtag, max_id, since_id);
-		}
 
 		auto status()
 		{
@@ -375,10 +368,11 @@ namespace Mastodon
 
 		}
 
-		auto status_post(const utility::string_t& content)
+		auto status_post(const utility::string_t& content, const bool& NSFW)
 		{
 			auto&& uri = web::uri_builder{ U("/api/v1/statuses") };
 			uri.append_query(U("status"), content);
+			uri.append_query(U("sensitive"), NSFW ? U("True") : U("False"));
 			return __api_request(uri, web::http::methods::POST);
 		}
 

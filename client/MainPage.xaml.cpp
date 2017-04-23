@@ -54,7 +54,7 @@ void client::MainPage::AppBarButton_Click(Platform::Object^ sender, Windows::UI:
 		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
 		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
 
-	instance.status_post(NewToot->Text->Data());
+	instance.status_post(NewToot->Text->Data(), false);
 }
 
 

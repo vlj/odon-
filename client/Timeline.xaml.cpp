@@ -31,10 +31,10 @@ Timeline::Timeline()
 		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
 		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
 
-	instance.timeline_home(0, 0)
+	instance.timeline_home()
 		.then([this](const std::vector<Mastodon::Status>& v)
 		{
-		_tootscol = ref new Platform::Collections::Vector<Toot^>();
+			_tootscol = ref new Platform::Collections::Vector<Toot^>();
 			for (const auto& toot : v)
 			{
 				_tootscol->Append(ref new Toot(toot));
