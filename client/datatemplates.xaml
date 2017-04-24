@@ -31,12 +31,4 @@
             </StackPanel>
         </UserControl>
     </DataTemplate>
-
-    <DataTemplate x:DataType="local:Account" x:Key="account_template">
-        <StackPanel Orientation="Horizontal">
-            <Image Source="{x:Bind Avatar}" Width="100" Height="100" />
-            <TextBlock Text="{Binding Username}" />
-            <Button Content="Fav" Command="{x:Bind OnClick}" />
-        </StackPanel>
-    </DataTemplate>
 </ResourceDictionary>

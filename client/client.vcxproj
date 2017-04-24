@@ -154,6 +154,9 @@
     <ClInclude Include="MainPage.xaml.h">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </ClInclude>
+    <ClInclude Include="Profile.xaml.h">
+      <DependentUpon>Profile.xaml</DependentUpon>
+    </ClInclude>
     <ClInclude Include="Search.xaml.h">
       <DependentUpon>Search.xaml</DependentUpon>
     </ClInclude>
@@ -176,6 +179,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="MainPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Profile.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Search.xaml">
@@ -224,6 +230,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Profile.xaml.cpp">
+      <DependentUpon>Profile.xaml</DependentUpon>
     </ClCompile>
     <ClCompile Include="Search.xaml.cpp">
       <DependentUpon>Search.xaml</DependentUpon>

@@ -1,5 +1,6 @@
 #pragma once
 #include <regex>
+#include <functional>
 
 namespace client
 {
@@ -28,14 +29,35 @@ namespace client
 		}
 	};
 
+	public ref class NavigateToDetail sealed : Windows::UI::Xaml::Input::ICommand
+	{
+		std::function<void(void)> callback;
+
+	internal:
+		NavigateToDetail(std::function<void(void)> f) : callback(f)
+		{
+		}
+	public:
+		// Inherited via ICommand
+		virtual event Windows::Foundation::EventHandler<Platform::Object ^> ^ CanExecuteChanged;
+		virtual bool CanExecute(Platform::Object ^parameter)
+		{
+			return true;
+		}
+		virtual void Execute(Platform::Object ^parameter)
+		{
+
+		}
+	};
+
 	[Windows::UI::Xaml::Data::Bindable]
 	public ref class Account sealed
 	{
 		Platform::String^ _username;
 		Platform::String^ _avatar;
 		Delegate^ _onClick;
+		NavigateToDetail^ _onNavigateToDetail;
 	public:
-
 		property Platform::String^ Username
 		{
 			Platform::String^ get()
@@ -60,11 +82,28 @@ namespace client
 			}
 		}
 
+		property Windows::UI::Xaml::Input::ICommand^ OnTaped
+		{
+			Windows::UI::Xaml::Input::ICommand^ get()
+			{
+				return _onClick;
+			}
+		}
+
 		Account(Platform::String^ username, Platform::String^ avatar, size_t id)
 		{
 			_username = username;
 			_avatar = avatar;
 			_onClick = ref new Delegate(id);
+		}
+
+		Account(Platform::String^ username, Platform::String^ avatar, size_t id,
+			NavigateToDetail^ callback)
+		{
+			_username = username;
+			_avatar = avatar;
+			_onClick = ref new Delegate(id);
+			_onNavigateToDetail = callback;
 		}
 
 	};

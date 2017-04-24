@@ -8,6 +8,16 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <ListView x:Name="displaySearch" ItemsSource="{Binding}" ItemTemplate="{StaticResource account_template}" />
+        <ListView x:Name="displaySearch" ItemsSource="{Binding}">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="local:Account">
+                    <StackPanel Orientation="Horizontal" BorderBrush="Black" Margin="1">
+                        <Image Source="{x:Bind Avatar}" Width="100" Height="100" />
+                        <TextBlock Text="{Binding Username}" />
+                        <Button Content="Fav" Command="{x:Bind OnClick}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </Grid>
 </Page>
