@@ -62,3 +62,19 @@ void client::MainPage::AppBarButton_Click_1(Platform::Object^ sender, Windows::U
 {
 	FlyoutBase::ShowAttachedFlyout(contentFrame);
 }
+
+
+void client::MainPage::AppBarButton_Click_2(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
+	Windows::Storage::Pickers::FileOpenPicker^ openPicker = ref new Windows::Storage::Pickers::FileOpenPicker();
+	openPicker->ViewMode = Windows::Storage::Pickers::PickerViewMode::Thumbnail;
+	openPicker->SuggestedStartLocation = Windows::Storage::Pickers::PickerLocationId::PicturesLibrary;
+	openPicker->FileTypeFilter->Append(".jpg");
+	openPicker->FileTypeFilter->Append(".jpeg");
+	openPicker->FileTypeFilter->Append(".png");
+
+	Concurrency::create_task(openPicker->PickSingleFileAsync()).then([this](Windows::Storage::StorageFile^ file)
+	{
+
+	});
+}
