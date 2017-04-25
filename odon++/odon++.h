@@ -412,6 +412,21 @@ namespace Mastodon
 					return uri; });
 		}
 
+		auto update_account(const utility::string_t& display_name, const utility::string_t& image_as_base64) const
+		{
+			auto&& uri = web::uri_builder{ U("/api/v1/accounts/update_credentials") };
+			uri.append_query(U("access_token"), access_token);
+			web::http::client::http_client client(base_url);
+			return client.request(web::http::methods::PATCH, uri.to_string(), U("data:image/png;base64,") + image_as_base64)
+				.then([=](const web::http::http_response& response)
+			{
+				const auto& status = response.status_code();
+				printf("Received response status code:%u\n", response.status_code());
+
+				return;
+			});
+		}
+
 		/**
 		Fetches the authenticated users mentions.
 
