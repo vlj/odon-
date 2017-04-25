@@ -8,7 +8,7 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <ListView x:Name="displaySearch" ItemsSource="{Binding}">
+        <ListView x:Name="displaySearch" ItemsSource="{Binding}" ItemClick="displaySearch_ItemClick" IsItemClickEnabled="True">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="local:Account">
                     <StackPanel Orientation="Horizontal" BorderBrush="Black" Margin="1">

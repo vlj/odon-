@@ -263,20 +263,6 @@ namespace Mastodon
 				return uri;
 			});
 		}
-
-		auto statuses(const size_t& id) const
-		{
-			auto&& uri = web::uri_builder{ U("/api/v1/accounts/") + std::to_wstring(id) + U("/statuses") };
-			return __api_request(uri, web::http::methods::GET)
-				.then([](const web::json::value& v) {
-					auto&& result = std::vector<Status>{};
-					for (const auto& s : v.as_array())
-					{
-						result.emplace_back(s);
-					}
-					return result;
-				});
-		}
 	};
 
 	struct InstanceConnexion : public InstanceAnonymous
@@ -433,9 +419,18 @@ namespace Mastodon
 		*/
 
 
-		auto statuses() const
+		auto statuses(const size_t& id) const
 		{
-
+			auto&& uri = web::uri_builder{ U("/api/v1/accounts/") + std::to_wstring(id) + U("/statuses") };
+			return __api_request(uri, web::http::methods::GET)
+				.then([](const web::json::value& v) {
+				auto&& result = std::vector<Status>{};
+				for (const auto& s : v.as_array())
+				{
+					result.emplace_back(s);
+				}
+				return result;
+			});
 		}
 
 		auto status_context()

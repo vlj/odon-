@@ -8,6 +8,6 @@
     mc:Ignorable="d">
 
     <StackPanel Orientation="Vertical">
-        <ListView x:Name="ProfileToot" ItemsSource="{x:Bind}" ItemTemplate="{StaticResource toot_template}" />
+        <ListView x:Name="ProfileToot" ItemsSource="{Binding}" ItemTemplate="{StaticResource toot_template}" />
     </StackPanel>
 </Page>

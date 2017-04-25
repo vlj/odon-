@@ -28,16 +28,23 @@ Profile::Profile()
 
 void client::Profile::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs ^ e)
 {
-	auto str = dynamic_cast<String^>(e->Parameter)->Data();
-	wchar_t* strend = nullptr;
-	const auto& profile_id = std::wcstol(str, &strend, 10);
-	Mastodon::InstanceAnonymous{}.statuses(profile_id)
+	const auto& profile_id = (int)(e->Parameter);
+
+	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
+	Mastodon::InstanceConnexion{
+		dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
+		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
+		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data()
+	}.statuses(profile_id)
 		.then([this](const std::vector<Mastodon::Status>& v) {
 			auto list = ref new Platform::Collections::Vector<Toot^>();
 			for (const auto& toot : v) {
 				list->Append(ref new Toot(toot));
 			}
-			ProfileToot->DataContext = list;
+			Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
+				ref new Windows::UI::Core::DispatchedHandler([this, list]() {
+				ProfileToot->DataContext = list;
+			}));
 		});
 }
 

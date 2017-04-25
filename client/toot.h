@@ -56,7 +56,7 @@ namespace client
 		Platform::String^ _username;
 		Platform::String^ _avatar;
 		Delegate^ _onClick;
-		NavigateToDetail^ _onNavigateToDetail;
+		int _id;
 	public:
 		property Platform::String^ Username
 		{
@@ -82,11 +82,11 @@ namespace client
 			}
 		}
 
-		property Windows::UI::Xaml::Input::ICommand^ OnTaped
+		property int id
 		{
-			Windows::UI::Xaml::Input::ICommand^ get()
+			int get()
 			{
-				return _onClick;
+				return _id;
 			}
 		}
 
@@ -95,17 +95,8 @@ namespace client
 			_username = username;
 			_avatar = avatar;
 			_onClick = ref new Delegate(id);
+			_id = id;
 		}
-
-		Account(Platform::String^ username, Platform::String^ avatar, size_t id,
-			NavigateToDetail^ callback)
-		{
-			_username = username;
-			_avatar = avatar;
-			_onClick = ref new Delegate(id);
-			_onNavigateToDetail = callback;
-		}
-
 	};
 
 	[Windows::UI::Xaml::Data::Bindable]

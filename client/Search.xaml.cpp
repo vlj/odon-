@@ -5,6 +5,7 @@
 
 #include "pch.h"
 #include "Search.xaml.h"
+#include "Profile.xaml.h"
 
 using namespace client;
 
@@ -46,4 +47,11 @@ void client::Search::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEven
 			this->displaySearch->DataContext = list;
 		}));
 	});
+}
+
+
+void client::Search::displaySearch_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e)
+{
+	auto acc = dynamic_cast<Account^>(e->ClickedItem);
+	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(Profile::typeid), acc->id);
 }

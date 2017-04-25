@@ -18,5 +18,7 @@ namespace client
 	public:
 		Search();
 		virtual void OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs^ e) override;
+	private:
+		void displaySearch_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e);
 	};
 }
