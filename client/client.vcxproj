@@ -144,6 +144,9 @@
     <ClInclude Include="datatemplates.xaml.h">
       <DependentUpon>datatemplates.xaml</DependentUpon>
     </ClInclude>
+    <ClInclude Include="FocusedToot.xaml.h">
+      <DependentUpon>FocusedToot.xaml</DependentUpon>
+    </ClInclude>
     <ClInclude Include="Login.xaml.h">
       <DependentUpon>Login.xaml</DependentUpon>
     </ClInclude>
@@ -173,6 +176,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="datatemplates.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FocusedToot.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Login.xaml">
@@ -216,6 +222,9 @@
     </ClCompile>
     <ClCompile Include="datatemplates.xaml.cpp">
       <DependentUpon>datatemplates.xaml</DependentUpon>
+    </ClCompile>
+    <ClCompile Include="FocusedToot.xaml.cpp">
+      <DependentUpon>FocusedToot.xaml</DependentUpon>
     </ClCompile>
     <ClCompile Include="Login.xaml.cpp">
       <DependentUpon>Login.xaml</DependentUpon>

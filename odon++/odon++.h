@@ -110,7 +110,10 @@ namespace Mastodon
 			//reblogged = v.at(U("reblogged")).as_string();
 		}
 
-		Status(const Status& in) = default;
+		Status(const Status& in) : _account(in._account)
+		{
+
+		}
 	};
 
 	struct Relationship
@@ -261,6 +264,15 @@ namespace Mastodon
 			return timeline(U("tag/") + hashtag, [local](auto&& uri) {
 				if (local) uri.append_query(U("local"), U("true"));
 				return uri;
+			});
+		}
+
+		auto status(const size_t& id) const
+		{
+			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) };
+			return __api_request(uri, web::http::methods::GET)
+				.then([](const web::json::value& v) {
+				return Status{ v };
 			});
 		}
 	};

@@ -118,18 +118,28 @@ namespace client
 			if (_status.spoiler_text)
 				_spoiler_text = ref new Platform::String(_status.spoiler_text->c_str());
 			_sensitive = _status.sensitive;
+			_id = _status.id;
 		}
 	private:
 		Account^ _account;
 		Platform::String^ _content;
 		Platform::String^ _spoiler_text;
 		bool _sensitive;
+		int _id;
 	public:
 		property bool Sensitive
 		{
 			bool get()
 			{
 				return _spoiler_text != nullptr;
+			}
+		}
+
+		property int Id
+		{
+			int get()
+			{
+				return _id;
 			}
 		}
 
@@ -163,12 +173,6 @@ namespace client
 			{
 				return _account;
 			}
-		}
-
-		Toot(Account^ user, Platform::String^ content)
-		{
-			_account = user;
-			_content = content;
 		}
 	};
 }

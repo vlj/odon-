@@ -30,5 +30,7 @@ namespace client
 				return _tootscol;
 			}
 		}
+	private:
+		void ListView_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e);
 	};
 }

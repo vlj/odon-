@@ -7,13 +7,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-
     <Hub Header="Mastodon" x:Name="hub">
         <HubSection x:Name="timelinesection" Header="Timeline">
             <DataTemplate x:DataType="local:Timeline">
                 <ListView ItemsSource="{x:Bind tootscol, Mode=OneWay}"
                                       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                                      ItemTemplate="{StaticResource toot_template}"/>
+                                      ItemTemplate="{StaticResource toot_template}" ItemClick="ListView_ItemClick" IsItemClickEnabled="True"/>
             </DataTemplate>
         </HubSection>
         <HubSection Header="Mentions">

@@ -35,6 +35,11 @@ MainPage::MainPage()
 		contentFrame->Navigate(Windows::UI::Xaml::Interop::TypeName(ConnectedPage::typeid), nullptr);
 	else
 		contentFrame->Navigate(Windows::UI::Xaml::Interop::TypeName(Timeline::typeid), nullptr);
+
+	Windows::UI::Core::SystemNavigationManager::GetForCurrentView()->BackRequested +=
+		ref new Windows::Foundation::EventHandler<Windows::UI::Core::BackRequestedEventArgs^>(this, &MainPage::onBack);
+	Windows::UI::Core::SystemNavigationManager::GetForCurrentView()->AppViewBackButtonVisibility =
+		Windows::UI::Core::AppViewBackButtonVisibility::Visible;
 }
 
 void client::MainPage::paneOpened_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
@@ -94,4 +99,13 @@ void client::MainPage::AppBarButton_Click_2(Platform::Object^ sender, Windows::U
 		client->SendRequestAsync(request);
 		return;
 	});
+}
+
+void client::MainPage::onBack(Platform::Object ^ sender, Windows::UI::Core::BackRequestedEventArgs ^ e)
+{
+	if (contentFrame->CanGoBack)
+	{
+		e->Handled = true;
+		contentFrame->GoBack();
+	}
 }

@@ -5,6 +5,7 @@
 
 #include "pch.h"
 #include "Timeline.xaml.h"
+#include "FocusedToot.xaml.h"
 
 using namespace client;
 
@@ -40,4 +41,10 @@ Timeline::Timeline()
 				_tootscol->Append(ref new Toot(toot));
 			}
 		});
+}
+
+void client::Timeline::ListView_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e)
+{
+	auto toot = dynamic_cast<Toot^>(e->ClickedItem);
+	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(FocusedToot::typeid), toot->Id);
 }
