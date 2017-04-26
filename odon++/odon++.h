@@ -110,10 +110,8 @@ namespace Mastodon
 			//reblogged = v.at(U("reblogged")).as_string();
 		}
 
-		Status(const Status& in) : _account(in._account)
-		{
-
-		}
+		Status() = default;
+		Status(const Status& in) = default;
 	};
 
 	struct Relationship
