@@ -29,12 +29,18 @@ FocusedToot::FocusedToot()
 void FocusedToot::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs ^ e)
 {
 	auto id = (int)(e->Parameter);
-	/*auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
+	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
 		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
 		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
 
-	instance.timeline_home()*/
-	Mastodon::InstanceAnonymous{}.status(id);
+	Mastodon::InstanceAnonymous{}.status(id)
+		.then([this](const Mastodon::Status& status) {
+		Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
+			ref new Windows::UI::Core::DispatchedHandler([this, status]()
+		{
+			tootpresenter->DataContext = ref new Toot(status);
+		}));
+	});
 
 }

@@ -22,6 +22,7 @@
     <ClCompile Include="Login.xaml.cpp" />
     <ClCompile Include="Search.xaml.cpp" />
     <ClCompile Include="Profile.xaml.cpp" />
+    <ClCompile Include="FocusedToot.xaml.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -34,6 +35,7 @@
     <ClInclude Include="Login.xaml.h" />
     <ClInclude Include="Search.xaml.h" />
     <ClInclude Include="Profile.xaml.h" />
+    <ClInclude Include="FocusedToot.xaml.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\LockScreenLogo.scale-200.png">
