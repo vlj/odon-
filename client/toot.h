@@ -6,9 +6,9 @@ namespace client
 {
 	public ref class Delegate sealed : Windows::UI::Xaml::Input::ICommand
 	{
-		int _id;
+		size_t _id;
 	public:
-		Delegate(int id)
+		Delegate(size_t id)
 		{
 			_id = id;
 		}
@@ -56,7 +56,7 @@ namespace client
 		Platform::String^ _username;
 		Platform::String^ _avatar;
 		Delegate^ _onClick;
-		int _id;
+		size_t _id;
 	public:
 		property Platform::String^ Username
 		{
@@ -82,9 +82,9 @@ namespace client
 			}
 		}
 
-		property int id
+		property size_t id
 		{
-			int get()
+			size_t get()
 			{
 				return _id;
 			}
@@ -125,7 +125,7 @@ namespace client
 		Platform::String^ _content;
 		Platform::String^ _spoiler_text;
 		bool _sensitive;
-		int _id;
+		size_t _id;
 	public:
 		property bool Sensitive
 		{
@@ -135,9 +135,9 @@ namespace client
 			}
 		}
 
-		property int Id
+		property size_t Id
 		{
-			int get()
+			size_t get()
 			{
 				return _id;
 			}

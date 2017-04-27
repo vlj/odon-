@@ -28,7 +28,7 @@ FocusedToot::FocusedToot()
 
 void FocusedToot::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs ^ e)
 {
-	auto id = (int)(e->Parameter);
+	auto id = (size_t)(e->Parameter);
 	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
 		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
@@ -43,4 +43,23 @@ void FocusedToot::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventAr
 		}));
 	});
 
+	Mastodon::InstanceAnonymous{}.status_context(id)
+		.then([this](const Mastodon::Context& context) {
+			auto ancestors = ref new Platform::Collections::Vector<Toot^>();
+			for (const auto& a : context.ancestors)
+			{
+				ancestors->Append(ref new Toot{ a });
+			}
+			auto descendants = ref new Platform::Collections::Vector<Toot^>();
+			for (const auto& d : context.descendants)
+			{
+				descendants->Append(ref new Toot{ d });
+			}
+			Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
+				ref new Windows::UI::Core::DispatchedHandler([this, ancestors, descendants]()
+			{
+				ancestorslist->DataContext = ancestors;
+				descendantslist->DataContext = descendants;
+			}));
+	});
 }

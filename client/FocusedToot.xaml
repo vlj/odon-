@@ -7,7 +7,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <StackPanel Orientation="Vertical" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <ListView x:Name="ancestorslist" ItemsSource="{Binding}" ItemTemplate="{StaticResource toot_template}" />
         <ContentPresenter x:Name="tootpresenter" ContentTemplate="{StaticResource toot_template}" />
-    </Grid>
+        <ListView x:Name="descendantslist" ItemsSource="{Binding}" ItemTemplate="{StaticResource toot_template}" />
+    </StackPanel>
 </Page>

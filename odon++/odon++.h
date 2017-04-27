@@ -114,6 +114,27 @@ namespace Mastodon
 		Status(const Status& in) = default;
 	};
 
+	struct Context
+	{
+		std::vector<Status> ancestors;
+		std::vector<Status> descendants;
+
+		Context(const web::json::value& v)
+		{
+			for (const auto& a : v.at(U("ancestors")).as_array())
+			{
+				ancestors.emplace_back(a);
+			}
+
+			for (const auto& d : v.at(U("descendants")).as_array())
+			{
+				descendants.emplace_back(d);
+			}
+		}
+
+		Context() = default;
+	};
+
 	struct Relationship
 	{
 		size_t id;
@@ -271,6 +292,15 @@ namespace Mastodon
 			return __api_request(uri, web::http::methods::GET)
 				.then([](const web::json::value& v) {
 				return Status{ v };
+			});
+		}
+
+		auto status_context(const size_t& id) const
+		{
+			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) + U("/context")};
+			return __api_request(uri, web::http::methods::GET)
+				.then([](const web::json::value& v) {
+				return Context{ v };
 			});
 		}
 	};
