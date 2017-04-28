@@ -27,6 +27,14 @@
                             <Run Text="{x:Bind Content}" />
                         </Paragraph>
                     </RichTextBlock>
+                    <StackPanel>
+                        <Button Command="{x:Bind Favourite}">
+                            <SymbolIcon Symbol="Favorite" />
+                        </Button>
+                        <Button Command="{x:Bind Reblog}">
+                            <SymbolIcon Symbol="ReShare" />
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
         </UserControl>

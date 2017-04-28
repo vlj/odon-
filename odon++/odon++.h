@@ -525,6 +525,32 @@ namespace Mastodon
 				});
 		}
 
+		// TODO: should return status
+
+		auto status_favourite(const size_t& id) const
+		{
+			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) + U("/favourite") };
+			return __api_request(uri, web::http::methods::POST);
+		}
+
+		auto status_unfavourite(const size_t& id) const
+		{
+			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) + U("/unfavourite") };
+			return __api_request(uri, web::http::methods::POST);
+		}
+
+		auto status_reblog(const size_t& id) const
+		{
+			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) + U("/reblog") };
+			return __api_request(uri, web::http::methods::POST);
+		}
+
+		auto status_unreblog(const size_t& id) const
+		{
+			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) + U("/unreblog") };
+			return __api_request(uri, web::http::methods::POST);
+		}
+
 		auto account_verify_credentials()
 		{
 

@@ -6,39 +6,12 @@ namespace client
 {
 	public ref class Delegate sealed : Windows::UI::Xaml::Input::ICommand
 	{
-		size_t _id;
-	public:
-		Delegate(size_t id)
-		{
-			_id = id;
-		}
-		// Inherited via ICommand
-		virtual event Windows::Foundation::EventHandler<Platform::Object ^> ^ CanExecuteChanged;
-		virtual bool CanExecute(Platform::Object ^parameter)
-		{
-			return true;
-		}
-		virtual void Execute(Platform::Object ^parameter)
-		{
-			auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-			auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_id"))->Data(),
-				dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_secret"))->Data(),
-				dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data());
-
-			instance.account_follow(_id);
-		}
-	};
-
-	public ref class NavigateToDetail sealed : Windows::UI::Xaml::Input::ICommand
-	{
-		std::function<void(void)> callback;
-
 	internal:
-		NavigateToDetail(std::function<void(void)> f) : callback(f)
-		{
-		}
+		std::function<void(void)> _callback;
+		Delegate(std::function<void(void)>&& callback) : _callback(callback) {}
 	public:
-		// Inherited via ICommand
+		Delegate() {}
+
 		virtual event Windows::Foundation::EventHandler<Platform::Object ^> ^ CanExecuteChanged;
 		virtual bool CanExecute(Platform::Object ^parameter)
 		{
@@ -46,7 +19,7 @@ namespace client
 		}
 		virtual void Execute(Platform::Object ^parameter)
 		{
-
+			_callback();
 		}
 	};
 
@@ -94,7 +67,14 @@ namespace client
 		{
 			_username = username;
 			_avatar = avatar;
-			_onClick = ref new Delegate(id);
+			_onClick = ref new Delegate([=]() {
+				auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
+				auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_id"))->Data(),
+					dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_secret"))->Data(),
+					dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data());
+
+				instance.account_follow(_id);
+			});
 			_id = id;
 		}
 	};
@@ -119,6 +99,24 @@ namespace client
 				_spoiler_text = ref new Platform::String(_status.spoiler_text->c_str());
 			_sensitive = _status.sensitive;
 			_id = _status.id;
+			const auto& id = _id;
+			_favourite = ref new Delegate([=]() {
+				auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
+				auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_id"))->Data(),
+					dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_secret"))->Data(),
+					dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data());
+
+				instance.status_favourite(id);
+			});
+
+			_reblog = ref new Delegate([=]() {
+				auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
+				auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_id"))->Data(),
+					dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_secret"))->Data(),
+					dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data());
+
+				instance.status_reblog(id);
+			});
 		}
 	private:
 		Account^ _account;
@@ -126,6 +124,8 @@ namespace client
 		Platform::String^ _spoiler_text;
 		bool _sensitive;
 		size_t _id;
+		Delegate^ _favourite;
+		Delegate^ _reblog;
 	public:
 		property bool Sensitive
 		{
@@ -172,6 +172,22 @@ namespace client
 			Account^ get()
 			{
 				return _account;
+			}
+		}
+
+		property Windows::UI::Xaml::Input::ICommand^ Favourite
+		{
+			Windows::UI::Xaml::Input::ICommand^ get()
+			{
+				return _favourite;
+			}
+		}
+
+		property Windows::UI::Xaml::Input::ICommand^ Reblog
+		{
+			Windows::UI::Xaml::Input::ICommand^ get()
+			{
+				return _reblog;
 			}
 		}
 	};
