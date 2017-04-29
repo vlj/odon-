@@ -83,7 +83,9 @@ namespace client
 	public ref class Toot sealed
 	{
 	internal:
-		Toot(const Mastodon::Status& _status)
+		Mastodon::Status status;
+
+		Toot(const Mastodon::Status& _status) : status(_status)
 		{
 			const auto& content =
 				std::regex_replace(
@@ -99,14 +101,15 @@ namespace client
 				_spoiler_text = ref new Platform::String(_status.spoiler_text->c_str());
 			_sensitive = _status.sensitive;
 			_id = _status.id;
-			const auto& id = _id;
 			_favourite = ref new Delegate([=]() {
 				auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 				auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_id"))->Data(),
 					dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_secret"))->Data(),
 					dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data());
-
-				instance.status_favourite(id);
+				if (status.favourited)
+					instance.status_unfavourite(status.id);
+				else
+					instance.status_favourite(status.id);
 			});
 
 			_reblog = ref new Delegate([=]() {
@@ -114,8 +117,10 @@ namespace client
 				auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_id"))->Data(),
 					dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_secret"))->Data(),
 					dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data());
-
-				instance.status_reblog(id);
+				if (status.reblogged)
+					instance.status_unreblog(status.id);
+				else
+					instance.status_reblog(status.id);
 			});
 		}
 	private:
@@ -148,6 +153,38 @@ namespace client
 			bool get()
 			{
 				return _spoiler_text == nullptr;
+			}
+		}
+
+		property bool IsFave
+		{
+			bool get()
+			{
+				return status.favourited;
+			}
+		}
+
+		property bool IsNotFave
+		{
+			bool get()
+			{
+				return !status.favourited;
+			}
+		}
+
+		property bool IsReblogged
+		{
+			bool get()
+			{
+				return status.reblogged;
+			}
+		}
+
+		property bool IsNotReblogged
+		{
+			bool get()
+			{
+				return !status.reblogged;
 			}
 		}
 

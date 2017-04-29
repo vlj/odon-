@@ -5,11 +5,52 @@
     xmlns:local="using:client"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d">
 
     <DataTemplate x:Key="toot_template" x:DataType="local:Toot">
         <UserControl HorizontalContentAlignment="Stretch" >
             <Grid BorderBrush="Black" BorderThickness="1">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup>
+                        <VisualState x:Name="faved">
+                            <VisualState.StateTriggers>
+                                <StateTrigger IsActive="{x:Bind IsFave}" />
+                            </VisualState.StateTriggers>
+                            <VisualState.Setters>
+                                <Setter Target="favicon.Symbol" Value="Unfavorite" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="unfaved">
+                            <VisualState.StateTriggers>
+                                <StateTrigger IsActive="{x:Bind IsNotFave}" />
+                            </VisualState.StateTriggers>
+                            <VisualState.Setters>
+                                <Setter Target="favicon.Symbol" Value="Favorite" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                    <VisualStateGroup>
+                        <VisualState x:Name="reblogged">
+                            <VisualState.StateTriggers>
+                                <StateTrigger IsActive="{x:Bind IsReblogged}" />
+                            </VisualState.StateTriggers>
+                            <VisualState.Setters>
+                                <Setter Target="reblog.Symbol" Value="UnPin" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="unreblogged">
+                            <VisualState.StateTriggers>
+                                <StateTrigger IsActive="{x:Bind IsNotReblogged}" />
+                            </VisualState.StateTriggers>
+                            <VisualState.Setters>
+                                <Setter Target="reblog.Symbol" Value="ReShare" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
@@ -37,10 +78,10 @@
                     </Paragraph>
                 </RichTextBlock>
                 <Button Command="{x:Bind Favourite}"  Grid.Column="1" Grid.Row="4" Background="{x:Null}">
-                        <SymbolIcon Symbol="Favorite" />
-                    </Button>
+                    <SymbolIcon x:Name="favicon" />
+                </Button>
                 <Button Command="{x:Bind Reblog}" Background="{x:Null}" Grid.Column="2" Grid.Row="4">
-                    <SymbolIcon Symbol="ReShare" />
+                    <SymbolIcon x:Name="reblog" />
                 </Button>
             </Grid>
         </UserControl>

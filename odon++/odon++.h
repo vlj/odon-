@@ -74,8 +74,8 @@ namespace Mastodon
 		size_t reblogs_count;
 		size_t favourites_count;
 		std::optional<utility::string_t> reblog;
-		utility::string_t favorited;
-		utility::string_t reblogged;
+		bool favourited;
+		bool reblogged;
 
 		Status(const web::json::value& v) : _account(v.at(U("account")).as_object())
 		{
@@ -106,8 +106,9 @@ namespace Mastodon
 			reblogs_count = v.at(U("reblogs_count")).as_integer();
 			favourites_count = v.at(U("favourites_count")).as_integer();
 			//reblog = v.at(U("reblog")).as_string();
-			//favorited = v.at(U("favorited")).as_string();
-			//reblogged = v.at(U("reblogged")).as_string();
+			const auto& str = v.at(U("favourited")).serialize();
+			favourited = v.at(U("favourited")).is_null() ? false : v.at(U("favourited")).as_bool();
+			reblogged = v.at(U("reblogged")).is_null() ? false : v.at(U("reblogged")).as_bool();
 		}
 
 		Status() = default;
