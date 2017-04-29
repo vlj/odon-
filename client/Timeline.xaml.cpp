@@ -25,7 +25,6 @@ using namespace Windows::UI::Xaml::Navigation;
 Timeline::Timeline()
 {
 	InitializeComponent();
-	this->timelinesection->DataContext = this;
 
 	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
@@ -35,11 +34,15 @@ Timeline::Timeline()
 	instance.timeline_home()
 		.then([this](const std::vector<Mastodon::Status>& v)
 		{
-			_tootscol = ref new Platform::Collections::Vector<Toot^>();
+			auto tootscol = ref new Platform::Collections::Vector<Toot^>();
 			for (const auto& toot : v)
 			{
-				_tootscol->Append(ref new Toot(toot));
+				tootscol->Append(ref new Toot(toot));
 			}
+			Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low, ref new Windows::UI::Core::DispatchedHandler([this, tootscol]()
+			{
+				this->timelinesection->DataContext = tootscol;
+			}));
 		});
 }
 

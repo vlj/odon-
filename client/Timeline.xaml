@@ -7,17 +7,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Hub Header="Mastodon" x:Name="hub">
-        <HubSection x:Name="timelinesection" Header="Timeline">
-            <DataTemplate x:DataType="local:Timeline">
-                <ListView ItemsSource="{x:Bind tootscol, Mode=OneWay}"
+    <Pivot x:Name="hub" HorizontalContentAlignment="Stretch" >
+        <PivotItem  Header="Timeline">
+            <ListView x:Name="timelinesection" ItemsSource="{Binding}"
                                       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                                      ItemTemplate="{StaticResource toot_template}" ItemClick="ListView_ItemClick" IsItemClickEnabled="True"/>
-            </DataTemplate>
-        </HubSection>
-        <HubSection Header="Mentions">
-            <DataTemplate>
-            </DataTemplate>
-        </HubSection>
-    </Hub>
+                                      ItemTemplate="{StaticResource toot_template}"
+                      ItemClick="ListView_ItemClick" IsItemClickEnabled="True" HorizontalContentAlignment="Stretch"/>
+        </PivotItem>
+        <PivotItem Header="Mentions"></PivotItem>
+    </Pivot>
 </Page>

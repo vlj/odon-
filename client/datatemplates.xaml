@@ -8,35 +8,41 @@
     mc:Ignorable="d">
 
     <DataTemplate x:Key="toot_template" x:DataType="local:Toot">
-        <UserControl>
-            <StackPanel Orientation="Horizontal" BorderBrush="Black" BorderThickness="1">
-                <Image Source="{x:Bind Author.Avatar, Mode=OneWay}" Width="100" Height="100" />
-                <StackPanel Orientation="Vertical">
-                    <TextBlock Text="{x:Bind Author.Username, Mode=OneWay}" />
-                    <StackPanel Orientation="Horizontal" Visibility="{x:Bind Sensitive}" >
-                        <RichTextBlock Width="300">
-                            <Paragraph>
-                                <Run Text="{x:Bind SpoilerText}" />
-                            </Paragraph>
-                        </RichTextBlock>
-                        <ToggleSwitch x:Name="toggle" OffContent="" OnContent=""
-                                  IsOn="{x:Bind NotSensitive}" />
-                    </StackPanel>
-                    <RichTextBlock Width="500" Visibility="{Binding IsOn, ElementName=toggle}">
-                        <Paragraph>
-                            <Run Text="{x:Bind Content}" />
-                        </Paragraph>
-                    </RichTextBlock>
-                    <StackPanel>
-                        <Button Command="{x:Bind Favourite}">
-                            <SymbolIcon Symbol="Favorite" />
-                        </Button>
-                        <Button Command="{x:Bind Reblog}">
-                            <SymbolIcon Symbol="ReShare" />
-                        </Button>
-                    </StackPanel>
-                </StackPanel>
-            </StackPanel>
+        <UserControl HorizontalContentAlignment="Stretch" >
+            <Grid BorderBrush="Black" BorderThickness="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Image Source="{x:Bind Author.Avatar, Mode=OneWay}" Width="100" Height="100" Grid.RowSpan="5" />
+                <TextBlock Text="{x:Bind Author.Username, Mode=OneWay}" Grid.Column="1" Grid.Row="1" />
+                <RichTextBlock Visibility="{x:Bind Sensitive}" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center">
+                    <Paragraph>
+                        <Run Text="{x:Bind SpoilerText}" />
+                    </Paragraph>
+                </RichTextBlock>
+                <ToggleSwitch x:Name="toggle" Visibility="{x:Bind Sensitive}" OffContent="" OnContent=""
+                                  IsOn="{x:Bind NotSensitive}" Grid.Row="2" Grid.Column="2" />
+                <RichTextBlock Visibility="{Binding IsOn, ElementName=toggle}" Grid.Row="3" Grid.Column="1" >
+                    <Paragraph>
+                        <Run Text="{x:Bind Content}" />
+                    </Paragraph>
+                </RichTextBlock>
+                <Button Command="{x:Bind Favourite}"  Grid.Column="1" Grid.Row="4" Background="{x:Null}">
+                        <SymbolIcon Symbol="Favorite" />
+                    </Button>
+                <Button Command="{x:Bind Reblog}" Background="{x:Null}" Grid.Column="2" Grid.Row="4">
+                    <SymbolIcon Symbol="ReShare" />
+                </Button>
+            </Grid>
         </UserControl>
     </DataTemplate>
 </ResourceDictionary>

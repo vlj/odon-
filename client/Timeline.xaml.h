@@ -17,19 +17,8 @@ namespace client
 	[Windows::Foundation::Metadata::WebHostHidden]
 	public ref class Timeline sealed
 	{
-	private:
-		Platform::Collections::Vector<Toot^>^ _tootscol;
-
 	public:
 		Timeline();
-
-		property Windows::Foundation::Collections::IObservableVector<Toot^>^ tootscol
-		{
-			Windows::Foundation::Collections::IObservableVector<Toot^>^ get()
-			{
-				return _tootscol;
-			}
-		}
 	private:
 		void ListView_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e);
 	};
