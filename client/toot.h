@@ -26,16 +26,28 @@ namespace client
 	[Windows::UI::Xaml::Data::Bindable]
 	public ref class Account sealed
 	{
-		Platform::String^ _username;
-		Platform::String^ _avatar;
+	internal:
+		Mastodon::Account _account;
+
+		Account(const Mastodon::Account& v) : _account(v)
+		{
+			_onClick = ref new Delegate([=]() {
+				auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
+				auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_id"))->Data(),
+					dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_secret"))->Data(),
+					dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data());
+
+				instance.account_follow(_account.id);
+			});
+		}
+
 		Delegate^ _onClick;
-		size_t _id;
 	public:
 		property Platform::String^ Username
 		{
 			Platform::String^ get()
 			{
-				return  _username;
+				return ref new Platform::String(_account.username.data());
 			}
 		}
 
@@ -43,7 +55,7 @@ namespace client
 		{
 			Platform::String^ get()
 			{
-				return _avatar;
+				return ref new Platform::String(_account.avatar.data());
 			}
 		}
 
@@ -59,23 +71,8 @@ namespace client
 		{
 			size_t get()
 			{
-				return _id;
+				return _account.id;
 			}
-		}
-
-		Account(Platform::String^ username, Platform::String^ avatar, size_t id)
-		{
-			_username = username;
-			_avatar = avatar;
-			_onClick = ref new Delegate([=]() {
-				auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-				auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_id"))->Data(),
-					dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_secret"))->Data(),
-					dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data());
-
-				instance.account_follow(_id);
-			});
-			_id = id;
 		}
 	};
 
@@ -92,11 +89,7 @@ namespace client
 					std::regex_replace(_status.content, std::wregex(L"(<p>)"), L""),
 					std::wregex(L"(</p>)"), L"");
 			_content = ref new Platform::String(content.c_str());
-			_account = ref new Account(
-				ref new Platform::String(_status._account.username.c_str()),
-				ref new Platform::String(_status._account.avatar.c_str()),
-				_status._account.id
-			);
+			_account = ref new Account(status._account);
 			if (_status.spoiler_text)
 				_spoiler_text = ref new Platform::String(_status.spoiler_text->c_str());
 			_sensitive = _status.sensitive;
@@ -226,11 +219,6 @@ namespace client
 			{
 				return _reblog;
 			}
-		}
-
-		Toot()
-		{
-
 		}
 	};
 

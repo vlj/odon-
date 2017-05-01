@@ -8,6 +8,9 @@
       <UniqueIdentifier>7d0eefee-7b94-4bc3-b157-e544818f427a</UniqueIdentifier>
       <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png</Extensions>
     </Filter>
+    <Filter Include="Localization">
+      <UniqueIdentifier>{ad284d66-e776-4da3-a56e-7bee6903ce4a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
@@ -36,6 +39,7 @@
     <ClInclude Include="Search.xaml.h" />
     <ClInclude Include="Profile.xaml.h" />
     <ClInclude Include="FocusedToot.xaml.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\LockScreenLogo.scale-200.png">
@@ -76,5 +80,8 @@
     <Page Include="Search.xaml" />
     <Page Include="Profile.xaml" />
     <Page Include="FocusedToot.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="client.rc" />
   </ItemGroup>
 </Project>

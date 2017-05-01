@@ -170,6 +170,7 @@
     <ClInclude Include="Profile.xaml.h">
       <DependentUpon>Profile.xaml</DependentUpon>
     </ClInclude>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Search.xaml.h">
       <DependentUpon>Search.xaml</DependentUpon>
     </ClInclude>
@@ -259,6 +260,9 @@
     <ClCompile Include="Timeline.xaml.cpp">
       <DependentUpon>Timeline.xaml</DependentUpon>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="client.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

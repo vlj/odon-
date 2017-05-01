@@ -36,11 +36,7 @@ void client::Search::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEven
 		auto list = ref new Platform::Collections::Vector<Account^>();
 		for (const auto& acc : results)
 		{
-			list->Append(ref new Account(
-				ref new String(acc.username.c_str()),
-				ref new String(acc.avatar.c_str()),
-				acc.id
-			));
+			list->Append(ref new Account(acc));
 		}
 		Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low, ref new Windows::UI::Core::DispatchedHandler([this, list]()
 		{
