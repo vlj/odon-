@@ -227,6 +227,73 @@ namespace client
 				return _reblog;
 			}
 		}
+
+		Toot()
+		{
+
+		}
+	};
+
+	[Windows::UI::Xaml::Data::Bindable]
+	public ref class Notification sealed
+	{
+		Mastodon::Notifications notification;
+	internal:
+		Notification(const Mastodon::Notifications& v) : notification(v)
+		{
+
+		}
+	public:
+		property Platform::String^ User
+		{
+			Platform::String^ get()
+			{
+				return ref new Platform::String(notification.account.username.data());
+			}
+		}
+
+		property Toot^ toot
+		{
+			Toot^ get()
+			{
+				if (notification.status.has_value())
+					return ref new Toot(notification.status.value());
+				else
+					return nullptr;
+			}
+		}
+
+		property bool IsMention
+		{
+			bool get()
+			{
+				return notification.type == Mastodon::NotificationType::mention;
+			}
+		}
+
+		property bool IsReblog
+		{
+			bool get()
+			{
+				return notification.type == Mastodon::NotificationType::reblog;
+			}
+		}
+
+		property bool IsFavourited
+		{
+			bool get()
+			{
+				return notification.type == Mastodon::NotificationType::favourite;
+			}
+		}
+
+		property bool IsFollow
+		{
+			bool get()
+			{
+				return notification.type == Mastodon::NotificationType::follow;
+			}
+		}
 	};
 }
 

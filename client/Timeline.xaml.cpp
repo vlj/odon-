@@ -44,6 +44,20 @@ Timeline::Timeline()
 				this->timelinesection->DataContext = tootscol;
 			}));
 		});
+
+	instance.notifications()
+		.then([this](const std::vector<Mastodon::Notifications>& v)
+		{
+			auto list = ref new Platform::Collections::Vector<Notification^>();
+			for (const auto& n : v)
+			{
+				list->Append(ref new Notification(n));
+			}
+			Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
+				ref new Windows::UI::Core::DispatchedHandler([this, list]() {
+				mentionsection->DataContext = list;
+			}));
+		});
 }
 
 void client::Timeline::ListView_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e)

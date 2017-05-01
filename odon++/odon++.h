@@ -184,8 +184,9 @@ namespace Mastodon
 				if (t == U("follow")) return NotificationType::follow;
 				throw;
 			} (v.at(U("type")).as_string());
-			if (!v.at(U("status")).is_null())
+			if (v.has_field(U("status")) && !v.at(U("status")).is_null())
 				status = Status{ v.at(U("status")) };
+			created_at = v.at(U("created_at")).as_string();
 		}
 	};
 
@@ -489,11 +490,6 @@ namespace Mastodon
 			});
 		}
 
-		auto status_context()
-		{
-
-		}
-
 		auto status_reblogged_by()
 		{
 
@@ -517,7 +513,7 @@ namespace Mastodon
 			auto&& uri = web::uri_builder{ U("/api/v1/notifications") };
 			return __api_request(uri, web::http::methods::GET)
 				.then([](const web::json::value& v) {
-					auto&& result = std::vector<Relationship>{};
+					auto&& result = std::vector<Notifications>{};
 					for (const auto& relation : v.as_array())
 					{
 						result.emplace_back(relation);

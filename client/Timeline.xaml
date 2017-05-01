@@ -14,6 +14,71 @@
                                       ItemTemplate="{StaticResource toot_template}"
                       ItemClick="ListView_ItemClick" IsItemClickEnabled="True" HorizontalContentAlignment="Stretch"/>
         </PivotItem>
-        <PivotItem Header="Mentions"></PivotItem>
+        <PivotItem Header="Mentions">
+            <ListView x:Name="mentionsection" ItemsSource="{Binding}"
+                      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                      HorizontalContentAlignment="Stretch" >
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="local:Notification">
+                        <UserControl>
+                            <Grid>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup>
+                                        <VisualState>
+                                            <VisualState.StateTriggers>
+                                                <StateTrigger IsActive="{x:Bind IsFollow}" />
+                                            </VisualState.StateTriggers>
+                                            <VisualState.Setters>
+                                                <Setter Target="tootcontent.Visibility" Value="Collapsed" />
+                                                <Setter Target="fav.Visibility" Value="Collapsed" />
+                                                <Setter Target="reblog.Visibility" Value="Collapsed" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState>
+                                            <VisualState.StateTriggers>
+                                                <StateTrigger IsActive="{x:Bind IsMention}" />
+                                            </VisualState.StateTriggers>
+                                            <VisualState.Setters>
+                                                <Setter Target="user.Visibility" Value="Collapsed" />
+                                                <Setter Target="follow.Visibility" Value="Collapsed" />
+                                                <Setter Target="fav.Visibility" Value="Collapsed" />
+                                                <Setter Target="reblog.Visibility" Value="Collapsed" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState>
+                                            <VisualState.StateTriggers>
+                                                <StateTrigger IsActive="{x:Bind IsFavourited}" />
+                                            </VisualState.StateTriggers>
+                                            <VisualState.Setters>
+                                                <Setter Target="follow.Visibility" Value="Collapsed" />
+                                                <Setter Target="reblog.Visibility" Value="Collapsed" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState>
+                                            <VisualState.StateTriggers>
+                                                <StateTrigger IsActive="{x:Bind IsReblog}" />
+                                            </VisualState.StateTriggers>
+                                            <VisualState.Setters>
+                                                <Setter Target="follow.Visibility" Value="Collapsed" />
+                                                <Setter Target="fav.Visibility" Value="Collapsed" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock x:Name="user" Text="{x:Bind User}" />
+                                    <TextBlock x:Name="follow" Text=" has followed you" />
+                                    <TextBlock x:Name="fav" Text=" has faved" />
+                                    <TextBlock x:Name="reblog" Text=" has reblogged" />
+                                </StackPanel>
+                                <ContentPresenter x:Name="tootcontent" ContentTemplate="{StaticResource toot_template}"
+                                                  DataContext="{x:Bind toot}" />
+                            </Grid>
+                        </UserControl>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </PivotItem>
     </Pivot>
 </Page>
