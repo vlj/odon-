@@ -330,6 +330,16 @@ namespace Mastodon
 			return __api_request(uri, web::http::methods::POST)
 				.then([](const web::json::value& v) { return Relationship{ v }; });
 		}
+
+		auto __status_interaction(const size_t& id, const utility::string_t& operation) const
+		{
+			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) + operation };
+			return __api_request(uri, web::http::methods::POST)
+				.then([](const web::json::value& v)
+				{
+					return Status{ v };
+				});
+		}
 	public:
 		/**
 		Create a new API wrapper instance based on the given client_secret and client_id.If you
@@ -522,30 +532,24 @@ namespace Mastodon
 				});
 		}
 
-		// TODO: should return status
-
 		auto status_favourite(const size_t& id) const
 		{
-			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) + U("/favourite") };
-			return __api_request(uri, web::http::methods::POST);
+			return __status_interaction(id, U("/favourite"));
 		}
 
 		auto status_unfavourite(const size_t& id) const
 		{
-			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) + U("/unfavourite") };
-			return __api_request(uri, web::http::methods::POST);
+			return __status_interaction(id, U("/unfavourite"));
 		}
 
 		auto status_reblog(const size_t& id) const
 		{
-			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) + U("/reblog") };
-			return __api_request(uri, web::http::methods::POST);
+			return __status_interaction(id, U("/reblog"));
 		}
 
 		auto status_unreblog(const size_t& id) const
 		{
-			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) + U("/unreblog") };
-			return __api_request(uri, web::http::methods::POST);
+			return __status_interaction(id, U("/unreblog"));
 		}
 
 		auto account_verify_credentials()
