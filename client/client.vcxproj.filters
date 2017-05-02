@@ -81,7 +81,4 @@
     <Page Include="Profile.xaml" />
     <Page Include="FocusedToot.xaml" />
   </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="client.rc" />
-  </ItemGroup>
 </Project>

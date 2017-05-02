@@ -72,11 +72,7 @@
                 </RichTextBlock>
                 <ToggleSwitch x:Name="toggle" Visibility="{x:Bind Sensitive}" OffContent="" OnContent=""
                                   IsOn="{x:Bind NotSensitive}" Grid.Row="2" Grid.Column="2" />
-                <RichTextBlock Visibility="{Binding IsOn, ElementName=toggle}" Grid.Row="3" Grid.Column="1" >
-                    <Paragraph>
-                        <Run Text="{x:Bind Content}" />
-                    </Paragraph>
-                </RichTextBlock>
+                <ContentControl Content="{x:Bind reb}" Visibility="{Binding IsOn, ElementName=toggle}" Grid.Row="3" Grid.Column="1" />
                 <Button Command="{x:Bind Favourite}"  Grid.Column="1" Grid.Row="4" Background="{x:Null}">
                     <SymbolIcon x:Name="favicon" />
                 </Button>

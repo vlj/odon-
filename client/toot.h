@@ -81,14 +81,9 @@ namespace client
 	{
 	internal:
 		Mastodon::Status status;
-
+		
 		Toot(const Mastodon::Status& _status) : status(_status)
 		{
-			const auto& content =
-				std::regex_replace(
-					std::regex_replace(_status.content, std::wregex(L"(<p>)"), L""),
-					std::wregex(L"(</p>)"), L"");
-			_content = ref new Platform::String(content.c_str());
 			_account = ref new Account(status._account);
 			if (_status.spoiler_text)
 				_spoiler_text = ref new Platform::String(_status.spoiler_text->c_str());
@@ -189,11 +184,41 @@ namespace client
 			}
 		}
 
-		property Platform::String^ Content
+		property Windows::UI::Xaml::Controls::RichTextBlock^ reb
 		{
-			Platform::String^ get()
+			Windows::UI::Xaml::Controls::RichTextBlock^ get()
 			{
-				return _content;
+				auto ctrl = ref new Windows::UI::Xaml::Controls::RichTextBlock();
+				auto doc = ref new Windows::Data::Xml::Dom::XmlDocument();
+				const auto& unescaped = std::regex_replace(status.content, std::wregex(L"(\\\")"), LR"(")");
+				auto content = ref new Platform::String(U("<div>")) +
+					ref new Platform::String(unescaped.c_str()) +
+					ref new Platform::String(U("</div>"));
+				auto buf = Windows::Security::Cryptography::CryptographicBuffer::ConvertStringToBinary(content, Windows::Security::Cryptography::BinaryStringEncoding::Utf8);
+				try {
+					if (status.id == 833927) return ctrl;
+					doc->LoadXmlFromBuffer(buf);
+					auto elements = doc->ChildNodes->Item(0)->ChildNodes;
+					for (unsigned int i = 0; i < elements->Length; ++i)
+					{
+						auto tmp = elements->Item(i);
+						auto nd = tmp->NodeName;
+						if (nd != "p")
+							throw;
+						auto paragraph = ref new Windows::UI::Xaml::Documents::Paragraph();
+						for (unsigned int j = 0; j < tmp->ChildNodes->Length; j++)
+						{
+							auto run = ref new Windows::UI::Xaml::Documents::Run();
+							run->Text = tmp->ChildNodes->Item(j)->InnerText;
+							paragraph->Inlines->Append(run);
+						}
+						ctrl->Blocks->Append(paragraph);
+					}
+				}
+				catch(...)
+				{ }
+
+				return ctrl;
 			}
 		}
 
