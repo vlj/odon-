@@ -190,33 +190,47 @@ namespace client
 			{
 				auto ctrl = ref new Windows::UI::Xaml::Controls::RichTextBlock();
 				auto doc = ref new Windows::Data::Xml::Dom::XmlDocument();
-				const auto& unescaped = std::regex_replace(status.content, std::wregex(L"(\\\")"), LR"(")");
+				const auto& unescaped = std::regex_replace(status.content, std::wregex(L"(&)[^a]"), LR"(&amp;)");
 				auto content = ref new Platform::String(U("<div>")) +
 					ref new Platform::String(unescaped.c_str()) +
 					ref new Platform::String(U("</div>"));
 				auto buf = Windows::Security::Cryptography::CryptographicBuffer::ConvertStringToBinary(content, Windows::Security::Cryptography::BinaryStringEncoding::Utf8);
-				try {
-					if (status.id == 833927) return ctrl;
-					doc->LoadXmlFromBuffer(buf);
-					auto elements = doc->ChildNodes->Item(0)->ChildNodes;
-					for (unsigned int i = 0; i < elements->Length; ++i)
+				doc->LoadXmlFromBuffer(buf);
+				auto elements = doc->ChildNodes->Item(0)->ChildNodes;
+				for (unsigned int i = 0; i < elements->Length; ++i)
+				{
+					auto tmp = elements->Item(i);
+					auto nd = tmp->NodeName;
+					if (nd != "p")
+						throw;
+					auto paragraph = ref new Windows::UI::Xaml::Documents::Paragraph();
+					for (unsigned int j = 0; j < tmp->ChildNodes->Length; j++)
 					{
-						auto tmp = elements->Item(i);
-						auto nd = tmp->NodeName;
-						if (nd != "p")
-							throw;
-						auto paragraph = ref new Windows::UI::Xaml::Documents::Paragraph();
-						for (unsigned int j = 0; j < tmp->ChildNodes->Length; j++)
+						auto element = tmp->ChildNodes->Item(j);
+						auto ndname = element->NodeName;
+						if (ndname == "a")
+						{
+							auto a = ref new Windows::UI::Xaml::Documents::Hyperlink();
+							//a->Inlines = element->Attributes->GetNamedItem("href");
+							paragraph->Inlines->Append(a);
+							continue;
+						}
+						if (ndname == "br")
+						{
+							auto br = ref new Windows::UI::Xaml::Documents::LineBreak();
+							paragraph->Inlines->Append(br);
+							continue;
+						}
+						if (ndname == "#text")
 						{
 							auto run = ref new Windows::UI::Xaml::Documents::Run();
-							run->Text = tmp->ChildNodes->Item(j)->InnerText;
+							run->Text = element->InnerText;
 							paragraph->Inlines->Append(run);
+							continue;
 						}
-						ctrl->Blocks->Append(paragraph);
 					}
+					ctrl->Blocks->Append(paragraph);
 				}
-				catch(...)
-				{ }
 
 				return ctrl;
 			}
