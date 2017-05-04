@@ -26,6 +26,7 @@
     <ClCompile Include="Search.xaml.cpp" />
     <ClCompile Include="Profile.xaml.cpp" />
     <ClCompile Include="FocusedToot.xaml.cpp" />
+    <ClCompile Include="toot.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

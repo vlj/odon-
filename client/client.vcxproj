@@ -260,6 +260,7 @@
     <ClCompile Include="Timeline.xaml.cpp">
       <DependentUpon>Timeline.xaml</DependentUpon>
     </ClCompile>
+    <ClCompile Include="toot.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
