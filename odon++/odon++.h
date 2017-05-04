@@ -106,9 +106,12 @@ namespace Mastodon
 			reblogs_count = v.at(U("reblogs_count")).as_integer();
 			favourites_count = v.at(U("favourites_count")).as_integer();
 			//reblog = v.at(U("reblog")).as_string();
-			const auto& str = v.at(U("favourited")).serialize();
-			favourited = v.at(U("favourited")).is_null() ? false : v.at(U("favourited")).as_bool();
-			reblogged = v.at(U("reblogged")).is_null() ? false : v.at(U("reblogged")).as_bool();
+			favourited = (!v.has_field(U("favourited")) || v.at(U("favourited")).is_null()) ?
+				false :
+				v.at(U("favourited")).as_bool();
+			reblogged = (!v.has_field(U("reblogged")) || v.at(U("reblogged")).is_null()) ?
+				false :
+				v.at(U("reblogged")).as_bool();
 		}
 
 		Status() = default;
