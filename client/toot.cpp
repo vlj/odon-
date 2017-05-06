@@ -31,7 +31,7 @@ Windows::UI::Xaml::Controls::RichTextBlock ^ client::Toot::convertParagraph(cons
 			if (ndname == "#text")
 			{
 				auto run = ref new Windows::UI::Xaml::Documents::Run();
-				run->Text = Windows::Data::Html::HtmlUtilities::ConvertToText(node->InnerText);
+				run->Text = node->InnerText;
 				container->Append(run);
 				continue;
 			}
