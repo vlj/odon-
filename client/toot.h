@@ -86,8 +86,6 @@ namespace client
 			_account = ref new Account(status._account);
 			if (_status.spoiler_text)
 				_spoiler_text = ref new Platform::String(_status.spoiler_text->c_str());
-			_sensitive = _status.sensitive;
-			_id = _status.id;
 			_favourite = ref new Delegate([=]() {
 				auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 				auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_id"))->Data(),
@@ -112,10 +110,8 @@ namespace client
 		}
 	private:
 		Account^ _account;
-		Platform::String^ _content;
 		Platform::String^ _spoiler_text;
 		bool _sensitive;
-		size_t _id;
 		Delegate^ _favourite;
 		Delegate^ _reblog;
 
@@ -129,11 +125,27 @@ namespace client
 			}
 		}
 
+		property bool IsReblog
+		{
+			bool get()
+			{
+				return status.reblog.get() != nullptr;
+			}
+		}
+
+		property Platform::String^ RebloggedBy
+		{
+			Platform::String^ get()
+			{
+				return ref new Platform::String(status._account.display_name.data());
+			}
+		}
+
 		property size_t Id
 		{
 			size_t get()
 			{
-				return _id;
+				return status.id;
 			}
 		}
 
@@ -189,7 +201,7 @@ namespace client
 		{
 			Windows::UI::Xaml::Controls::RichTextBlock^ get()
 			{
-				return convertParagraph(status.content);
+				return convertParagraph(status.reblog.get() == nullptr ? status.content : status.reblog->content);
 			}
 		}
 
@@ -197,7 +209,7 @@ namespace client
 		{
 			Account^ get()
 			{
-				return _account;
+				return status.reblog.get() == nullptr ? _account : ref new Account(status.reblog->_account);
 			}
 		}
 

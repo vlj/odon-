@@ -73,7 +73,7 @@ namespace Mastodon
 		utility::string_t url;
 		size_t reblogs_count;
 		size_t favourites_count;
-		std::optional<utility::string_t> reblog;
+		std::shared_ptr<Status> reblog;
 		bool favourited;
 		bool reblogged;
 
@@ -105,7 +105,10 @@ namespace Mastodon
 			url = v.at(U("url")).as_string();
 			reblogs_count = v.at(U("reblogs_count")).as_integer();
 			favourites_count = v.at(U("favourites_count")).as_integer();
-			//reblog = v.at(U("reblog")).as_string();
+			if (v.has_field(U("reblog")) && !v.at(U("reblog")).is_null())
+			{
+				reblog = std::make_shared<Status>(v.at(U("reblog")));
+			}
 			favourited = (!v.has_field(U("favourited")) || v.at(U("favourited")).is_null()) ?
 				false :
 				v.at(U("favourited")).as_bool();

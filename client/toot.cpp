@@ -31,7 +31,7 @@ Windows::UI::Xaml::Controls::RichTextBlock ^ client::Toot::convertParagraph(cons
 			if (ndname == "#text")
 			{
 				auto run = ref new Windows::UI::Xaml::Documents::Run();
-				run->Text = node->InnerText;
+				run->Text = Windows::Data::Html::HtmlUtilities::ConvertToText(node->InnerText);
 				container->Append(run);
 				continue;
 			}
@@ -41,9 +41,11 @@ Windows::UI::Xaml::Controls::RichTextBlock ^ client::Toot::convertParagraph(cons
 
 	auto ctrl = ref new Windows::UI::Xaml::Controls::RichTextBlock();
 	auto doc = ref new Windows::Data::Xml::Dom::XmlDocument();
-	const auto& unescaped = std::regex_replace(str, std::wregex(L"(&)[^a]"), LR"(&amp;)");
+	auto&& escaped = std::regex_replace(str, std::wregex(L"(&(?![a-z]+;))"), LR"(&amp;)");
+	// Fix some wrong html
+	escaped = std::regex_replace(escaped, std::wregex(L"(<br>)"), LR"(<br/>)");
 	auto content = ref new Platform::String(U("<div>")) +
-		ref new Platform::String(unescaped.c_str()) +
+		ref new Platform::String(escaped.c_str()) +
 		ref new Platform::String(U("</div>"));
 	auto buf = Windows::Security::Cryptography::CryptographicBuffer::ConvertStringToBinary(content, Windows::Security::Cryptography::BinaryStringEncoding::Utf8);
 	doc->LoadXmlFromBuffer(buf);

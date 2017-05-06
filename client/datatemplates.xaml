@@ -61,7 +61,11 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Image Source="{x:Bind Author.Avatar, Mode=OneWay}" Width="100" Height="100" Grid.RowSpan="5" />
+                <TextBlock Grid.Row="0" Grid.ColumnSpan="3" Visibility="{x:Bind IsReblog}">
+                    <Run>Reblogged by </Run>
+                    <Run Text="{x:Bind RebloggedBy}" />
+                </TextBlock>
+                <Image Source="{x:Bind Author.Avatar, Mode=OneWay}" Width="100" Height="100" Grid.Row="1" Grid.RowSpan="4" VerticalAlignment="Top" />
                 <TextBlock Text="{x:Bind Author.Username, Mode=OneWay}" Grid.Column="1" Grid.Row="1" />
                 <RichTextBlock Visibility="{x:Bind Sensitive}" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center">
                     <Paragraph>
