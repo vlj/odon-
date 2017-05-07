@@ -9,7 +9,7 @@
 
     <StackPanel Orientation="Vertical" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <ListView x:Name="ancestorslist" ItemsSource="{Binding}" ItemTemplate="{StaticResource toot_template}" />
-        <ContentPresenter x:Name="tootpresenter" ContentTemplate="{StaticResource toot_template}" />
+        <local:tootviewer x:Name="tootpresenter" />
         <ListView x:Name="descendantslist" ItemsSource="{Binding}" ItemTemplate="{StaticResource toot_template}" />
     </StackPanel>
 </Page>

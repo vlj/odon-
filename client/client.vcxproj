@@ -178,6 +178,9 @@
       <DependentUpon>Timeline.xaml</DependentUpon>
     </ClInclude>
     <ClInclude Include="toot.h" />
+    <ClInclude Include="tootviewer.xaml.h">
+      <DependentUpon>tootviewer.xaml</DependentUpon>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -205,6 +208,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Timeline.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="tootviewer.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
@@ -261,6 +267,9 @@
       <DependentUpon>Timeline.xaml</DependentUpon>
     </ClCompile>
     <ClCompile Include="toot.cpp" />
+    <ClCompile Include="tootviewer.xaml.cpp">
+      <DependentUpon>tootviewer.xaml</DependentUpon>
+    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

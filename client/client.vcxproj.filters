@@ -81,5 +81,6 @@
     <Page Include="Search.xaml" />
     <Page Include="Profile.xaml" />
     <Page Include="FocusedToot.xaml" />
+    <Page Include="tootviewer.xaml" />
   </ItemGroup>
 </Project>

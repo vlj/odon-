@@ -4,6 +4,7 @@
 //
 
 #include "pch.h"
+#include "tootviewer.xaml.h"
 #include "FocusedToot.xaml.h"
 
 using namespace client;

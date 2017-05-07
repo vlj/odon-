@@ -10,9 +10,14 @@
     <Pivot x:Name="hub" HorizontalContentAlignment="Stretch" >
         <PivotItem  Header="Timeline">
             <ListView x:Name="timelinesection" ItemsSource="{Binding}"
-                                      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                                      ItemTemplate="{StaticResource toot_template}"
-                      ItemClick="ListView_ItemClick" IsItemClickEnabled="True" HorizontalContentAlignment="Stretch"/>
+                      ItemClick="ListView_ItemClick" IsItemClickEnabled="True" HorizontalContentAlignment="Stretch"
+                      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="local:Toot">
+                        <local:tootviewer />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </PivotItem>
         <PivotItem Header="Mentions">
             <ListView x:Name="mentionsection" ItemsSource="{Binding}"
@@ -72,8 +77,7 @@
                                     <TextBlock x:Name="fav" Text=" has faved" />
                                     <TextBlock x:Name="reblog" Text=" has reblogged" />
                                 </StackPanel>
-                                <ContentPresenter x:Name="tootcontent" ContentTemplate="{StaticResource toot_template}"
-                                                  DataContext="{x:Bind toot}" />
+                                <local:tootviewer x:Name="tootcontent" DataContext="{x:Bind toot}" />
                             </Grid>
                         </UserControl>
                     </DataTemplate>
