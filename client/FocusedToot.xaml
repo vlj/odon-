@@ -8,8 +8,20 @@
     mc:Ignorable="d">
 
     <StackPanel Orientation="Vertical" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <ListView x:Name="ancestorslist" ItemsSource="{Binding}" ItemTemplate="{StaticResource toot_template}" />
+        <ListView x:Name="ancestorslist" ItemsSource="{Binding}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <local:tootviewer />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
         <local:tootviewer x:Name="tootpresenter" />
-        <ListView x:Name="descendantslist" ItemsSource="{Binding}" ItemTemplate="{StaticResource toot_template}" />
+        <ListView x:Name="descendantslist" ItemsSource="{Binding}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <local:tootviewer />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </StackPanel>
 </Page>
