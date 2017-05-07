@@ -7,13 +7,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <StackPanel Orientation="Vertical">
-        <ListView x:Name="ProfileToot" ItemsSource="{Binding}">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <local:tootviewer />
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-    </StackPanel>
+
+    <ListView x:Name="ProfileToot" ItemsSource="{Binding}" IsItemClickEnabled="True" ItemClick="ProfileToot_ItemClick" >
+        <ListView.ItemTemplate>
+            <DataTemplate>
+                <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" />
+            </DataTemplate>
+        </ListView.ItemTemplate>
+    </ListView>
 </Page>

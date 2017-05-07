@@ -5,6 +5,7 @@
 
 #include "pch.h"
 #include "Profile.xaml.h"
+#include "FocusedToot.xaml.h"
 
 using namespace client;
 
@@ -48,4 +49,14 @@ void client::Profile::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEve
 		});
 }
 
+void client::Profile::ProfileToot_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e)
+{
+	auto toot = dynamic_cast<Toot^>(e->ClickedItem);
+	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(FocusedToot::typeid), toot->Id);
+}
 
+
+void client::Profile::tootviewer_OnImagePressed(client::tootviewer^ c, default::int32 Id)
+{
+	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(Profile::typeid), Id);
+}

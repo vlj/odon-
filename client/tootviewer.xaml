@@ -64,7 +64,7 @@
                     <Run>Reblogged by </Run>
                     <Run Text="{Binding RebloggedBy}" />
         </TextBlock>
-        <Button VerticalAlignment="Top" Grid.Row="1" Grid.RowSpan="4" Click="Button_Click">
+        <Button VerticalAlignment="Top" Grid.Row="1" Grid.RowSpan="4" Click="Button_Click" Background="{x:Null}">
             <Image Source="{Binding Author.Avatar}" Width="100" Height="100" />
         </Button>
         <TextBlock Text="{Binding Author.Username}" Grid.Column="1" Grid.Row="1" />

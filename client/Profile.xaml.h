@@ -6,6 +6,7 @@
 #pragma once
 
 #include "Profile.g.h"
+#include "tootviewer.xaml.h"
 
 namespace client
 {
@@ -20,6 +21,7 @@ namespace client
 
 		virtual void OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs^ e) override;
 	private:
-		void StackPanel_Tapped(Platform::Object^ sender, Windows::UI::Xaml::Input::TappedRoutedEventArgs^ e);
+		void ProfileToot_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e);
+		void tootviewer_OnImagePressed(client::tootviewer^ c, default::int32 Id);
 	};
 }

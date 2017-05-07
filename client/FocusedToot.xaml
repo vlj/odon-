@@ -8,18 +8,18 @@
     mc:Ignorable="d">
 
     <StackPanel Orientation="Vertical" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <ListView x:Name="ancestorslist" ItemsSource="{Binding}">
+        <ListView x:Name="ancestorslist" ItemsSource="{Binding}" IsItemClickEnabled="True" ItemClick="ancestorslist_ItemClick">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <local:tootviewer />
+                    <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" />
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
         <local:tootviewer x:Name="tootpresenter" />
-        <ListView x:Name="descendantslist" ItemsSource="{Binding}">
+        <ListView x:Name="descendantslist" ItemsSource="{Binding}" IsItemClickEnabled="True" ItemClick="ancestorslist_ItemClick">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <local:tootviewer />
+                    <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" />
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
