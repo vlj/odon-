@@ -8,6 +8,12 @@
     mc:Ignorable="d">
 
     <StackPanel Orientation="Vertical">
-        <ListView x:Name="ProfileToot" ItemsSource="{Binding}" ItemTemplate="{StaticResource toot_template}" />
+        <ListView x:Name="ProfileToot" ItemsSource="{Binding}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <local:tootviewer />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </StackPanel>
 </Page>

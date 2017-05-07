@@ -14,7 +14,7 @@
                       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="local:Toot">
-                        <local:tootviewer />
+                        <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" />
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>

@@ -6,6 +6,7 @@
 #include "pch.h"
 #include "Timeline.xaml.h"
 #include "FocusedToot.xaml.h"
+#include "Profile.xaml.h"
 
 using namespace client;
 
@@ -64,4 +65,10 @@ void client::Timeline::ListView_ItemClick(Platform::Object^ sender, Windows::UI:
 {
 	auto toot = dynamic_cast<Toot^>(e->ClickedItem);
 	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(FocusedToot::typeid), toot->Id);
+}
+
+
+void client::Timeline::tootviewer_OnImagePressed(client::tootviewer^ c, default::int32 Id)
+{
+	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(Profile::typeid), Id);
 }

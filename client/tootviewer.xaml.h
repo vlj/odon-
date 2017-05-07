@@ -10,12 +10,18 @@
 
 namespace client
 {
+	ref class tootviewer;
+	public delegate void ImagePressed(tootviewer^ c, int Id);
+
+
 	[Windows::Foundation::Metadata::WebHostHidden]
 	public ref class tootviewer sealed
 	{
 		Toot^ _toot;
 	public:
 		tootviewer();
+
+		event ImagePressed^ OnImagePressed;
 
 		property Toot^ Status
 		{
@@ -29,6 +35,8 @@ namespace client
 				DataContext = v;
 			}
 		}
+	private:
+		void Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
 	};
 
 }
