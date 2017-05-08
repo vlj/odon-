@@ -40,6 +40,7 @@ Windows::UI::Xaml::Controls::RichTextBlock ^ client::Toot::convertParagraph(cons
 	};
 
 	auto ctrl = ref new Windows::UI::Xaml::Controls::RichTextBlock();
+	ctrl->IsTextSelectionEnabled = false;
 	auto doc = ref new Windows::Data::Xml::Dom::XmlDocument();
 	auto&& escaped = std::regex_replace(str, std::wregex(L"(&(?![a-z]+;))"), LR"(&amp;)");
 	// Fix some wrong html

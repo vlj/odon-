@@ -46,7 +46,7 @@ namespace client
 		{
 			Platform::String^ get()
 			{
-				return ref new Platform::String(_account.username.data());
+				return ref new Platform::String(_account.display_name.data());
 			}
 		}
 
