@@ -6,6 +6,7 @@
 #pragma once
 
 #include "datatemplates.g.h"
+#include "TootListModelView.h"
 
 namespace client
 {

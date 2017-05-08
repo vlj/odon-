@@ -9,7 +9,7 @@
 
     <Pivot x:Name="hub" HorizontalContentAlignment="Stretch" >
         <PivotItem  Header="Timeline">
-            <ListView x:Name="timelinesection" ItemsSource="{Binding}"
+            <ListView x:Name="timelinesection" ItemsSource="{Binding Source={StaticResource tootlist}, Path=TimelineToots}"
                       ItemClick="ListView_ItemClick" IsItemClickEnabled="True" HorizontalContentAlignment="Stretch"
                       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
                 <ListView.ItemTemplate>

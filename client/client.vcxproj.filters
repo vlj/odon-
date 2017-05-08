@@ -11,6 +11,12 @@
     <Filter Include="Localization">
       <UniqueIdentifier>{ad284d66-e776-4da3-a56e-7bee6903ce4a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{6598653a-60eb-4e7e-b997-8234c4608eaf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ModelView">
+      <UniqueIdentifier>{6aa20dd2-86e9-4b13-92e2-6369083b1abf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
@@ -26,7 +32,13 @@
     <ClCompile Include="Search.xaml.cpp" />
     <ClCompile Include="Profile.xaml.cpp" />
     <ClCompile Include="FocusedToot.xaml.cpp" />
-    <ClCompile Include="toot.cpp" />
+    <ClCompile Include="tootviewer.xaml.cpp" />
+    <ClCompile Include="toot.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="TootListModelView.cpp">
+      <Filter>ModelView</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -34,13 +46,19 @@
     <ClInclude Include="MainPage.xaml.h" />
     <ClInclude Include="ConnectedPage.xaml.h" />
     <ClInclude Include="Timeline.xaml.h" />
-    <ClInclude Include="toot.h" />
     <ClInclude Include="datatemplates.xaml.h" />
     <ClInclude Include="Login.xaml.h" />
     <ClInclude Include="Search.xaml.h" />
     <ClInclude Include="Profile.xaml.h" />
     <ClInclude Include="FocusedToot.xaml.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="tootviewer.xaml.h" />
+    <ClInclude Include="toot.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="TootListModelView.h">
+      <Filter>ModelView</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\LockScreenLogo.scale-200.png">

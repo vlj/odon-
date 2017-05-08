@@ -178,6 +178,7 @@
       <DependentUpon>Timeline.xaml</DependentUpon>
     </ClInclude>
     <ClInclude Include="toot.h" />
+    <ClInclude Include="TootListModelView.h" />
     <ClInclude Include="tootviewer.xaml.h">
       <DependentUpon>tootviewer.xaml</DependentUpon>
     </ClInclude>
@@ -267,6 +268,7 @@
       <DependentUpon>Timeline.xaml</DependentUpon>
     </ClCompile>
     <ClCompile Include="toot.cpp" />
+    <ClCompile Include="TootListModelView.cpp" />
     <ClCompile Include="tootviewer.xaml.cpp">
       <DependentUpon>tootviewer.xaml</DependentUpon>
     </ClCompile>
