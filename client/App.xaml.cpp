@@ -5,6 +5,7 @@
 
 #include "pch.h"
 #include "MainPage.xaml.h"
+#include "TootListModelView.h"
 
 using namespace client;
 
@@ -88,6 +89,12 @@ void App::OnLaunched(Windows::ApplicationModel::Activation::LaunchActivatedEvent
             Window::Current->Activate();
         }
     }
+
+	Windows::ApplicationModel::Background::BackgroundExecutionManager::RequestAccessAsync();
+	auto backgroundtaskbuilder = ref new Windows::ApplicationModel::Background::BackgroundTaskBuilder();
+	auto backgroundsync = ref new Windows::ApplicationModel::Background::TimeTrigger(15, false);
+	backgroundtaskbuilder->SetTrigger(backgroundsync);
+	auto registered = backgroundtaskbuilder->Register();
 }
 
 /// <summary>
@@ -113,4 +120,10 @@ void App::OnSuspending(Object^ sender, SuspendingEventArgs^ e)
 void App::OnNavigationFailed(Platform::Object ^sender, Windows::UI::Xaml::Navigation::NavigationFailedEventArgs ^e)
 {
     throw ref new FailureException("Failed to load Page " + e->SourcePageType.Name);
+}
+
+void client::App::OnBackgroundActivated(Windows::ApplicationModel::Activation::BackgroundActivatedEventArgs ^ args)
+{
+	auto modelView = static_cast<TootListModelView^>(Application::Current->Resources->Lookup("tootlist"));
+	modelView->refresh();
 }

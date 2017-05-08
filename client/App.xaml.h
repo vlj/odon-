@@ -22,11 +22,11 @@ namespace client
 
 	internal:
 		App();
-
+	public:
+		void OnBackgroundActivated(Windows::ApplicationModel::Activation::BackgroundActivatedEventArgs^ args) override;
 	private:
 		void OnSuspending(Platform::Object^ sender, Windows::ApplicationModel::SuspendingEventArgs^ e);
 		void OnNavigationFailed(Platform::Object ^sender, Windows::UI::Xaml::Navigation::NavigationFailedEventArgs ^e);
-
 	private:
 		std::unique_ptr<Mastodon::InstanceConnexion> mInstanceConnexion;
 		
