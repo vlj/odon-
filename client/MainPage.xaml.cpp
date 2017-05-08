@@ -60,13 +60,11 @@ void client::MainPage::AppBarButton_Click(Platform::Object^ sender, Windows::UI:
 		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
 		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
 
+	auto modelView = static_cast<TootListModelView^>(Application::Current->Resources->Lookup("tootlist"));
 	instance.status_post(NewToot->Text->Data(), false)
-		.then([this](const web::json::value&) {
-		Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low, ref new Windows::UI::Core::DispatchedHandler([this]() {
-			auto modelView = static_cast<TootListModelView^>(Application::Current->Resources->Lookup("tootlist"));
+		.then([modelView](const web::json::value&) {
 			modelView->refresh();
-		}));
-	});
+		});
 }
 
 
