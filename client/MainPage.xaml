@@ -34,7 +34,7 @@
                         </Flyout>
                     </AppBarButton.Flyout>
                 </AppBarButton>
-                <AppBarButton Icon="Refresh" Label="Refresh" HorizontalAlignment="Left" />
+                <AppBarButton Icon="Refresh" Label="Refresh" HorizontalAlignment="Left" Click="AppBarButton_Click_3" />
                 <AppBarButton Icon="Edit" Label="New Toot" Click="AppBarButton_Click_1" />
                 <AppBarButton Icon="Contact" Label="Preferences" Click="AppBarButton_Click_2"/>
             </StackPanel>

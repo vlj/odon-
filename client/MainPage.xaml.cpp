@@ -9,6 +9,7 @@
 #include "ConnectedPage.xaml.h"
 #include "Timeline.xaml.h"
 #include "Search.xaml.h"
+#include "TootListModelView.h"
 
 using namespace client;
 
@@ -59,7 +60,13 @@ void client::MainPage::AppBarButton_Click(Platform::Object^ sender, Windows::UI:
 		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
 		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
 
-	instance.status_post(NewToot->Text->Data(), false);
+	instance.status_post(NewToot->Text->Data(), false)
+		.then([this](const web::json::value&) {
+		Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low, ref new Windows::UI::Core::DispatchedHandler([this]() {
+			auto modelView = static_cast<TootListModelView^>(Application::Current->Resources->Lookup("tootlist"));
+			modelView->refresh();
+		}));
+	});
 }
 
 
@@ -116,4 +123,11 @@ void client::MainPage::onBack(Platform::Object ^ sender, Windows::UI::Core::Back
 		e->Handled = true;
 		contentFrame->GoBack();
 	}
+}
+
+
+void client::MainPage::AppBarButton_Click_3(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
+	auto modelView = static_cast<TootListModelView^>(Application::Current->Resources->Lookup("tootlist"));
+	modelView->refresh();
 }
