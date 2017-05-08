@@ -26,39 +26,6 @@ using namespace Windows::UI::Xaml::Navigation;
 Timeline::Timeline()
 {
 	InitializeComponent();
-
-	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
-		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
-		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
-
-	instance.timeline_home()
-		.then([this](const std::vector<Mastodon::Status>& v)
-		{
-			auto tootscol = ref new Platform::Collections::Vector<Toot^>();
-			for (const auto& toot : v)
-			{
-				tootscol->Append(ref new Toot(toot));
-			}
-			Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low, ref new Windows::UI::Core::DispatchedHandler([this, tootscol]()
-			{
-				this->timelinesection->DataContext = tootscol;
-			}));
-		});
-
-	instance.notifications()
-		.then([this](const std::vector<Mastodon::Notifications>& v)
-		{
-			auto list = ref new Platform::Collections::Vector<Notification^>();
-			for (const auto& n : v)
-			{
-				list->Append(ref new Notification(n));
-			}
-			Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
-				ref new Windows::UI::Core::DispatchedHandler([this, list]() {
-				mentionsection->DataContext = list;
-			}));
-		});
 }
 
 void client::Timeline::ListView_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e)

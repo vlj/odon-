@@ -6,6 +6,7 @@ using namespace Platform;
 client::TootListModelView::TootListModelView()
 {
 	_timeline = ref new Collections::Vector<Toot^>();
+	_notifications = ref new Collections::Vector<Notification^>();
 	refresh();
 }
 
@@ -30,6 +31,22 @@ void client::TootListModelView::refresh()
 			ref new Windows::UI::Core::DispatchedHandler([this]()
 		{
 			PropertyChanged(this, ref new Windows::UI::Xaml::Data::PropertyChangedEventArgs("TimelineToots"));
+		}));
+	});
+
+	instance.notifications()
+		.then([this](const std::vector<Mastodon::Notifications>& v)
+	{
+		auto refreshednotifications = ref new Platform::Collections::Vector<Notification^>();
+		for (const auto& n : v)
+		{
+			refreshednotifications->Append(ref new Notification(n));
+		}
+		_notifications = refreshednotifications;
+		Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
+			Windows::UI::Core::CoreDispatcherPriority::Low,
+			ref new Windows::UI::Core::DispatchedHandler([this]() {
+			PropertyChanged(this, ref new Windows::UI::Xaml::Data::PropertyChangedEventArgs("Notifications"));
 		}));
 	});
 }

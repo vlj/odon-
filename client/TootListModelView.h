@@ -17,11 +17,20 @@ namespace client
 			}
 		}
 
+		property Windows::Foundation::Collections::IObservableVector<Notification^> ^ Notifications
+		{
+			Windows::Foundation::Collections::IObservableVector<Notification^>^ get()
+			{
+				return _notifications;
+			}
+		}
+
 		virtual event Windows::UI::Xaml::Data::PropertyChangedEventHandler ^ PropertyChanged;
 
 		void refresh();
 
 	private:
 		Platform::Collections::Vector<Toot^>^ _timeline;
+		Platform::Collections::Vector<Notification^>^ _notifications;
 	};
 }

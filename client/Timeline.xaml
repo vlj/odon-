@@ -20,7 +20,7 @@
             </ListView>
         </PivotItem>
         <PivotItem Header="Mentions">
-            <ListView x:Name="mentionsection" ItemsSource="{Binding}"
+            <ListView x:Name="mentionsection" ItemsSource="{Binding Source={StaticResource tootlist}, Path=Notifications}"
                       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                       HorizontalContentAlignment="Stretch" >
                 <ListView.ItemTemplate>
