@@ -38,9 +38,22 @@ void client::TootListModelView::refresh()
 		.then([this](const std::vector<Mastodon::Notifications>& v)
 	{
 		auto refreshednotifications = ref new Platform::Collections::Vector<Notification^>();
+		auto toastNotifier = Windows::UI::Notifications::ToastNotificationManager::CreateToastNotifier();
 		for (const auto& n : v)
 		{
 			refreshednotifications->Append(ref new Notification(n));
+
+			auto toastVisual =
+				LR"(<toast launch="app-defined-string"><visual>
+		<binding template='ToastGeneric'>
+		<text>Ducktodon</text>
+		<text>)" + n.account.display_name + LR"(</text>
+		</binding>
+		</visual></toast>)";
+			auto xml = ref new Windows::Data::Xml::Dom::XmlDocument();
+			xml->LoadXml(ref new Platform::String(toastVisual.data()));
+			auto notif = ref new Windows::UI::Notifications::ToastNotification(xml);
+			toastNotifier->Show(notif);
 		}
 		_notifications = refreshednotifications;
 		Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
