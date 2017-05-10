@@ -7,7 +7,28 @@ client::TootListModelView::TootListModelView()
 {
 	_timeline = ref new Collections::Vector<Toot^>();
 	_notifications = ref new Collections::Vector<Notification^>();
-//	refresh();
+	SetTimer();
+}
+
+void client::TootListModelView::SetTimer()
+{
+	if (periodicTimer != nullptr)
+		return;
+	Windows::Foundation::TimeSpan timespan;
+	timespan.Duration = 10 * 10000000;
+	periodicTimer = Windows::System::Threading::ThreadPoolTimer::CreatePeriodicTimer(
+		ref new Windows::System::Threading::TimerElapsedHandler([this](auto)
+	{
+		refresh();
+	}), timespan);
+}
+
+void client::TootListModelView::SuspendTimer()
+{
+	if (periodicTimer == nullptr)
+		return;
+	periodicTimer->Cancel();
+	periodicTimer = nullptr;
 }
 
 void client::TootListModelView::refresh()

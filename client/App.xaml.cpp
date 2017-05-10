@@ -30,7 +30,8 @@ using namespace Windows::UI::Xaml::Navigation;
 App::App()
 {
     InitializeComponent();
-    Suspending += ref new SuspendingEventHandler(this, &App::OnSuspending);
+    EnteredBackground += ref new EnteredBackgroundEventHandler(this, &App::OnEnteredBackground);
+	LeavingBackground += ref new LeavingBackgroundEventHandler(this, &App::OnLeavingBackground);
 }
 
 /// <summary>
@@ -104,12 +105,16 @@ void App::OnLaunched(Windows::ApplicationModel::Activation::LaunchActivatedEvent
 /// </summary>
 /// <param name="sender">Source de la requête de suspension.</param>
 /// <param name="e">Détails de la requête de suspension.</param>
-void App::OnSuspending(Object^ sender, SuspendingEventArgs^ e)
+void App::OnEnteredBackground(Object^ sender, EnteredBackgroundEventArgs^ e)
 {
-    (void) sender;  // Paramètre non utilisé
-    (void) e;   // Paramètre non utilisé
+	auto modelView = static_cast<TootListModelView^>(Application::Current->Resources->Lookup("tootlist"));
+	modelView->SuspendTimer();
+}
 
-    //TODO: enregistrez l'état de l'application et arrêtez toute activité en arrière-plan
+void App::OnLeavingBackground(Object^ sender, LeavingBackgroundEventArgs^ e)
+{
+	auto modelView = static_cast<TootListModelView^>(Application::Current->Resources->Lookup("tootlist"));
+	modelView->SetTimer();
 }
 
 /// <summary>

@@ -6,8 +6,12 @@ namespace client
 	[Windows::UI::Xaml::Data::BindableAttribute]
 	public ref class TootListModelView sealed : Windows::UI::Xaml::Data::INotifyPropertyChanged
 	{
+		Windows::System::Threading::ThreadPoolTimer^ periodicTimer;
 	public:
 		TootListModelView();
+
+		void SetTimer();
+		void SuspendTimer();
 
 		property Windows::Foundation::Collections::IObservableVector<Toot^>^ TimelineToots
 		{
