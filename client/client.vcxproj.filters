@@ -17,6 +17,9 @@
     <Filter Include="ModelView">
       <UniqueIdentifier>{6aa20dd2-86e9-4b13-92e2-6369083b1abf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Controls">
+      <UniqueIdentifier>{296a0a52-fcfe-45aa-b188-8a424e8eaf2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
@@ -99,6 +102,11 @@
     <Page Include="Search.xaml" />
     <Page Include="Profile.xaml" />
     <Page Include="FocusedToot.xaml" />
-    <Page Include="tootviewer.xaml" />
+    <Page Include="tootviewer.xaml">
+      <Filter>Controls</Filter>
+    </Page>
+    <Page Include="TootWriter.xaml">
+      <Filter>Controls</Filter>
+    </Page>
   </ItemGroup>
 </Project>

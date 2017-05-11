@@ -23,5 +23,6 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        <local:TootWriter x:Name="writer" />
     </StackPanel>
 </Page>

@@ -53,27 +53,6 @@ void client::MainPage::Button_Click(Platform::Object^ sender, Windows::UI::Xaml:
 	contentFrame->Navigate(Windows::UI::Xaml::Interop::TypeName(Search::typeid), SearchBox->Text);
 }
 
-void client::MainPage::AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
-{
-	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
-		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
-		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
-
-	auto modelView = static_cast<TootListModelView^>(Application::Current->Resources->Lookup("tootlist"));
-	instance.status_post(NewToot->Text->Data(), false)
-		.then([modelView](const web::json::value&) {
-			modelView->refresh();
-		});
-}
-
-
-void client::MainPage::AppBarButton_Click_1(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
-{
-	FlyoutBase::ShowAttachedFlyout(contentFrame);
-}
-
-
 void client::MainPage::AppBarButton_Click_2(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
 	Windows::Storage::Pickers::FileOpenPicker^ openPicker = ref new Windows::Storage::Pickers::FileOpenPicker();

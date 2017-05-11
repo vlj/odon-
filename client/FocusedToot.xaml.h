@@ -6,6 +6,7 @@
 #pragma once
 
 #include "FocusedToot.g.h"
+#include "TootWriter.xaml.h"
 
 namespace client
 {

@@ -516,11 +516,37 @@ namespace Mastodon
 
 		}
 
-		auto status_post(const utility::string_t& content, const bool& NSFW)
+		auto status_post(const utility::string_t& content,
+			const visibility_level& visibility,
+			const std::optional<int> &answer_to,
+			const std::optional<utility::string_t>& spoiler_text,
+			const bool& sensitive)
 		{
 			auto&& uri = web::uri_builder{ U("/api/v1/statuses") };
 			uri.append_query(U("status"), content);
-			uri.append_query(U("sensitive"), NSFW ? U("True") : U("False"));
+			uri.append_query(U("sensitive"), sensitive ? U("True") : U("False"));
+			if (answer_to.has_value())
+			{
+				uri.append_query(U("in_reply_to_id"), answer_to.value());
+			}
+			if (spoiler_text.has_value())
+			{
+				uri.append_query(U("spoiler_text"), spoiler_text.value());
+			}
+			uri.append_query(U("visibility"), [](const auto& visibility) {
+				switch (visibility)
+				{
+				case visibility_level::direct_level:
+					return U("direct");
+				case visibility_level::private_level:
+					return U("private");
+				case visibility_level::public_level:
+					return U("public");
+				case visibility_level::unlisted_level:
+					return U("unlisted");
+				}
+				throw;
+			} (visibility));
 			return __api_request(uri, web::http::methods::POST);
 		}
 

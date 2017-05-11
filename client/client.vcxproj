@@ -182,6 +182,9 @@
     <ClInclude Include="tootviewer.xaml.h">
       <DependentUpon>tootviewer.xaml</DependentUpon>
     </ClInclude>
+    <ClInclude Include="TootWriter.xaml.h">
+      <DependentUpon>TootWriter.xaml</DependentUpon>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -212,6 +215,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="tootviewer.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TootWriter.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
@@ -271,6 +277,9 @@
     <ClCompile Include="TootListModelView.cpp" />
     <ClCompile Include="tootviewer.xaml.cpp">
       <DependentUpon>tootviewer.xaml</DependentUpon>
+    </ClCompile>
+    <ClCompile Include="TootWriter.xaml.cpp">
+      <DependentUpon>TootWriter.xaml</DependentUpon>
     </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

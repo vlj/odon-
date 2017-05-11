@@ -35,36 +35,10 @@
                     </AppBarButton.Flyout>
                 </AppBarButton>
                 <AppBarButton Icon="Refresh" Label="Refresh" HorizontalAlignment="Left" Click="AppBarButton_Click_3" />
-                <AppBarButton Icon="Edit" Label="New Toot" Click="AppBarButton_Click_1" />
                 <AppBarButton Icon="Contact" Label="Preferences" Click="AppBarButton_Click_2"/>
             </StackPanel>
         </SplitView.Pane>
         <Frame x:Name="contentFrame">
-            <FlyoutBase.AttachedFlyout>
-                <Flyout Placement="Bottom">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBox x:Name="NewToot" Width="250" Grid.RowSpan="2"/>
-                        <ComboBox x:Name="comboBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="120" Grid.Row="1" Grid.Column="1">
-                            <ComboBoxItem Content="Direct"/>
-                            <ComboBoxItem Content="Private"/>
-                            <ComboBoxItem Content="Unlisted"/>
-                            <ComboBoxItem Content="Public" IsSelected="True"/>
-                        </ComboBox>
-                        <Button Click="AppBarButton_Click" Background="{x:Null}" BorderBrush="{x:Null}" Grid.Column="1" >
-                            <SymbolIcon Symbol="Send" />
-                        </Button>
-                    </Grid>
-                </Flyout>
-            </FlyoutBase.AttachedFlyout>
             <Page />
         </Frame>
     </SplitView>

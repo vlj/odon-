@@ -42,6 +42,9 @@ void FocusedToot::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventAr
 			ref new Windows::UI::Core::DispatchedHandler([this, status]()
 		{
 			tootpresenter->DataContext = ref new Toot(status);
+			writer->AnswerTo = status.id;
+			const auto& answerTag = U("@") + status._account.username;
+			writer->Text = ref new Platform::String(answerTag.data());
 		}));
 	});
 
