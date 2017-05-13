@@ -33,6 +33,7 @@ void TootWriter::AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml:
 	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
 		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
 		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
+	NewToot->IsReadOnly = true;
 
 	auto modelView = static_cast<TootListModelView^>(Application::Current->Resources->Lookup("tootlist"));
 	const auto& answer_to = (_answerTo == 0) ? std::optional<int>{} : std::make_optional(_answerTo);
@@ -40,7 +41,12 @@ void TootWriter::AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml:
 		Mastodon::visibility_level::public_level,
 		answer_to,
 		std::optional<utility::string_t>{}, false)
-		.then([modelView](const web::json::value&) {
+		.then([this, modelView](const web::json::value&) {
+		Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
+			ref new Windows::UI::Core::DispatchedHandler([this]() {
+			NewToot->IsReadOnly = false;
+			NewToot->Text = ref new Platform::String();
+		}));
 		modelView->refresh();
 	});
 }

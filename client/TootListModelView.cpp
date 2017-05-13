@@ -7,6 +7,7 @@ client::TootListModelView::TootListModelView()
 {
 	_timeline = ref new Collections::Vector<Toot^>();
 	_notifications = ref new Collections::Vector<Notification^>();
+	refresh();
 	SetTimer();
 }
 
