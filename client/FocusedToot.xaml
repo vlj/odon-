@@ -7,22 +7,32 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <StackPanel Orientation="Vertical" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <ListView x:Name="ancestorslist" ItemsSource="{Binding}" IsItemClickEnabled="True" ItemClick="ancestorslist_ItemClick">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" />
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-        <local:tootviewer x:Name="tootpresenter" />
-        <ListView x:Name="descendantslist" ItemsSource="{Binding}" IsItemClickEnabled="True" ItemClick="ancestorslist_ItemClick">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" />
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-        <local:TootWriter x:Name="writer" />
-    </StackPanel>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Orientation="Vertical">
+            <ListView x:Name="ancestorslist" ItemsSource="{Binding}" IsItemClickEnabled="True" ItemClick="ancestorslist_ItemClick">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <local:tootviewer x:Name="tootpresenter" />
+            <ListView x:Name="descendantslist" ItemsSource="{Binding}" IsItemClickEnabled="True" ItemClick="ancestorslist_ItemClick">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+        <local:TootWriter x:Name="writer" Grid.Row="1" />
+    </Grid>
 </Page>
