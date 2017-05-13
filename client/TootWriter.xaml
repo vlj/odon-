@@ -27,7 +27,7 @@
             <ComboBoxItem Content="Unlisted"/>
             <ComboBoxItem Content="Public" IsSelected="True"/>
         </ComboBox>
-        <Button Click="AppBarButton_Click" Background="{x:Null}" BorderBrush="{x:Null}" Grid.Column="1" >
+        <Button Click="AppBarButton_Click" Background="{x:Null}" BorderBrush="{x:Null}" Grid.Column="1" HorizontalAlignment="Center" >
             <SymbolIcon Symbol="Send" />
         </Button>
     </Grid>
