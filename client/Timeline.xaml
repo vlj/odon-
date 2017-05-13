@@ -9,7 +9,14 @@
 
     <Pivot x:Name="hub" HorizontalContentAlignment="Stretch" >
         <PivotItem  Header="Timeline">
-            <StackPanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
                 <ListView x:Name="timelinesection" ItemsSource="{Binding Source={StaticResource tootlist}, Path=TimelineToots}"
                       ItemClick="ListView_ItemClick" IsItemClickEnabled="True" HorizontalContentAlignment="Stretch"
                       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -19,8 +26,8 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-                <local:TootWriter x:Name="tootWriter" />
-            </StackPanel>
+                <local:TootWriter x:Name="tootWriter" Grid.Row="1" />
+            </Grid>
         </PivotItem>
         <PivotItem Header="Mentions">
             <ListView x:Name="mentionsection" ItemsSource="{Binding Source={StaticResource tootlist}, Path=Notifications}"
