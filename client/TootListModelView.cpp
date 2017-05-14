@@ -35,6 +35,12 @@ void client::TootListModelView::SuspendTimer()
 void client::TootListModelView::refresh()
 {
 	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
+
+	if (localSettings->Values->Lookup("client_id") == nullptr ||
+		localSettings->Values->Lookup("client_secret") == nullptr ||
+		localSettings->Values->Lookup("access_token") == nullptr)
+		return;
+
 	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
 		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
 		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
