@@ -72,6 +72,7 @@ namespace Mastodon
 				if (tp == U("image")) return attachement_type::image;
 				if (tp == U("video")) return attachement_type::video;
 				if (tp == U("gifv")) return attachement_type::gifv;
+				throw;
 			}(object.at(U("type")).as_string());
 			url = object.at(U("url")).as_string();
 			if (!object.at(U("remote_url")).is_null())

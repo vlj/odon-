@@ -75,6 +75,35 @@ namespace client
 		}
 	};
 
+	public ref class Attachment sealed
+	{
+	internal:
+		Attachment(const Mastodon::Attachment& att)
+		{
+			previewUrl = ref new Platform::String(att.preview_url.data());
+			url = ref new Platform::String(att.url.data());
+		}
+
+		Platform::String^ previewUrl;
+		Platform::String^ url;
+	public:
+		property Platform::String^ PreviewUrl
+		{
+			Platform::String^ get()
+			{
+				return previewUrl;
+			}
+		}
+
+		property Platform::String^ Url
+		{
+			Platform::String^ get()
+			{
+				return url;
+			}
+		}
+	};
+
 	[Windows::UI::Xaml::Data::Bindable]
 	public ref class Toot sealed
 	{
@@ -221,22 +250,14 @@ namespace client
 			}
 		}
 
-		property Windows::Foundation::Collections::IObservableVector<Windows::UI::Xaml::Controls::Image^>^ Medias
+		property Windows::Foundation::Collections::IObservableVector<Attachment^>^ Medias
 		{
-			Windows::Foundation::Collections::IObservableVector<Windows::UI::Xaml::Controls::Image^>^ get()
+			Windows::Foundation::Collections::IObservableVector<Attachment^>^ get()
 			{
-				auto images = ref new Platform::Collections::Vector<Windows::UI::Xaml::Controls::Image^>();
+				auto images = ref new Platform::Collections::Vector<Attachment^>();
 				for (const auto& media : status.media_attachments)
 				{
-					Windows::UI::Xaml::Controls::Image^ pic = ref new Windows::UI::Xaml::Controls::Image();
-					pic->Source = ref new Windows::UI::Xaml::Media::Imaging::BitmapImage(
-						ref new Windows::Foundation::Uri(
-							ref new Platform::String(media.preview_url.data())
-						)
-					);
-					pic->Width = 50;
-					pic->Height = 50;
-					images->Append(pic);
+					images->Append(ref new Attachment(media));
 				}
 				return images;
 			}

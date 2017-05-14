@@ -77,7 +77,22 @@
         <ToggleSwitch x:Name="toggle" Visibility="{Binding Sensitive}" OffContent="" OnContent=""
                                   IsOn="{Binding NotSensitive}" Grid.Row="2" Grid.Column="2" />
         <ContentControl Content="{Binding reb}" Visibility="{Binding IsOn, ElementName=toggle}" Grid.Row="3" Grid.Column="1" />
-        <GridView x:Name="imageViewer" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Visibility="{Binding HasMedia}" ItemsSource="{Binding Medias}" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Disabled" />
+        <GridView x:Name="imageViewer" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Visibility="{Binding HasMedia}" ItemsSource="{Binding Medias}" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Disabled" >
+            <GridView.ItemTemplate>
+                <DataTemplate x:DataType="local:Attachment">
+                    <Grid>
+                        <Button>
+                            <Button.Flyout>
+                                <Flyout Placement="Full">
+                                    <Image Source="{x:Bind Url}" MaxWidth="500" MaxHeight="500" />
+                                </Flyout>
+                            </Button.Flyout>
+                            <Image Source="{x:Bind PreviewUrl}" Width="50" Height="50" />
+                        </Button>
+                    </Grid>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
         <Button Command="{Binding Favourite}"  Grid.Column="1" Grid.Row="5" Background="{x:Null}">
             <SymbolIcon x:Name="favicon" />
         </Button>
