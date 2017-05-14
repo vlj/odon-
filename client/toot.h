@@ -213,20 +213,29 @@ namespace client
 			}
 		}
 
+		property bool HasMedia
+		{
+			bool get()
+			{
+				return !status.media_attachments.empty();
+			}
+		}
+
 		property Windows::Foundation::Collections::IObservableVector<Windows::UI::Xaml::Controls::Image^>^ Medias
 		{
 			Windows::Foundation::Collections::IObservableVector<Windows::UI::Xaml::Controls::Image^>^ get()
 			{
 				auto images = ref new Platform::Collections::Vector<Windows::UI::Xaml::Controls::Image^>();
-				for (int i = 0; i < 4; i++)
+				for (const auto& media : status.media_attachments)
 				{
 					Windows::UI::Xaml::Controls::Image^ pic = ref new Windows::UI::Xaml::Controls::Image();
-					pic->Source = ref new Windows::UI::Xaml::Media::Imaging::BitmapImage(ref new Windows::Foundation::Uri(
-						ref new Platform::String(status._account.avatar.data())
-					)
+					pic->Source = ref new Windows::UI::Xaml::Media::Imaging::BitmapImage(
+						ref new Windows::Foundation::Uri(
+							ref new Platform::String(media.preview_url.data())
+						)
 					);
-					pic->Width = 100;
-					pic->Height = 100;
+					pic->Width = 50;
+					pic->Height = 50;
 					images->Append(pic);
 				}
 				return images;

@@ -46,6 +46,42 @@ namespace Mastodon
 		}
 	};
 
+	enum class attachement_type
+	{
+		image,
+		video,
+		gifv
+	};
+
+	struct Attachment
+	{
+		int id;
+		attachement_type type;
+		utility::string_t url;
+		std::optional<utility::string_t> remote_url;
+		utility::string_t preview_url;
+		std::optional<utility::string_t> text_url;
+
+		Attachment() = default;
+
+		Attachment(const web::json::object& object)
+		{
+			id = object.at(U("id")).as_integer();
+			type = [](const auto& tp)
+			{
+				if (tp == U("image")) return attachement_type::image;
+				if (tp == U("video")) return attachement_type::video;
+				if (tp == U("gifv")) return attachement_type::gifv;
+			}(object.at(U("type")).as_string());
+			url = object.at(U("url")).as_string();
+			if (!object.at(U("remote_url")).is_null())
+				remote_url = object.at(U("remote_url")).as_string();
+			preview_url = object.at(U("preview_url")).as_string();
+			if (!object.at(U("text_url")).is_null())
+				text_url = object.at(U("text_url")).as_string();
+		}
+	};
+
 	enum class visibility_level
 	{
 		public_level,
@@ -65,7 +101,7 @@ namespace Mastodon
 		std::optional<utility::string_t> spoiler_text;
 		visibility_level visibility;
 		utility::string_t application;
-		std::vector<utility::string_t> media_attachments;
+		std::vector<Attachment> media_attachments;
 		std::vector<utility::string_t> mentions;
 		std::vector<utility::string_t> tags;
 		utility::string_t uri;
@@ -80,10 +116,26 @@ namespace Mastodon
 		Status(const web::json::value& v) : _account(v.at(U("account")).as_object())
 		{
 			id = v.at(U("id")).as_integer();
+			uri = v.at(U("uri")).as_string();
+			url = v.at(U("url")).as_string();
 			//in_reply_to_id = v.at(U("in_reply_to_id")).as_string();
 			//in_reply_to_account_id = v.at(U("in_reply_to_account_id")).as_string();
-			created_at = v.at(U("created_at")).as_string();
 //			sensitive = v.at(U("sensitive")).as_bool();
+			//application = v.at(U("application")).as_string();
+			if (v.has_field(U("reblog")) && !v.at(U("reblog")).is_null())
+			{
+				reblog = std::make_shared<Status>(v.at(U("reblog")));
+			}
+			content = v.at(U("content")).as_string();
+			created_at = v.at(U("created_at")).as_string();
+			reblogs_count = v.at(U("reblogs_count")).as_integer();
+			favourites_count = v.at(U("favourites_count")).as_integer();
+			reblogged = (!v.has_field(U("reblogged")) || v.at(U("reblogged")).is_null()) ?
+				false :
+				v.at(U("reblogged")).as_bool();
+			favourited = (!v.has_field(U("favourited")) || v.at(U("favourited")).is_null()) ?
+				false :
+				v.at(U("favourited")).as_bool();
 			const auto& spoiler = v.at(U("spoiler_text"));
 			if (!spoiler.is_null())
 				spoiler_text = spoiler.as_string();
@@ -99,22 +151,14 @@ namespace Mastodon
 					return visibility_level::direct_level;
 				throw;
 			}(v.at(U("visibility")).as_string());
-			//application = v.at(U("application")).as_string();
-			uri = v.at(U("uri")).as_string();
-			content = v.at(U("content")).as_string();
-			url = v.at(U("url")).as_string();
-			reblogs_count = v.at(U("reblogs_count")).as_integer();
-			favourites_count = v.at(U("favourites_count")).as_integer();
-			if (v.has_field(U("reblog")) && !v.at(U("reblog")).is_null())
-			{
-				reblog = std::make_shared<Status>(v.at(U("reblog")));
-			}
-			favourited = (!v.has_field(U("favourited")) || v.at(U("favourited")).is_null()) ?
-				false :
-				v.at(U("favourited")).as_bool();
-			reblogged = (!v.has_field(U("reblogged")) || v.at(U("reblogged")).is_null()) ?
-				false :
-				v.at(U("reblogged")).as_bool();
+			media_attachments = [](const auto& v) {
+				std::vector<Attachment> result;
+				for (const auto& att : v)
+				{
+					result.emplace_back(att.as_object());
+				}
+				return result;
+			} (v.at(U("media_attachments")).as_array());
 		}
 
 		Status() = default;

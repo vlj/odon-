@@ -77,7 +77,7 @@
         <ToggleSwitch x:Name="toggle" Visibility="{Binding Sensitive}" OffContent="" OnContent=""
                                   IsOn="{Binding NotSensitive}" Grid.Row="2" Grid.Column="2" />
         <ContentControl Content="{Binding reb}" Visibility="{Binding IsOn, ElementName=toggle}" Grid.Row="3" Grid.Column="1" />
-        <GridView x:Name="imageViewer" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding Medias}" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Disabled" />
+        <GridView x:Name="imageViewer" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Visibility="{Binding HasMedia}" ItemsSource="{Binding Medias}" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Disabled" />
         <Button Command="{Binding Favourite}"  Grid.Column="1" Grid.Row="5" Background="{x:Null}">
             <SymbolIcon x:Name="favicon" />
         </Button>
