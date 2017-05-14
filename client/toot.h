@@ -213,6 +213,26 @@ namespace client
 			}
 		}
 
+		property Windows::Foundation::Collections::IObservableVector<Windows::UI::Xaml::Controls::Image^>^ Medias
+		{
+			Windows::Foundation::Collections::IObservableVector<Windows::UI::Xaml::Controls::Image^>^ get()
+			{
+				auto images = ref new Platform::Collections::Vector<Windows::UI::Xaml::Controls::Image^>();
+				for (int i = 0; i < 4; i++)
+				{
+					Windows::UI::Xaml::Controls::Image^ pic = ref new Windows::UI::Xaml::Controls::Image();
+					pic->Source = ref new Windows::UI::Xaml::Media::Imaging::BitmapImage(ref new Windows::Foundation::Uri(
+						ref new Platform::String(status._account.avatar.data())
+					)
+					);
+					pic->Width = 100;
+					pic->Height = 100;
+					images->Append(pic);
+				}
+				return images;
+			}
+		}
+
 		property Windows::UI::Xaml::Input::ICommand^ Favourite
 		{
 			Windows::UI::Xaml::Input::ICommand^ get()
@@ -228,6 +248,7 @@ namespace client
 				return _reblog;
 			}
 		}
+
 	};
 
 	[Windows::UI::Xaml::Data::Bindable]
