@@ -8,11 +8,26 @@
     mc:Ignorable="d">
 
 
-    <ListView x:Name="ProfileToot" ItemsSource="{Binding}" IsItemClickEnabled="True" ItemClick="ProfileToot_ItemClick" >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <ListView x:Name="ProfileToot" ItemsSource="{Binding}" IsItemClickEnabled="True" ItemClick="ProfileToot_ItemClick" >
+        <ListView.ItemContainerTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </ListView.ItemContainerTransitions>
         <ListView.ItemTemplate>
             <DataTemplate>
                 <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" />
             </DataTemplate>
         </ListView.ItemTemplate>
     </ListView>
+        <local:TootWriter x:Name="tootWriter" Grid.Row="1" />
+    </Grid>
 </Page>

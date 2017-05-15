@@ -55,7 +55,7 @@ Windows::UI::Xaml::Controls::RichTextBlock ^ client::Toot::convertParagraph(cons
 	{
 		auto tmp = elements->Item(i);
 		auto nd = tmp->NodeName;
-		if (nd != "p")
+		if (nd != "p" && nd != "#text")
 			throw;
 		const auto& parse = [&](Windows::Data::Xml::Dom::XmlNodeList^ _nodes, Windows::UI::Xaml::Documents::InlineCollection^ _container)
 		{

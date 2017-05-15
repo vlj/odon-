@@ -20,6 +20,11 @@
                 <ListView x:Name="timelinesection" ItemsSource="{Binding Source={StaticResource tootlist}, Path=TimelineToots}"
                       ItemClick="ListView_ItemClick" IsItemClickEnabled="True" HorizontalContentAlignment="Stretch"
                       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                    <ListView.ItemContainerTransitions>
+                        <TransitionCollection>
+                            <EntranceThemeTransition />
+                        </TransitionCollection>
+                    </ListView.ItemContainerTransitions>
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="local:Toot">
                             <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" />
@@ -33,6 +38,11 @@
             <ListView x:Name="mentionsection" ItemsSource="{Binding Source={StaticResource tootlist}, Path=Notifications}"
                       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                       HorizontalContentAlignment="Stretch" >
+                <ListView.ItemContainerTransitions>
+                    <TransitionCollection>
+                        <EntranceThemeTransition/>
+                    </TransitionCollection>
+                </ListView.ItemContainerTransitions>
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="local:Notification">
                         <UserControl>

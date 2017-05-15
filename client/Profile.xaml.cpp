@@ -32,11 +32,12 @@ void client::Profile::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEve
 	const auto& profile_id = (int)(e->Parameter);
 
 	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-	Mastodon::InstanceConnexion{
+	const auto& instance = Mastodon::InstanceConnexion{
 		dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
 		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
 		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data()
-	}.statuses(profile_id)
+	};
+	instance.statuses(profile_id)
 		.then([this](const std::vector<Mastodon::Status>& v) {
 			auto list = ref new Platform::Collections::Vector<Toot^>();
 			for (const auto& toot : v) {
@@ -47,6 +48,17 @@ void client::Profile::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEve
 				ProfileToot->DataContext = list;
 			}));
 		});
+
+	instance.account(profile_id)
+		.then([this](const Mastodon::Account& account) {
+
+		Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
+			ref new Windows::UI::Core::DispatchedHandler([this, account]()
+		{
+			const auto& answerTag = U("@") + account.username;
+			tootWriter->Text = ref new Platform::String(answerTag.data());
+		}));
+	});
 }
 
 void client::Profile::ProfileToot_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e)

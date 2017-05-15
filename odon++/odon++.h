@@ -290,13 +290,6 @@ namespace Mastodon
 	public:
 		const utility::string_t base_url{ U("https://oc.todon.fr") };
 
-		auto account(const size_t& id)
-		{
-			auto&& uri = web::uri_builder{ U("/api/v1/accounts/") + std::to_wstring(id) };
-			return __api_request(uri, web::http::methods::GET)
-				.then([](const web::json::value& v) { return Account{ v.as_object() }; });
-		}
-
 		auto account_search(const utility::string_t& search_term) const
 		{
 			auto&& uri = web::uri_builder(U("/api/v1/search"));
@@ -500,6 +493,13 @@ namespace Mastodon
 				{
 					return v[U("access_token")].as_string();
 				});
+		}
+
+		auto account(const size_t& id) const
+		{
+			auto&& uri = web::uri_builder{ U("/api/v1/accounts/") + std::to_wstring(id) };
+			return __api_request(uri, web::http::methods::GET)
+				.then([](const web::json::value& v) { return Account{ v.as_object() }; });
 		}
 
 		/**
