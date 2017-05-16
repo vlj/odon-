@@ -9,10 +9,12 @@
 
 namespace client
 {
+
 	[Windows::Foundation::Metadata::WebHostHidden]
 	public ref class TootWriter sealed
 	{
 		int _answerTo = 0;
+		Platform::Collections::Vector<Windows::Storage::Streams::IBuffer^>^ medias;
 	public:
 		TootWriter();
 
@@ -39,5 +41,6 @@ namespace client
 
 	private:
 		void AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
+		void Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
 	};
 }

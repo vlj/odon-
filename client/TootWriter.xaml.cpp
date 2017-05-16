@@ -25,28 +25,105 @@ using namespace Windows::UI::Xaml::Navigation;
 TootWriter::TootWriter()
 {
 	InitializeComponent();
+	medias = ref new Platform::Collections::Vector<Windows::Storage::Streams::IBuffer^>();
 }
 
 void TootWriter::AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
 	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
-		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
-		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
+	auto access_token = dynamic_cast<String^>(localSettings->Values->Lookup("access_token"));
+
 	NewToot->IsReadOnly = true;
+
+	auto client = ref new Windows::Web::Http::HttpClient();
+	auto uri = ref new Windows::Foundation::Uri("https://oc.todon.fr/api/v1/media");
+
+	auto media_ids = std::make_shared<std::vector<int>>();
+	const auto& callback = [access_token, client, uri, media_ids](Windows::Storage::Streams::IBuffer^ bufferOp) {
+		auto httpBuffer = ref new Windows::Web::Http::HttpBufferContent(bufferOp);
+		auto upload_pic = ref new Windows::Web::Http::HttpMultipartFormDataContent();
+		upload_pic->Add(httpBuffer, "file", "somefile.jpg");
+		upload_pic->Add(ref new Windows::Web::Http::HttpStringContent(access_token), "access_token");
+		return Concurrency::create_task(client->PostAsync(uri, upload_pic))
+			.then([](Windows::Web::Http::HttpResponseMessage^ response)
+			{
+				return response->Content->ReadAsStringAsync();
+			})
+			.then([=](Platform::String^ str)
+			{
+				auto jsonValue = Windows::Data::Json::JsonObject::Parse(str);
+				auto n = jsonValue->GetNamedNumber(ref new Platform::String(U("id")));
+				media_ids->push_back(n);
+			});
+		};
 
 	auto modelView = static_cast<TootListModelView^>(Application::Current->Resources->Lookup("tootlist"));
 	const auto& answer_to = (_answerTo == 0) ? std::optional<int>{} : std::make_optional(_answerTo);
-	instance.status_post(NewToot->Text->Data(),
-		Mastodon::visibility_level::public_level,
-		answer_to,
-		std::optional<utility::string_t>{}, false)
-		.then([this, modelView](const web::json::value&) {
+	const auto& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
+		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
+		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
+
+	const auto& continuation = [&]() {
+		if (medias->Size == 0)
+		{
+			return instance.status_post(NewToot->Text->Data(),
+				Mastodon::visibility_level::public_level,
+				std::vector<int>{},
+				answer_to,
+				std::optional<utility::string_t>{}, false);
+		}
+
+		auto&& chain = callback(medias->GetAt(0));
+		for (int i = 1; i < medias->Size; i++)
+		{
+			chain = chain.then([=]() { return callback(medias->GetAt(i)); });
+		}
+		return chain.then([=](const auto&) {
+			return instance.status_post(NewToot->Text->Data(),
+				Mastodon::visibility_level::public_level,
+				*media_ids,
+				answer_to,
+				std::optional<utility::string_t>{}, false);
+		});
+	}();
+
+	continuation.then([=](const Concurrency::task<web::json::value>& t) {
+		try
+		{
+			t.get();
+		}
+		catch (...)
+		{
+
+		}
 		Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
-			ref new Windows::UI::Core::DispatchedHandler([this]() {
+			ref new Windows::UI::Core::DispatchedHandler([this, modelView]() {
 			NewToot->IsReadOnly = false;
 			NewToot->Text = ref new Platform::String();
+			modelView->refresh();
 		}));
-		modelView->refresh();
 	});
+}
+
+
+void client::TootWriter::Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
+	Windows::Storage::Pickers::FileOpenPicker^ openPicker = ref new Windows::Storage::Pickers::FileOpenPicker();
+	openPicker->ViewMode = Windows::Storage::Pickers::PickerViewMode::Thumbnail;
+	openPicker->SuggestedStartLocation = Windows::Storage::Pickers::PickerLocationId::PicturesLibrary;
+	openPicker->FileTypeFilter->Append(".jpg");
+	openPicker->FileTypeFilter->Append(".jpeg");
+	openPicker->FileTypeFilter->Append(".png");
+
+	// TODO: What happens if buffer is not ready when onclick ?
+	Concurrency::create_task(openPicker->PickSingleFileAsync()).then([](Windows::Storage::StorageFile^ file)
+	{
+		if (file == nullptr)
+			throw std::exception();
+		return Windows::Storage::FileIO::ReadBufferAsync(file);
+	}).then([this](Windows::Storage::Streams::IBuffer^ bufferOp)
+	{
+		medias->Append(bufferOp);
+	});
+
 }

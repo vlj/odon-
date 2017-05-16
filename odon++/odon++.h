@@ -563,13 +563,19 @@ namespace Mastodon
 
 		auto status_post(const utility::string_t& content,
 			const visibility_level& visibility,
+			const std::vector<int>& media_ids,
 			const std::optional<int> &answer_to,
 			const std::optional<utility::string_t>& spoiler_text,
-			const bool& sensitive)
+			const bool& sensitive) const
 		{
 			auto&& uri = web::uri_builder{ U("/api/v1/statuses") };
 			uri.append_query(U("status"), content);
 			uri.append_query(U("sensitive"), sensitive ? U("True") : U("False"));
+			for (const auto& id : media_ids)
+			{
+				uri.append_query(U("media_ids[]"), id);
+			}
+
 			if (answer_to.has_value())
 			{
 				uri.append_query(U("in_reply_to_id"), answer_to.value());

@@ -113,9 +113,9 @@ void client::TootListModelView::refresh()
 			toastVisual += LR"(</binding>
 				</visual></toast>)";
 			auto xml = ref new Windows::Data::Xml::Dom::XmlDocument();
-			xml->LoadXml(ref new Platform::String(toastVisual.data()));
-			auto notif = ref new Windows::UI::Notifications::ToastNotification(xml);
-			toastNotifier->Show(notif);
+			//xml->LoadXml(ref new Platform::String(toastVisual.data()));
+			//auto notif = ref new Windows::UI::Notifications::ToastNotification(xml);
+			//toastNotifier->Show(notif);
 		}
 		Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
 			Windows::UI::Core::CoreDispatcherPriority::Low,

@@ -30,5 +30,8 @@
         <Button Click="AppBarButton_Click" Background="{x:Null}" BorderBrush="{x:Null}" Grid.Column="1" HorizontalAlignment="Center" >
             <SymbolIcon Symbol="Send" />
         </Button>
+        <Button Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center" Background="{x:Null}" Click="Button_Click">
+            <SymbolIcon Symbol="Download"  />
+        </Button>
     </Grid>
 </UserControl>
