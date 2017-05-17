@@ -66,9 +66,9 @@ namespace client
 			}
 		}
 
-		property size_t id
+		property int id
 		{
-			size_t get()
+			int get()
 			{
 				return _account.id;
 			}

@@ -69,7 +69,7 @@ void client::TootListModelView::refresh()
 		auto toastNotifier = Windows::UI::Notifications::ToastNotificationManager::CreateToastNotifier();
 		auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 		auto ptrvalue = localSettings->Values->Lookup("last_notification");
-		const auto& lastId = ptrvalue == nullptr ? 0 : (unsigned int)ptrvalue;
+		const auto& lastId = ptrvalue == nullptr ? 0 : (int)ptrvalue;
 		auto newLastId = lastId;
 		for (const auto& n : v)
 		{
@@ -77,7 +77,7 @@ void client::TootListModelView::refresh()
 
 			if (n.id <= lastId)
 				continue;
-			newLastId = std::max<unsigned int>(newLastId, n.id);
+			newLastId = std::max<int>(newLastId, n.id);
 			const auto& removeHtml = [](const auto& content)
 			{
 				return std::wstring{
@@ -113,9 +113,9 @@ void client::TootListModelView::refresh()
 			toastVisual += LR"(</binding>
 				</visual></toast>)";
 			auto xml = ref new Windows::Data::Xml::Dom::XmlDocument();
-			//xml->LoadXml(ref new Platform::String(toastVisual.data()));
-			//auto notif = ref new Windows::UI::Notifications::ToastNotification(xml);
-			//toastNotifier->Show(notif);
+			xml->LoadXml(ref new Platform::String(toastVisual.data()));
+			auto notif = ref new Windows::UI::Notifications::ToastNotification(xml);
+			toastNotifier->Show(notif);
 		}
 		Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
 			Windows::UI::Core::CoreDispatcherPriority::Low,

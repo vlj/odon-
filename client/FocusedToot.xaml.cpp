@@ -30,7 +30,7 @@ FocusedToot::FocusedToot()
 
 void FocusedToot::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs ^ e)
 {
-	auto id = (size_t)(e->Parameter);
+	auto id = (int)(e->Parameter);
 	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
 		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),

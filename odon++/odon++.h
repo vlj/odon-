@@ -16,13 +16,13 @@ namespace Mastodon
 		utility::string_t avatar;
 		utility::string_t created_at;
 		utility::string_t display_name;
-		size_t followers_count;
-		size_t following_count;
+		int followers_count;
+		int following_count;
 		utility::string_t header;
-		size_t id;
+		int id;
 		bool locked;
 		utility::string_t note;
-		size_t statuses_count;
+		int statuses_count;
 		utility::string_t url;
 		utility::string_t username;
 
@@ -94,7 +94,7 @@ namespace Mastodon
 	struct Status
 	{
 		Account _account;
-		size_t id;
+		int id;
 		std::optional<utility::string_t> in_reply_to_id;
 		utility::string_t created_at;
 		std::optional<utility::string_t> in_reply_to_account_id;
@@ -108,8 +108,8 @@ namespace Mastodon
 		utility::string_t uri;
 		utility::string_t content;
 		utility::string_t url;
-		size_t reblogs_count;
-		size_t favourites_count;
+		int reblogs_count;
+		int favourites_count;
 		std::shared_ptr<Status> reblog;
 		bool favourited;
 		bool reblogged;
@@ -189,7 +189,7 @@ namespace Mastodon
 
 	struct Relationship
 	{
-		size_t id;
+		int id;
 		bool following;
 		bool followed_by;
 		bool blocking;
@@ -219,7 +219,7 @@ namespace Mastodon
 
 	struct Notifications
 	{
-		size_t id;
+		int id;
 		NotificationType type;
 		utility::string_t created_at;
 		Account account;
@@ -332,7 +332,7 @@ namespace Mastodon
 			});
 		}
 
-		auto status(const size_t& id) const
+		auto status(const int& id) const
 		{
 			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) };
 			return __api_request(uri, web::http::methods::GET)
@@ -341,7 +341,7 @@ namespace Mastodon
 			});
 		}
 
-		auto status_context(const size_t& id) const
+		auto status_context(const int& id) const
 		{
 			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) + U("/context")};
 			return __api_request(uri, web::http::methods::GET)
@@ -366,7 +366,7 @@ namespace Mastodon
 			return InstanceAnonymous::__api_request(uri, method);
 		}
 
-		auto __relationship_update(const size_t& id, const utility::string_t& key) const
+		auto __relationship_update(const int& id, const utility::string_t& key) const
 		{
 			web::uri_builder uri(U("/api/v1/accounts/"));
 			uri.append_path(std::to_wstring(id));
@@ -375,7 +375,7 @@ namespace Mastodon
 				.then([](const web::json::value& v) { return Relationship{ v }; });
 		}
 
-		auto __status_interaction(const size_t& id, const utility::string_t& operation) const
+		auto __status_interaction(const int& id, const utility::string_t& operation) const
 		{
 			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) + operation };
 			return __api_request(uri, web::http::methods::POST)
@@ -495,7 +495,7 @@ namespace Mastodon
 				});
 		}
 
-		auto account(const size_t& id) const
+		auto account(const int& id) const
 		{
 			auto&& uri = web::uri_builder{ U("/api/v1/accounts/") + std::to_wstring(id) };
 			return __api_request(uri, web::http::methods::GET)
@@ -537,7 +537,7 @@ namespace Mastodon
 		*/
 
 
-		auto statuses(const size_t& id) const
+		auto statuses(const int& id) const
 		{
 			auto&& uri = web::uri_builder{ U("/api/v1/accounts/") + std::to_wstring(id) + U("/statuses") };
 			return __api_request(uri, web::http::methods::GET)
@@ -615,22 +615,22 @@ namespace Mastodon
 				});
 		}
 
-		auto status_favourite(const size_t& id) const
+		auto status_favourite(const int& id) const
 		{
 			return __status_interaction(id, U("/favourite"));
 		}
 
-		auto status_unfavourite(const size_t& id) const
+		auto status_unfavourite(const int& id) const
 		{
 			return __status_interaction(id, U("/unfavourite"));
 		}
 
-		auto status_reblog(const size_t& id) const
+		auto status_reblog(const int& id) const
 		{
 			return __status_interaction(id, U("/reblog"));
 		}
 
-		auto status_unreblog(const size_t& id) const
+		auto status_unreblog(const int& id) const
 		{
 			return __status_interaction(id, U("/unreblog"));
 		}
@@ -640,32 +640,32 @@ namespace Mastodon
 
 		}
 
-		auto account_follow(const size_t& id)
+		auto account_follow(const int& id)
 		{
 			return __relationship_update(id, U("follow"));
 		}
 
-		auto account_unfollow(const size_t& id)
+		auto account_unfollow(const int& id)
 		{
 			return __relationship_update(id, U("unfollow"));
 		}
 
-		auto account_block(const size_t& id)
+		auto account_block(const int& id)
 		{
 			return __relationship_update(id, U("block"));
 		}
 
-		auto account_unblock(const size_t& id)
+		auto account_unblock(const int& id)
 		{
 			return __relationship_update(id, U("unblock"));
 		}
 
-		auto account_mute(const size_t& id)
+		auto account_mute(const int& id)
 		{
 			return __relationship_update(id, U("mute"));
 		}
 
-		auto account_unmute(const size_t& id)
+		auto account_unmute(const int& id)
 		{
 			return __relationship_update(id, U("unmute"));
 		}
