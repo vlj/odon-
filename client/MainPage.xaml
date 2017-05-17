@@ -7,14 +7,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Page.Transitions>
-        <TransitionCollection>
-            <NavigationThemeTransition>
-                <DrillInNavigationTransitionInfo />
-            </NavigationThemeTransition>
-        </TransitionCollection>
-    </Page.Transitions>
-
     <SplitView x:Name="Pane" DisplayMode="CompactOverlay" CompactPaneLength="68">
         <SplitView.Pane>
             <StackPanel>
@@ -39,7 +31,7 @@
             </StackPanel>
         </SplitView.Pane>
         <Frame x:Name="contentFrame">
-            <Page />
+            <Page/>
         </Frame>
     </SplitView>
 </Page>

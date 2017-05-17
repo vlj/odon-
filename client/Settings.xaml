@@ -7,17 +7,33 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Transitions>
+        <TransitionCollection>
+            <NavigationThemeTransition>
+                <DrillInNavigationTransitionInfo />
+            </NavigationThemeTransition>
+        </TransitionCollection>
+    </Page.Transitions>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" BorderBrush="Black" BorderThickness="1" Padding="10" Margin="0,0,-1,0">
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-
+        <TextBox Header="Display name" />
+        <Button Grid.Column="1" Margin="10,0" HorizontalAlignment="Center" VerticalAlignment="Bottom">Update</Button>
+        <TextBox Header="Biography" Grid.Row="1" />
+        <Button Grid.Column="1" Grid.Row="1" Margin="10,0" VerticalAlignment="Bottom">Update</Button>
+        <TextBlock Text="Avatar" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Center" />
+        <Button Grid.Column="1" Grid.Row="2" Margin="10">Upload</Button>
+        <TextBlock Text="Header" Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Center" />
+        <Button Grid.Column="3" Grid.Row="3" Margin="10">Upload</Button>
     </Grid>
 </Page>
