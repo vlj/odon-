@@ -25,7 +25,6 @@ using namespace Windows::UI::Xaml::Navigation;
 TootWriter::TootWriter()
 {
 	InitializeComponent();
-	medias = ref new Platform::Collections::Vector<Windows::Storage::Streams::IBuffer^>();
 }
 
 void TootWriter::AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
@@ -39,23 +38,27 @@ void TootWriter::AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml:
 	auto uri = ref new Windows::Foundation::Uri("https://oc.todon.fr/api/v1/media");
 
 	auto media_ids = std::make_shared<std::vector<int>>();
-	const auto& callback = [access_token, client, uri, media_ids](Windows::Storage::Streams::IBuffer^ bufferOp) {
-		auto httpBuffer = ref new Windows::Web::Http::HttpBufferContent(bufferOp);
-		auto upload_pic = ref new Windows::Web::Http::HttpMultipartFormDataContent();
-		upload_pic->Add(httpBuffer, "file", "somefile.jpg");
-		upload_pic->Add(ref new Windows::Web::Http::HttpStringContent(access_token), "access_token");
-		return Concurrency::create_task(client->PostAsync(uri, upload_pic))
-			.then([](Windows::Web::Http::HttpResponseMessage^ response)
-			{
-				return response->Content->ReadAsStringAsync();
-			})
-			.then([=](Platform::String^ str)
-			{
-				auto jsonValue = Windows::Data::Json::JsonObject::Parse(str);
-				auto n = jsonValue->GetNamedNumber(ref new Platform::String(U("id")));
-				media_ids->push_back(n);
-			});
-		};
+	const auto& callback =
+		[access_token, client, uri, media_ids](const Concurrency::task<Windows::Storage::Streams::IBuffer^>& buffer_task)
+	{
+		return buffer_task.then([access_token, client, uri, media_ids](Windows::Storage::Streams::IBuffer^ bufferOp)
+		{
+			auto httpBuffer = ref new Windows::Web::Http::HttpBufferContent(bufferOp);
+			auto upload_pic = ref new Windows::Web::Http::HttpMultipartFormDataContent();
+			upload_pic->Add(httpBuffer, "file", "somefile.jpg");
+			upload_pic->Add(ref new Windows::Web::Http::HttpStringContent(access_token), "access_token");
+			return client->PostAsync(uri, upload_pic);
+		}).then([](Windows::Web::Http::HttpResponseMessage^ response)
+		{
+			return response->Content->ReadAsStringAsync();
+		})
+		.then([=](Platform::String^ str)
+		{
+			auto jsonValue = Windows::Data::Json::JsonObject::Parse(str);
+			auto n = jsonValue->GetNamedNumber(ref new Platform::String(U("id")));
+			media_ids->push_back(n);
+		});
+	};
 
 	auto modelView = static_cast<TootListModelView^>(Application::Current->Resources->Lookup("tootlist"));
 	const auto& answer_to = (_answerTo == 0) ? std::optional<int>{} : std::make_optional(_answerTo);
@@ -64,7 +67,7 @@ void TootWriter::AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml:
 		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
 
 	const auto& continuation = [&]() {
-		if (medias->Size == 0)
+		if (medias.empty())
 		{
 			return instance.status_post(NewToot->Text->Data(),
 				Mastodon::visibility_level::public_level,
@@ -73,10 +76,10 @@ void TootWriter::AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml:
 				std::optional<utility::string_t>{}, false);
 		}
 
-		auto&& chain = callback(medias->GetAt(0));
-		for (int i = 1; i < medias->Size; i++)
+		auto&& chain = callback(medias[0]);
+		for (int i = 1; i < medias.size(); i++)
 		{
-			chain = chain.then([=]() { return callback(medias->GetAt(i)); });
+			chain = chain.then([=]() { return callback(medias[i]); });
 		}
 		return chain.then([=](const auto&) {
 			return instance.status_post(NewToot->Text->Data(),
@@ -116,14 +119,13 @@ void client::TootWriter::Button_Click(Platform::Object^ sender, Windows::UI::Xam
 	openPicker->FileTypeFilter->Append(".png");
 
 	// TODO: What happens if buffer is not ready when onclick ?
-	Concurrency::create_task(openPicker->PickSingleFileAsync()).then([](Windows::Storage::StorageFile^ file)
-	{
-		if (file == nullptr)
-			throw std::exception();
-		return Windows::Storage::FileIO::ReadBufferAsync(file);
-	}).then([this](Windows::Storage::Streams::IBuffer^ bufferOp)
-	{
-		medias->Append(bufferOp);
-	});
 
+	auto&& to_append = Concurrency::create_task(openPicker->PickSingleFileAsync())
+		.then([](Windows::Storage::StorageFile^ file)
+		{
+			if (file == nullptr)
+				throw std::exception();
+			return Windows::Storage::FileIO::ReadBufferAsync(file);
+		});
+	medias.push_back(to_append);
 }

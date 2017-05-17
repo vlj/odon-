@@ -125,5 +125,8 @@
     <Page Include="Login.xaml">
       <Filter>Pages</Filter>
     </Page>
+    <Page Include="Settings.xaml">
+      <Filter>Pages</Filter>
+    </Page>
   </ItemGroup>
 </Project>

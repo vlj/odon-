@@ -14,7 +14,7 @@ namespace client
 	public ref class TootWriter sealed
 	{
 		int _answerTo = 0;
-		Platform::Collections::Vector<Windows::Storage::Streams::IBuffer^>^ medias;
+		std::vector<Concurrency::task<Windows::Storage::Streams::IBuffer^> > medias;
 	public:
 		TootWriter();
 
