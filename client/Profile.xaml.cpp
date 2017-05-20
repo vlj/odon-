@@ -55,10 +55,13 @@ void client::Profile::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEve
 		Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
 			ref new Windows::UI::Core::DispatchedHandler([this, account]()
 		{
-			header->Source = ref new Windows::UI::Xaml::Media::Imaging::BitmapImage(
+			headerbrush->ImageSource = ref new Windows::UI::Xaml::Media::Imaging::BitmapImage(
 				ref new Windows::Foundation::Uri(ref new Platform::String(account.header.data()))
 			);
-
+			avatar->Source = ref new Windows::UI::Xaml::Media::Imaging::BitmapImage(
+				ref new Windows::Foundation::Uri(ref new Platform::String(account.avatar.data()))
+			);
+			note->Text = ref new Platform::String(account.note.data());
 			const auto& answerTag = U("@") + account.username;
 			tootWriter->Text = ref new Platform::String(answerTag.data());
 		}));
