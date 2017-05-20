@@ -120,7 +120,9 @@ void client::TootWriter::Button_Click(Platform::Object^ sender, Windows::UI::Xam
 
 	// TODO: What happens if buffer is not ready when onclick ?
 
-	auto&& to_append = Concurrency::create_task(openPicker->PickSingleFileAsync())
+	const auto& get_file = Concurrency::create_task(openPicker->PickSingleFileAsync());
+
+	auto&& to_append = get_file
 		.then([](Windows::Storage::StorageFile^ file)
 		{
 			if (file == nullptr)
@@ -128,4 +130,34 @@ void client::TootWriter::Button_Click(Platform::Object^ sender, Windows::UI::Xam
 			return Windows::Storage::FileIO::ReadBufferAsync(file);
 		});
 	medias.push_back(to_append);
+	get_file.then([](Windows::Storage::StorageFile^ file)
+	{
+		return file->OpenAsync(Windows::Storage::FileAccessMode::Read);
+	})
+	.then([](Windows::Storage::Streams::IRandomAccessStream^ stream) {
+		return Windows::Graphics::Imaging::BitmapDecoder::CreateAsync(stream);
+	})
+	.then([](Windows::Graphics::Imaging::BitmapDecoder^ decoder) {
+		return decoder->GetSoftwareBitmapAsync();
+	})
+	.then([this](Windows::Graphics::Imaging::SoftwareBitmap^ bitmap) {
+		if (bitmap->BitmapPixelFormat != Windows::Graphics::Imaging::BitmapPixelFormat::Bgra8 ||
+			bitmap->BitmapAlphaMode == Windows::Graphics::Imaging::BitmapAlphaMode::Straight)
+		{
+			bitmap = Windows::Graphics::Imaging::SoftwareBitmap::Convert(bitmap,
+				Windows::Graphics::Imaging::BitmapPixelFormat::Bgra8,
+				Windows::Graphics::Imaging::BitmapAlphaMode::Premultiplied);
+		}
+		auto src = ref new Windows::UI::Xaml::Media::Imaging::SoftwareBitmapSource();
+		src->SetBitmapAsync(bitmap);
+		auto img = ref new Windows::UI::Xaml::Controls::Image();
+		img->Width = 40;
+		img->Height = 40;
+		img->Source = src;
+		Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
+			ref new Windows::UI::Core::DispatchedHandler([this, img]() {
+			mediasToSend->Items->Append(img);
+		}));
+
+	});
 }
