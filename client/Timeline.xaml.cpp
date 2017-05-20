@@ -39,3 +39,10 @@ void client::Timeline::tootviewer_OnImagePressed(client::tootviewer^ c, default:
 {
 	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(Profile::typeid), Id);
 }
+
+
+void client::Timeline::mentionsection_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e)
+{
+	auto notification = dynamic_cast<Notification^>(e->ClickedItem);
+	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(FocusedToot::typeid), notification->toot->Id);
+}

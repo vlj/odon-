@@ -22,5 +22,6 @@ namespace client
 	private:
 		void ListView_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e);
 		void tootviewer_OnImagePressed(client::tootviewer^ c, default::int32 Id);
+		void mentionsection_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e);
 	};
 }

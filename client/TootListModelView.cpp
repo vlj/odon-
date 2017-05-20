@@ -89,7 +89,7 @@ void client::TootListModelView::refresh()
 			std::wstring&& toastVisual =
 				LR"(<toast launch="app-defined-string"><visual>
 				<binding template='ToastGeneric'>
-				<text>Ducktodon</text>
+				<text>Mastoduck</text>
 				<text>)";
 			if (n.type == Mastodon::NotificationType::favourite)
 			{

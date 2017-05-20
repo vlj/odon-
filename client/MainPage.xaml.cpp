@@ -68,7 +68,6 @@ void client::MainPage::onBack(Platform::Object ^ sender, Windows::UI::Core::Back
 	}
 }
 
-
 void client::MainPage::AppBarButton_Click_3(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
 	auto modelView = static_cast<TootListModelView^>(Application::Current->Resources->Lookup("tootlist"));

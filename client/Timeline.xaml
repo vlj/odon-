@@ -50,7 +50,9 @@
         <PivotItem Header="Mentions">
             <ListView x:Name="mentionsection" ItemsSource="{Binding Source={StaticResource tootlist}, Path=Notifications}"
                       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                      HorizontalContentAlignment="Stretch" >
+                      HorizontalContentAlignment="Stretch"
+                      IsItemClickEnabled="True" ItemClick="mentionsection_ItemClick"
+                      >
                 <ListView.ItemContainerTransitions>
                     <TransitionCollection>
                         <EntranceThemeTransition/>
@@ -60,6 +62,13 @@
                     <DataTemplate x:DataType="local:Notification">
                         <UserControl>
                             <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup>
                                         <VisualState>
@@ -110,7 +119,7 @@
                                     <TextBlock x:Name="fav" Text=" has faved" />
                                     <TextBlock x:Name="reblog" Text=" has reblogged" />
                                 </StackPanel>
-                                <local:tootviewer x:Name="tootcontent" DataContext="{x:Bind toot}" />
+                                <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" Grid.Row="1" x:Name="tootcontent" DataContext="{x:Bind toot}" />
                             </Grid>
                         </UserControl>
                     </DataTemplate>
