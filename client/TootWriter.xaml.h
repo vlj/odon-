@@ -39,6 +39,14 @@ namespace client
 			}
 		}
 
+		property Platform::String^ Spoiler
+		{
+			void set(Platform::String^ v)
+			{
+				SpoilerText->Text = v;
+			}
+		}
+
 	private:
 		void AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
 		void Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);

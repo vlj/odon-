@@ -170,9 +170,9 @@ namespace client
 			}
 		}
 
-		property size_t Id
+		property int Id
 		{
-			size_t get()
+			int get()
 			{
 				return status.id;
 			}

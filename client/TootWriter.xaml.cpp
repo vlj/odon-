@@ -33,6 +33,7 @@ void TootWriter::AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml:
 	auto access_token = dynamic_cast<String^>(localSettings->Values->Lookup("access_token"));
 
 	NewToot->IsReadOnly = true;
+	SpoilerText->IsReadOnly = true;
 
 	auto client = ref new Windows::Web::Http::HttpClient();
 	auto uri = ref new Windows::Foundation::Uri("https://oc.todon.fr/api/v1/media");
@@ -67,13 +68,16 @@ void TootWriter::AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml:
 		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
 
 	const auto& continuation = [&]() {
+		const auto& spoiler_text = SpoilerText->Text->IsEmpty() ?
+			std::make_optional<utility::string_t>() :
+			SpoilerText->Text->Data();
 		if (medias.empty())
 		{
 			return instance.status_post(NewToot->Text->Data(),
 				Mastodon::visibility_level::public_level,
 				std::vector<int>{},
 				answer_to,
-				std::optional<utility::string_t>{}, false);
+				spoiler_text, sensitive->IsOn);
 		}
 
 		auto&& chain = callback(medias[0]);
@@ -86,7 +90,7 @@ void TootWriter::AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml:
 				Mastodon::visibility_level::public_level,
 				*media_ids,
 				answer_to,
-				std::optional<utility::string_t>{}, false);
+				spoiler_text, sensitive->IsOn);
 		});
 	}();
 
@@ -101,6 +105,7 @@ void TootWriter::AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml:
 		}
 		Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
 			ref new Windows::UI::Core::DispatchedHandler([this, modelView]() {
+			SpoilerText->IsReadOnly = false;
 			NewToot->IsReadOnly = false;
 			NewToot->Text = ref new Platform::String();
 			modelView->refresh();

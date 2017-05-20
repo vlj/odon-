@@ -30,7 +30,7 @@ FocusedToot::FocusedToot()
 
 void FocusedToot::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs ^ e)
 {
-	auto id = (int)(e->Parameter);
+	auto id = static_cast<int>(e->Parameter);
 	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
 		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
@@ -43,6 +43,8 @@ void FocusedToot::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventAr
 		{
 			tootpresenter->DataContext = ref new Toot(status);
 			writer->AnswerTo = status.id;
+			if (status.spoiler_text.has_value())
+				writer->Spoiler = ref new Platform::String(status.spoiler_text.value().data());
 			const auto& answerTag = U("@") + status._account.username;
 			writer->Text = ref new Platform::String(answerTag.data());
 		}));

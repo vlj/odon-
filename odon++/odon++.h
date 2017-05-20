@@ -568,7 +568,7 @@ namespace Mastodon
 		{
 			auto&& uri = web::uri_builder{ U("/api/v1/statuses") };
 			uri.append_query(U("status"), content);
-			uri.append_query(U("sensitive"), sensitive ? U("True") : U("False"));
+			uri.append_query(U("sensitive"), sensitive ? U("true") : U("false"));
 			for (const auto& id : media_ids)
 			{
 				uri.append_query(U("media_ids[]"), id);

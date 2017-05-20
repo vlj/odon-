@@ -14,14 +14,15 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto" />
             <RowDefinition />
+            <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-
-        <TextBox x:Name="NewToot" Grid.RowSpan="3" TextWrapping="Wrap" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
+        <TextBox x:Name="SpoilerText" Header="SpoilerText" />
+        <TextBox x:Name="NewToot" Header="Content" Grid.Row ="1"  Grid.RowSpan="3" TextWrapping="Wrap" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
         <ComboBox x:Name="comboBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="120" Grid.Row="1" Grid.Column="1">
             <ComboBoxItem Content="Direct"/>
             <ComboBoxItem Content="Private"/>
@@ -31,7 +32,7 @@
         <Button Click="AppBarButton_Click" Background="{x:Null}" BorderBrush="{x:Null}" Grid.Column="1" HorizontalAlignment="Center" >
             <SymbolIcon Symbol="Send" />
         </Button>
-        <ListView x:Name="mediasToSend" Grid.Row="3" Grid.ColumnSpan="2" >
+        <ListView x:Name="mediasToSend" Grid.Row="4" Grid.ColumnSpan="2" >
             <ListView.ItemContainerTransitions>
                 <TransitionCollection>
                     <AddDeleteThemeTransition/>
@@ -43,7 +44,8 @@
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
         </ListView>
-        <Button Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center" Background="{x:Null}" Click="Button_Click">
+        <ToggleSwitch x:Name="sensitive" Grid.Column="1" Grid.Row="2" OnContent="Yes" OffContent="No" IsOn="True" Header="Is Media Sensitive ?" HorizontalAlignment="Center" HorizontalContentAlignment="Center" />
+        <Button Grid.Column="1" Grid.Row="3" HorizontalAlignment="Center" Background="{x:Null}" Click="Button_Click">
             <SymbolIcon Symbol="Download" />
         </Button>
     </Grid>
