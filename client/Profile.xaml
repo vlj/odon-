@@ -17,13 +17,15 @@
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <ListView x:Name="ProfileToot" ItemsSource="{Binding}" IsItemClickEnabled="True" ItemClick="ProfileToot_ItemClick" >
+        <Image x:Name="header" />
+        <ListView Grid.Row="1" x:Name="ProfileToot" ItemsSource="{Binding}" IsItemClickEnabled="True" ItemClick="ProfileToot_ItemClick" >
         <ListView.ItemContainerTransitions>
             <TransitionCollection>
                 <EntranceThemeTransition/>
@@ -35,6 +37,6 @@
             </DataTemplate>
         </ListView.ItemTemplate>
     </ListView>
-        <local:TootWriter x:Name="tootWriter" Grid.Row="1" />
+        <local:TootWriter x:Name="tootWriter" Grid.Row="2" />
     </Grid>
 </Page>
