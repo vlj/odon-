@@ -515,19 +515,17 @@ namespace Mastodon
 					return uri; });
 		}
 
-		auto update_account(const utility::string_t& display_name, const utility::string_t& image_as_base64) const
+		/**
+		 Note : updating image not supported
+		*/
+		auto update_account(const std::optional<utility::string_t>& display_name, const std::optional<utility::string_t>& note) const
 		{
 			auto&& uri = web::uri_builder{ U("/api/v1/accounts/update_credentials") };
-			uri.append_query(U("access_token"), access_token);
-			web::http::client::http_client client(base_url);
-			return client.request(web::http::methods::PATCH, uri.to_string(), U("data:image/png;base64,") + image_as_base64)
-				.then([=](const web::http::http_response& response)
-			{
-				const auto& status = response.status_code();
-				printf("Received response status code:%u\n", response.status_code());
-
-				return;
-			});
+			if (display_name.has_value())
+				uri.append_query(U("display_name"), display_name.value());
+			if (note.has_value())
+				uri.append_query(U("note"), note.value());
+			return __api_request(uri, web::http::methods::PATCH);
 		}
 
 		/**
