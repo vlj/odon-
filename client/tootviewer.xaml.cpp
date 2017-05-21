@@ -30,6 +30,5 @@ tootviewer::tootviewer()
 void client::tootviewer::Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
 	auto toot = dynamic_cast<Toot^>(DataContext);
-	auto id = static_cast<int>(toot->Author->id);
-	OnImagePressed(this, id);
+	OnImagePressed(this, toot->Author);
 }

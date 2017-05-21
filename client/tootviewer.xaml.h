@@ -11,7 +11,7 @@
 namespace client
 {
 	ref class tootviewer;
-	public delegate void ImagePressed(tootviewer^ c, int Id);
+	public delegate void ImagePressed(tootviewer^ c, Account^ account);
 
 
 	[Windows::Foundation::Metadata::WebHostHidden]

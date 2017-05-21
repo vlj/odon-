@@ -72,9 +72,9 @@ void FocusedToot::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventAr
 }
 
 
-void client::FocusedToot::tootviewer_OnImagePressed(client::tootviewer^ c, default::int32 Id)
+void client::FocusedToot::tootviewer_OnImagePressed(client::tootviewer^ c, Account^ acc)
 {
-	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(Profile::typeid), Id);
+	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(Profile::typeid), acc);
 }
 
 

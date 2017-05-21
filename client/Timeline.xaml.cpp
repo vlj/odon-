@@ -35,9 +35,9 @@ void client::Timeline::ListView_ItemClick(Platform::Object^ sender, Windows::UI:
 }
 
 
-void client::Timeline::tootviewer_OnImagePressed(client::tootviewer^ c, default::int32 Id)
+void client::Timeline::tootviewer_OnImagePressed(client::tootviewer^ c, Account^ acc)
 {
-	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(Profile::typeid), Id);
+	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(Profile::typeid), acc);
 }
 
 

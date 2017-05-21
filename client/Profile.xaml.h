@@ -20,8 +20,9 @@ namespace client
 		Profile();
 
 		virtual void OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs^ e) override;
+
 	private:
 		void ProfileToot_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e);
-		void tootviewer_OnImagePressed(client::tootviewer^ c, default::int32 Id);
+		void tootviewer_OnImagePressed(client::tootviewer^ c, Account^ acc);
 	};
 }

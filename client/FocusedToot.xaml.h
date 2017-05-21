@@ -21,7 +21,7 @@ namespace client
 
 		virtual void OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs ^ e) override;
 	private:
-		void tootviewer_OnImagePressed(client::tootviewer^ c, default::int32 Id);
+		void tootviewer_OnImagePressed(client::tootviewer^ c, Account^ acc);
 		void ancestorslist_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e);
 	};
 }

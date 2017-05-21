@@ -29,7 +29,20 @@ Profile::Profile()
 
 void client::Profile::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs ^ e)
 {
-	const auto& profile_id = (int)(e->Parameter);
+	auto profile = dynamic_cast<Account^>(e->Parameter);
+
+	DataContext = profile;
+
+/*	headerbrush->ImageSource = ref new Windows::UI::Xaml::Media::Imaging::BitmapImage(
+		ref new Windows::Foundation::Uri(ref new Platform::String(account.header.data()))
+	);
+	avatar->Source = ref new Windows::UI::Xaml::Media::Imaging::BitmapImage(
+		ref new Windows::Foundation::Uri(ref new Platform::String(account.avatar.data()))
+	);
+	note->Text = ref new Platform::String(account.note.data());
+	const auto& answerTag = U("@") + account.username;
+	tootWriter->Text = ref new Platform::String(answerTag.data());*/
+
 
 	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 	const auto& instance = Mastodon::InstanceConnexion{
@@ -37,7 +50,7 @@ void client::Profile::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEve
 		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
 		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data()
 	};
-	instance.statuses(profile_id)
+	instance.statuses(profile->id)
 		.then([this](const std::vector<Mastodon::Status>& v) {
 			auto list = ref new Platform::Collections::Vector<Toot^>();
 			for (const auto& toot : v) {
@@ -48,24 +61,6 @@ void client::Profile::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEve
 				ProfileToot->DataContext = list;
 			}));
 		});
-
-	instance.account(profile_id)
-		.then([this](const Mastodon::Account& account) {
-
-		Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
-			ref new Windows::UI::Core::DispatchedHandler([this, account]()
-		{
-			headerbrush->ImageSource = ref new Windows::UI::Xaml::Media::Imaging::BitmapImage(
-				ref new Windows::Foundation::Uri(ref new Platform::String(account.header.data()))
-			);
-			avatar->Source = ref new Windows::UI::Xaml::Media::Imaging::BitmapImage(
-				ref new Windows::Foundation::Uri(ref new Platform::String(account.avatar.data()))
-			);
-			note->Text = ref new Platform::String(account.note.data());
-			const auto& answerTag = U("@") + account.username;
-			tootWriter->Text = ref new Platform::String(answerTag.data());
-		}));
-	});
 }
 
 void client::Profile::ProfileToot_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e)
@@ -75,7 +70,7 @@ void client::Profile::ProfileToot_ItemClick(Platform::Object^ sender, Windows::U
 }
 
 
-void client::Profile::tootviewer_OnImagePressed(client::tootviewer^ c, default::int32 Id)
+void client::Profile::tootviewer_OnImagePressed(client::tootviewer^ c, Account^ acc)
 {
-	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(Profile::typeid), Id);
+	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(Profile::typeid), acc);
 }

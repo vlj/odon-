@@ -22,6 +22,12 @@ namespace client
 		}
 	};
 
+	public ref class Util sealed
+	{
+	internal:
+		static Windows::UI::Xaml::Controls::RichTextBlock^ convertParagraph(const utility::string_t& str);
+	};
+
 	[Windows::UI::Xaml::Data::Bindable]
 	public ref class Account sealed
 	{
@@ -58,6 +64,14 @@ namespace client
 			}
 		}
 
+		property Platform::String^ Header
+		{
+			Platform::String^ get()
+			{
+				return ref new Platform::String(_account.header.data());
+			}
+		}
+
 		property Windows::UI::Xaml::Input::ICommand^ OnClick
 		{
 			Windows::UI::Xaml::Input::ICommand^ get()
@@ -71,6 +85,14 @@ namespace client
 			int get()
 			{
 				return _account.id;
+			}
+		}
+
+		property Windows::UI::Xaml::Controls::RichTextBlock^ Note
+		{
+			Windows::UI::Xaml::Controls::RichTextBlock^ get()
+			{
+				return Util::convertParagraph(_account.note);
 			}
 		}
 	};
@@ -143,8 +165,6 @@ namespace client
 		bool _sensitive;
 		Delegate^ _favourite;
 		Delegate^ _reblog;
-
-		static Windows::UI::Xaml::Controls::RichTextBlock^ convertParagraph(const utility::string_t& str);
 	public:
 		property bool Sensitive
 		{
@@ -230,7 +250,7 @@ namespace client
 		{
 			Windows::UI::Xaml::Controls::RichTextBlock^ get()
 			{
-				return convertParagraph(status.reblog.get() == nullptr ? status.content : status.reblog->content);
+				return Util::convertParagraph(status.reblog.get() == nullptr ? status.content : status.reblog->content);
 			}
 		}
 

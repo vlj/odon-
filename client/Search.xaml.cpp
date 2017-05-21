@@ -49,5 +49,5 @@ void client::Search::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEven
 void client::Search::displaySearch_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e)
 {
 	auto acc = dynamic_cast<Account^>(e->ClickedItem);
-	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(Profile::typeid), acc->id);
+	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(Profile::typeid), acc);
 }

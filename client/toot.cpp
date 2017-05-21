@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <regex>
 
-Windows::UI::Xaml::Controls::RichTextBlock ^ client::Toot::convertParagraph(const utility::string_t & str)
+Windows::UI::Xaml::Controls::RichTextBlock ^ client::Util::convertParagraph(const utility::string_t & str)
 {
 	static const auto& parse_impl = [](Windows::Data::Xml::Dom::XmlNodeList^ nodes, auto container, const auto& parse_ref) -> void
 	{
@@ -66,4 +66,5 @@ Windows::UI::Xaml::Controls::RichTextBlock ^ client::Toot::convertParagraph(cons
 		ctrl->Blocks->Append(paragraph);
 	}
 	return ctrl;
+
 }
