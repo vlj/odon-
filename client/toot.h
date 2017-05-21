@@ -283,6 +283,22 @@ namespace client
 			}
 		}
 
+		property Platform::String^ FavoriteCount
+		{
+			Platform::String^ get()
+			{
+				return ref new Platform::String(std::to_wstring(status.favourites_count).data());
+			}
+		}
+
+		property Platform::String^ RebloggedCount
+		{
+			Platform::String^ get()
+			{
+				return ref new Platform::String(std::to_wstring(status.reblogs_count).data());
+			}
+		}
+
 		property Windows::UI::Xaml::Input::ICommand^ Favourite
 		{
 			Windows::UI::Xaml::Input::ICommand^ get()

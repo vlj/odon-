@@ -79,7 +79,7 @@
             </Paragraph>
         </RichTextBlock>
         <ToggleSwitch x:Name="toggle" Visibility="{Binding Sensitive}" Header="Show" OnContent="" OffContent=""
-                                  IsOn="{Binding NotSensitive}" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" HorizontalContentAlignment="Right" HorizontalAlignment="Right" MinWidth="0" />
+                                  IsOn="{Binding NotSensitive}" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" HorizontalAlignment="Center" MinWidth="0" />
         <ContentControl Content="{Binding reb}" Visibility="{Binding IsOn, ElementName=toggle}" Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="1" HorizontalContentAlignment="Stretch" />
         <GridView x:Name="imageViewer" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Visibility="{Binding HasMedia}" ItemsSource="{Binding Medias}" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" >
             <GridView.ItemTemplate>
@@ -98,10 +98,16 @@
             </GridView.ItemTemplate>
         </GridView>
         <Button Command="{Binding Favourite}"  Grid.Column="2" Grid.Row="5" Background="{x:Null}">
-            <SymbolIcon x:Name="favicon" />
+            <StackPanel Orientation="Horizontal">
+                <SymbolIcon x:Name="favicon" />
+                <TextBlock Text="{Binding FavoriteCount}" />
+            </StackPanel>
         </Button>
         <Button Command="{Binding Reblog}" Background="{x:Null}" Grid.Column="3" Grid.Row="5">
-            <SymbolIcon x:Name="reblog" />
+            <StackPanel Orientation="Horizontal">
+                <SymbolIcon x:Name="reblog" />
+                <TextBlock Text="{Binding RebloggedCount}" />
+            </StackPanel>
         </Button>
     </Grid>
 </UserControl>
