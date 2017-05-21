@@ -8,7 +8,10 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
-    <Grid BorderBrush="Black" BorderThickness="1">
+    <Grid BorderThickness="0,1">
+        <Grid.BorderBrush>
+            <SolidColorBrush Color="{ThemeResource SystemBaseLowColor}"/>
+        </Grid.BorderBrush>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
                 <VisualState x:Name="faved">
@@ -76,8 +79,8 @@
         </RichTextBlock>
         <ToggleSwitch x:Name="toggle" Visibility="{Binding Sensitive}" OffContent="" OnContent=""
                                   IsOn="{Binding NotSensitive}" Grid.Row="2" Grid.Column="2" />
-        <ContentControl Content="{Binding reb}" Visibility="{Binding IsOn, ElementName=toggle}" Grid.Row="3" Grid.Column="1" />
-        <GridView x:Name="imageViewer" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Visibility="{Binding HasMedia}" ItemsSource="{Binding Medias}" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Disabled" >
+        <ContentControl Content="{Binding reb}" Visibility="{Binding IsOn, ElementName=toggle}" Grid.Row="3" Grid.Column="1" HorizontalContentAlignment="Stretch" />
+        <GridView x:Name="imageViewer" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Visibility="{Binding HasMedia}" ItemsSource="{Binding Medias}" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" >
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="local:Attachment">
                     <Grid>

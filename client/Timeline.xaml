@@ -33,6 +33,11 @@
                 <ListView x:Name="timelinesection" ItemsSource="{Binding Source={StaticResource tootlist}, Path=TimelineToots}"
                       ItemClick="ListView_ItemClick" IsItemClickEnabled="True" HorizontalContentAlignment="Stretch"
                       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
                     <ListView.ItemContainerTransitions>
                         <TransitionCollection>
                             <EntranceThemeTransition />
