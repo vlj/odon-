@@ -44,11 +44,6 @@ MainPage::MainPage()
 		Windows::UI::Core::AppViewBackButtonVisibility::Visible;
 }
 
-void client::MainPage::paneOpened_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
-{
-	Pane->IsPaneOpen = !this->Pane->IsPaneOpen;
-}
-
 void client::MainPage::Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
 	contentFrame->Navigate(Windows::UI::Xaml::Interop::TypeName(Search::typeid), SearchBox->Text);
@@ -72,4 +67,10 @@ void client::MainPage::AppBarButton_Click_3(Platform::Object^ sender, Windows::U
 {
 	auto modelView = static_cast<TootListModelView^>(Application::Current->Resources->Lookup("tootlist"));
 	modelView->refresh();
+}
+
+
+void client::MainPage::AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
+	contentFrame->Navigate(Windows::UI::Xaml::Interop::TypeName(Timeline::typeid), nullptr);
 }
