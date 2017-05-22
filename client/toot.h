@@ -127,7 +127,7 @@ namespace client
 	};
 
 	[Windows::UI::Xaml::Data::Bindable]
-	public ref class Toot sealed
+	public ref class Toot sealed : public Windows::UI::Xaml::Data::INotifyPropertyChanged
 	{
 	internal:
 		Mastodon::Status status;
@@ -137,15 +137,29 @@ namespace client
 			_account = ref new Account(status._account);
 			if (_status.spoiler_text)
 				_spoiler_text = ref new Platform::String(_status.spoiler_text->c_str());
+
+			const auto& DispatcherPropertyChanged = ref new Windows::UI::Core::DispatchedHandler([this]() {
+				PropertyChanged(this, ref new Windows::UI::Xaml::Data::PropertyChangedEventArgs(""));
+			});
+
 			_favourite = ref new Delegate([=]() {
 				auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 				auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_id"))->Data(),
 					dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_secret"))->Data(),
 					dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data());
-				if (status.favourited)
-					instance.status_unfavourite(status.id);
-				else
-					instance.status_favourite(status.id);
+
+				const auto& httprequest = [&]() {
+					if (status.favourited)
+						return instance.status_unfavourite(status.id);
+					return instance.status_favourite(status.id);
+				};
+
+				httprequest().then([&](const Mastodon::Status& newStatus) {
+					status.favourited = newStatus.favourited;
+					status.favourites_count = newStatus.favourites_count;
+					Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
+						Windows::UI::Core::CoreDispatcherPriority::Low, DispatcherPropertyChanged);
+				});
 			});
 
 			_reblog = ref new Delegate([=]() {
@@ -153,10 +167,19 @@ namespace client
 				auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_id"))->Data(),
 					dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_secret"))->Data(),
 					dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data());
-				if (status.reblogged)
-					instance.status_unreblog(status.id);
-				else
-					instance.status_reblog(status.id);
+
+				const auto& httprequest = [&]() {
+					if (status.reblogged)
+						return instance.status_unreblog(status.id);
+					return instance.status_reblog(status.id);
+				};
+
+				httprequest().then([&](const Mastodon::Status& newStatus) {
+					status.reblogged = newStatus.reblogged;
+					status.reblogs_count = newStatus.reblogs_count;
+					Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
+						Windows::UI::Core::CoreDispatcherPriority::Low, DispatcherPropertyChanged);
+				});
 			});
 		}
 	private:
@@ -166,6 +189,8 @@ namespace client
 		Delegate^ _favourite;
 		Delegate^ _reblog;
 	public:
+		virtual event Windows::UI::Xaml::Data::PropertyChangedEventHandler ^ PropertyChanged;
+
 		property bool Sensitive
 		{
 			bool get()
