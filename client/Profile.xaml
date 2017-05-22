@@ -24,16 +24,39 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Border>
-            <Border.Background>
-                <ImageBrush x:Name="headerbrush" Stretch="UniformToFill" ImageSource="{Binding Header}"/>
-            </Border.Background>
+
+        <StackPanel>
             <StackPanel>
-                <Image x:Name="avatar" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10" Source="{Binding Avatar}" />
-                <ContentControl Content="{Binding Note}" />
+                <StackPanel.Background>
+                    <ImageBrush x:Name="headerbrush" Stretch="UniformToFill" ImageSource="{Binding Header}"/>
+                </StackPanel.Background>
+                <Image Grid.Column="1" x:Name="avatar" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10" Source="{Binding Avatar}" />
+                <ContentControl Grid.ColumnSpan="3" Grid.Row="1" Content="{Binding Note}" />
             </StackPanel>
-        </Border>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Toots" Grid.Column="0" HorizontalAlignment="Center"/>
+                <TextBlock Text="Followers" Grid.Column="1" HorizontalAlignment="Center"/>
+                <TextBlock Text="Followings" Grid.Column="2" HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding TootCount}" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding FollowerCount}" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding FollowingCount}" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Center"/>
+            </Grid>
+        </StackPanel>
         <ListView Grid.Row="1" x:Name="ProfileToot" ItemsSource="{Binding}" IsItemClickEnabled="True" ItemClick="ProfileToot_ItemClick" >
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.ItemContainerTransitions>
                 <TransitionCollection>
                     <EntranceThemeTransition/>

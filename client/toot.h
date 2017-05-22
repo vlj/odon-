@@ -48,6 +48,30 @@ namespace client
 
 		Delegate^ _onClick;
 	public:
+		property Platform::String^ TootCount
+		{
+			Platform::String^ get()
+			{
+				return ref new Platform::String(std::to_wstring(_account.statuses_count).data());
+			}
+		}
+
+		property Platform::String^ FollowerCount
+		{
+			Platform::String^ get()
+			{
+				return ref new Platform::String(std::to_wstring(_account.followers_count).data());
+			}
+		}
+
+		property Platform::String^ FollowingCount
+		{
+			Platform::String^ get()
+			{
+				return ref new Platform::String(std::to_wstring(_account.following_count).data());
+			}
+		}
+
 		property Platform::String^ Username
 		{
 			Platform::String^ get()
