@@ -24,23 +24,46 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Orientation="Vertical">
-            <ListView x:Name="ancestorslist" ItemsSource="{Binding}" IsItemClickEnabled="True" ItemClick="ancestorslist_ItemClick">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" />
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            <local:tootviewer x:Name="tootpresenter" />
-            <ListView x:Name="descendantslist" ItemsSource="{Binding}" IsItemClickEnabled="True" ItemClick="ancestorslist_ItemClick">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" />
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </StackPanel>
+        <ScrollViewer>
+            <StackPanel Orientation="Vertical">
+                <ListView x:Name="ancestorslist" ItemsSource="{Binding}" IsItemClickEnabled="True" ItemClick="ancestorslist_ItemClick">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border>
+                                <Border.Background>
+                                    <SolidColorBrush Color="{ThemeResource SystemBaseMediumColor}" />
+                                </Border.Background>
+                                <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" />
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <local:tootviewer x:Name="tootpresenter" OnImagePressed="tootviewer_OnImagePressed" />
+                <ListView x:Name="descendantslist" ItemsSource="{Binding}" IsItemClickEnabled="True" ItemClick="ancestorslist_ItemClick">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border>
+                                <Border.Background>
+                                    <SolidColorBrush Color="{ThemeResource SystemBaseMediumColor}" />
+                                </Border.Background>
+                                <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" />
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackPanel>
+        </ScrollViewer>
         <local:TootWriter x:Name="writer" Grid.Row="1" />
     </Grid>
 </Page>

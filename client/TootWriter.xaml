@@ -9,7 +9,13 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid>
+    <Grid BorderThickness="3">
+        <Grid.BorderBrush>
+            <SolidColorBrush Color="{ThemeResource SystemBaseMediumColor}"/>
+        </Grid.BorderBrush>
+        <Grid.Background>
+            <SolidColorBrush Color="{ThemeResource SystemBaseLowColor}"/>
+        </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto" />

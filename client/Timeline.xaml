@@ -22,7 +22,7 @@
                     <EntranceThemeTransition/>
                 </TransitionCollection>
             </PivotItem.Transitions>
-            <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition Height="Auto"/>
@@ -58,6 +58,11 @@
                       HorizontalContentAlignment="Stretch"
                       IsItemClickEnabled="True" ItemClick="mentionsection_ItemClick"
                       >
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
                 <ListView.ItemContainerTransitions>
                     <TransitionCollection>
                         <EntranceThemeTransition/>
