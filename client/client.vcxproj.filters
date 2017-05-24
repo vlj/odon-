@@ -8,9 +8,6 @@
       <UniqueIdentifier>7d0eefee-7b94-4bc3-b157-e544818f427a</UniqueIdentifier>
       <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png</Extensions>
     </Filter>
-    <Filter Include="Localization">
-      <UniqueIdentifier>{ad284d66-e776-4da3-a56e-7bee6903ce4a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Data">
       <UniqueIdentifier>{6598653a-60eb-4e7e-b997-8234c4608eaf}</UniqueIdentifier>
     </Filter>
@@ -22,6 +19,15 @@
     </Filter>
     <Filter Include="Pages">
       <UniqueIdentifier>{cdcd78a8-fcf6-4a46-9c55-0ff0b1d71194}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Strings">
+      <UniqueIdentifier>{f1ccb437-737d-4422-997d-a164233de1e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Strings\en-US">
+      <UniqueIdentifier>{a35127d2-e32b-4cc5-9774-dd7a8f20510f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Strings\fr-FR">
+      <UniqueIdentifier>{497153c6-a5da-4c04-930b-ca295d8272fd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -46,6 +52,7 @@
       <Filter>ModelView</Filter>
     </ClCompile>
     <ClCompile Include="TootWriter.xaml.cpp" />
+    <ClCompile Include="Settings.xaml.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -67,6 +74,7 @@
       <Filter>ModelView</Filter>
     </ClInclude>
     <ClInclude Include="TootWriter.xaml.h" />
+    <ClInclude Include="Settings.xaml.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\LockScreenLogo.scale-200.png">
@@ -128,5 +136,13 @@
     <Page Include="Settings.xaml">
       <Filter>Pages</Filter>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Include="Strings\en-US\Resources.resw">
+      <Filter>Strings\en-US</Filter>
+    </PRIResource>
+    <PRIResource Include="Strings\fr-FS\Resources.resw">
+      <Filter>Strings\fr-FR</Filter>
+    </PRIResource>
   </ItemGroup>
 </Project>

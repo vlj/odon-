@@ -43,9 +43,9 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="Toots" Grid.Column="0" HorizontalAlignment="Center"/>
-                <TextBlock Text="Followers" Grid.Column="1" HorizontalAlignment="Center"/>
-                <TextBlock Text="Followings" Grid.Column="2" HorizontalAlignment="Center"/>
+                <TextBlock x:Uid="TootsCount" Grid.Column="0" HorizontalAlignment="Center"/>
+                <TextBlock x:Uid="FollowersCount" Grid.Column="1" HorizontalAlignment="Center"/>
+                <TextBlock x:Uid="FollowingsCount" Grid.Column="2" HorizontalAlignment="Center"/>
                 <TextBlock Text="{Binding TootCount}" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center"/>
                 <TextBlock Text="{Binding FollowerCount}" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center"/>
                 <TextBlock Text="{Binding FollowingCount}" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Center"/>

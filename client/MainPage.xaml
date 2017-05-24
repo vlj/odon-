@@ -10,8 +10,8 @@
     <SplitView x:Name="Pane" DisplayMode="CompactOverlay" CompactPaneLength="68">
         <SplitView.Pane>
             <StackPanel>
-                <AppBarButton Icon="Home"  Click="AppBarButton_Click"/>
-                <AppBarButton Icon="Find" Label="Find" AllowFocusOnInteraction="True">
+                <AppBarButton Icon="Home" x:Uid="HomeButton" Click="AppBarButton_Click"/>
+                <AppBarButton Icon="Find" x:Uid="FindButton" Label="Find" AllowFocusOnInteraction="True">
                     <AppBarButton.Flyout>
                         <Flyout>
                             <StackPanel Orientation="Horizontal">
@@ -21,8 +21,8 @@
                         </Flyout>
                     </AppBarButton.Flyout>
                 </AppBarButton>
-                <AppBarButton Icon="Refresh" Label="Refresh" HorizontalAlignment="Left" Click="AppBarButton_Click_3" />
-                <AppBarButton Icon="Contact" Label="Preferences" Click="AppBarButton_Click_2"/>
+                <AppBarButton Icon="Refresh" x:Uid="RefreshButton" HorizontalAlignment="Left" Click="AppBarButton_Click_3" />
+                <AppBarButton Icon="Contact" x:Uid="SettingsButton" Click="AppBarButton_Click_2"/>
             </StackPanel>
         </SplitView.Pane>
         <Frame x:Name="contentFrame">
