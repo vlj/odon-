@@ -31,7 +31,7 @@ Timeline::Timeline()
 void client::Timeline::ListView_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e)
 {
 	auto toot = dynamic_cast<Toot^>(e->ClickedItem);
-	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(FocusedToot::typeid), toot->Id);
+	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(FocusedToot::typeid), toot);
 }
 
 
@@ -44,5 +44,5 @@ void client::Timeline::tootviewer_OnImagePressed(client::tootviewer^ c, Account^
 void client::Timeline::mentionsection_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e)
 {
 	auto notification = dynamic_cast<Notification^>(e->ClickedItem);
-	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(FocusedToot::typeid), notification->toot->Id);
+	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(FocusedToot::typeid), notification->toot);
 }

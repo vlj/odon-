@@ -24,6 +24,5 @@ namespace client
 		void tootviewer_OnImagePressed(client::tootviewer^ c, Account^ acc);
 		void ancestorslist_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e);
 		concurrency::task<void> getConversation(const int& id);
-		concurrency::task<void> getAnswerDatas(const int& id);
 	};
 }

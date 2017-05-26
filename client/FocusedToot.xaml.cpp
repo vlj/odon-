@@ -30,9 +30,12 @@ FocusedToot::FocusedToot()
 
 void FocusedToot::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs ^ e)
 {
-	const auto& id = static_cast<int>(e->Parameter);
-	getAnswerDatas(id);
-	getConversation(id);
+	auto toot = static_cast<Toot^>(e->Parameter);
+	getConversation(toot->Id);
+	tootpresenter->DataContext = toot;
+	writer->AnswerTo = toot->Id;
+	writer->Spoiler = toot->SpoilerText;
+	writer->Text = U("@") + toot->Author->Username;
 }
 
 
@@ -45,7 +48,7 @@ void client::FocusedToot::tootviewer_OnImagePressed(client::tootviewer^ c, Accou
 void client::FocusedToot::ancestorslist_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e)
 {
 	auto toot = dynamic_cast<Toot^>(e->ClickedItem);
-	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(FocusedToot::typeid), toot->Id);
+	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(FocusedToot::typeid), toot);
 }
 
 concurrency::task<void> client::FocusedToot::getConversation(const int& id)
@@ -66,20 +69,5 @@ concurrency::task<void> client::FocusedToot::getConversation(const int& id)
 	{
 		ancestorslist->DataContext = ancestors;
 		descendantslist->DataContext = descendants;
-	}));
-}
-
-concurrency::task<void> client::FocusedToot::getAnswerDatas(const int& id)
-{
-	const auto& status = co_await Util::getInstance().status(id);
-	Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
-		ref new Windows::UI::Core::DispatchedHandler([this, status]()
-	{
-		tootpresenter->DataContext = ref new Toot(status);
-		writer->AnswerTo = status.id;
-		if (status.spoiler_text.has_value())
-			writer->Spoiler = ref new Platform::String(status.spoiler_text.value().data());
-		const auto& answerTag = U("@") + status._account.username;
-		writer->Text = ref new Platform::String(answerTag.data());
 	}));
 }
