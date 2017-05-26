@@ -50,7 +50,8 @@ namespace Mastodon
 	{
 		image,
 		video,
-		gifv
+		gifv,
+		unknow,
 	};
 
 	struct Attachment
@@ -72,7 +73,7 @@ namespace Mastodon
 				if (tp == U("image")) return attachement_type::image;
 				if (tp == U("video")) return attachement_type::video;
 				if (tp == U("gifv")) return attachement_type::gifv;
-				throw;
+				return attachement_type::unknow;
 			}(object.at(U("type")).as_string());
 			url = object.at(U("url")).as_string();
 			if (!object.at(U("remote_url")).is_null())
@@ -95,9 +96,9 @@ namespace Mastodon
 	{
 		Account _account;
 		int id;
-		std::optional<utility::string_t> in_reply_to_id;
+		std::optional<int> in_reply_to_id;
 		utility::string_t created_at;
-		std::optional<utility::string_t> in_reply_to_account_id;
+		std::optional<int> in_reply_to_account_id;
 		bool sensitive;
 		std::optional<utility::string_t> spoiler_text;
 		visibility_level visibility;
@@ -119,8 +120,10 @@ namespace Mastodon
 			id = v.at(U("id")).as_integer();
 			uri = v.at(U("uri")).as_string();
 			url = v.at(U("url")).as_string();
-			//in_reply_to_id = v.at(U("in_reply_to_id")).as_string();
-			//in_reply_to_account_id = v.at(U("in_reply_to_account_id")).as_string();
+			if (v.has_field(U("in_reply_to_id")) && !v.at(U("in_reply_to_id")).is_null())
+				in_reply_to_id = v.at(U("in_reply_to_id")).as_integer();
+			if (U("in_reply_to_account_id") && !v.at(U("in_reply_to_account_id")).is_null())
+				in_reply_to_account_id = v.at(U("in_reply_to_account_id")).as_integer();
 //			sensitive = v.at(U("sensitive")).as_bool();
 			//application = v.at(U("application")).as_string();
 			if (v.has_field(U("reblog")) && !v.at(U("reblog")).is_null())
