@@ -36,5 +36,8 @@ namespace client
 	private:
 		Platform::Collections::Vector<Toot^>^ _timeline;
 		Platform::Collections::Vector<Notification^>^ _notifications;
+
+		concurrency::task<void> fetchStatuses(const Mastodon::InstanceConnexion instance);
+		concurrency::task<void> fetchNotifications(const Mastodon::InstanceConnexion instance);
 	};
 }
