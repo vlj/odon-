@@ -20,5 +20,6 @@ namespace client
 		virtual void OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs^ e) override;
 	private:
 		void displaySearch_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e);
+		concurrency::task<void> getSearchResults(const std::wstring& searchTerm);
 	};
 }

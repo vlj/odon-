@@ -27,6 +27,7 @@ namespace client
 	internal:
 		static Windows::UI::Xaml::Controls::RichTextBlock^ convertParagraph(const utility::string_t& str);
 		static Platform::String^ emojify(const utility::string_t& str);
+		static Mastodon::InstanceConnexion getInstance();
 	};
 
 	[Windows::UI::Xaml::Data::Bindable]

@@ -119,16 +119,13 @@ concurrency::task<void> client::TootListModelView::fetchNotifications(const Mast
 
 void client::TootListModelView::refresh()
 {
-	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-
-	if (localSettings->Values->Lookup("client_id") == nullptr ||
-		localSettings->Values->Lookup("client_secret") == nullptr ||
-		localSettings->Values->Lookup("access_token") == nullptr)
+	try {
+		const auto& instance = Util::getInstance();
+		fetchStatuses(instance);
+		fetchNotifications(instance);
+	}
+	catch (...)
+	{
 		return;
-
-	const auto& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
-		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
-		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
-	fetchStatuses(instance);
-	fetchNotifications(instance);
+	}
 }

@@ -30,45 +30,9 @@ FocusedToot::FocusedToot()
 
 void FocusedToot::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs ^ e)
 {
-	auto id = static_cast<int>(e->Parameter);
-	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
-		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
-		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
-
-	Mastodon::InstanceAnonymous{}.status(id)
-		.then([this](const Mastodon::Status& status) {
-		Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
-			ref new Windows::UI::Core::DispatchedHandler([this, status]()
-		{
-			tootpresenter->DataContext = ref new Toot(status);
-			writer->AnswerTo = status.id;
-			if (status.spoiler_text.has_value())
-				writer->Spoiler = ref new Platform::String(status.spoiler_text.value().data());
-			const auto& answerTag = U("@") + status._account.username;
-			writer->Text = ref new Platform::String(answerTag.data());
-		}));
-	});
-
-	Mastodon::InstanceAnonymous{}.status_context(id)
-		.then([this](const Mastodon::Context& context) {
-			auto ancestors = ref new Platform::Collections::Vector<Toot^>();
-			for (const auto& a : context.ancestors)
-			{
-				ancestors->Append(ref new Toot{ a });
-			}
-			auto descendants = ref new Platform::Collections::Vector<Toot^>();
-			for (const auto& d : context.descendants)
-			{
-				descendants->Append(ref new Toot{ d });
-			}
-			Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
-				ref new Windows::UI::Core::DispatchedHandler([this, ancestors, descendants]()
-			{
-				ancestorslist->DataContext = ancestors;
-				descendantslist->DataContext = descendants;
-			}));
-	});
+	const auto& id = static_cast<int>(e->Parameter);
+	getAnswerDatas(id);
+	getConversation(id);
 }
 
 
@@ -82,4 +46,40 @@ void client::FocusedToot::ancestorslist_ItemClick(Platform::Object^ sender, Wind
 {
 	auto toot = dynamic_cast<Toot^>(e->ClickedItem);
 	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(FocusedToot::typeid), toot->Id);
+}
+
+concurrency::task<void> client::FocusedToot::getConversation(const int& id)
+{
+	const auto& context = co_await Util::getInstance().status_context(id);
+	auto ancestors = ref new Platform::Collections::Vector<Toot^>();
+	for (const auto& a : context.ancestors)
+	{
+		ancestors->Append(ref new Toot{ a });
+	}
+	auto descendants = ref new Platform::Collections::Vector<Toot^>();
+	for (const auto& d : context.descendants)
+	{
+		descendants->Append(ref new Toot{ d });
+	}
+	Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
+		ref new Windows::UI::Core::DispatchedHandler([this, ancestors, descendants]()
+	{
+		ancestorslist->DataContext = ancestors;
+		descendantslist->DataContext = descendants;
+	}));
+}
+
+concurrency::task<void> client::FocusedToot::getAnswerDatas(const int& id)
+{
+	const auto& status = co_await Util::getInstance().status(id);
+	Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
+		ref new Windows::UI::Core::DispatchedHandler([this, status]()
+	{
+		tootpresenter->DataContext = ref new Toot(status);
+		writer->AnswerTo = status.id;
+		if (status.spoiler_text.has_value())
+			writer->Spoiler = ref new Platform::String(status.spoiler_text.value().data());
+		const auto& answerTag = U("@") + status._account.username;
+		writer->Text = ref new Platform::String(answerTag.data());
+	}));
 }

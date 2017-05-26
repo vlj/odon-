@@ -46,19 +46,16 @@ concurrency::task<void> client::TootWriter::SendStatus()
 		auto response = co_await client->PostAsync(uri, upload_pic);
 		auto str = co_await response->Content->ReadAsStringAsync();
 		auto jsonValue = Windows::Data::Json::JsonObject::Parse(str);
-		auto n = jsonValue->GetNamedNumber(ref new Platform::String(U("id")));
+		const auto& n = static_cast<int>(jsonValue->GetNamedNumber(ref new Platform::String(U("id"))));
 		media_ids.push_back(n);
 	}
 	medias.clear();
-	const auto& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
-		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
-		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
 	const auto& answer_to = (_answerTo == 0) ? std::optional<int>{} : std::make_optional(_answerTo);
 	const auto& spoiler_text = SpoilerText->Text->IsEmpty() ?
 		std::make_optional<utility::string_t>() :
 		SpoilerText->Text->Data();
 
-	co_await instance.status_post(NewToot->Text->Data(),
+	co_await Util::getInstance().status_post(NewToot->Text->Data(),
 		Mastodon::visibility_level::public_level,
 		media_ids,
 		answer_to,

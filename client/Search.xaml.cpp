@@ -29,25 +29,25 @@ Search::Search()
 
 void client::Search::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs^ e)
 {
-	auto search_term = dynamic_cast<String^>(e->Parameter);
-	Mastodon::InstanceAnonymous{}.account_search(search_term->Data())
-		.then([this](const std::vector<Mastodon::Account>& results)
-	{
-		auto list = ref new Platform::Collections::Vector<Account^>();
-		for (const auto& acc : results)
-		{
-			list->Append(ref new Account(acc));
-		}
-		Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low, ref new Windows::UI::Core::DispatchedHandler([this, list]()
-		{
-			this->displaySearch->DataContext = list;
-		}));
-	});
+	getSearchResults(dynamic_cast<String^>(e->Parameter)->Data());
 }
-
 
 void client::Search::displaySearch_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e)
 {
 	auto acc = dynamic_cast<Account^>(e->ClickedItem);
 	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(Profile::typeid), acc);
+}
+
+concurrency::task<void> client::Search::getSearchResults(const std::wstring& SearchTerm)
+{
+	const auto& results = co_await Util::getInstance().account_search(SearchTerm);
+	auto list = ref new Platform::Collections::Vector<Account^>();
+	for (const auto& acc : results)
+	{
+		list->Append(ref new Account(acc));
+	}
+	Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low, ref new Windows::UI::Core::DispatchedHandler([this, list]()
+	{
+		this->displaySearch->DataContext = list;
+	}));
 }

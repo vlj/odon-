@@ -24,5 +24,6 @@ namespace client
 	private:
 		void ProfileToot_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e);
 		void tootviewer_OnImagePressed(client::tootviewer^ c, Account^ acc);
+		concurrency::task<void> getStatuses(const int& id);
 	};
 }

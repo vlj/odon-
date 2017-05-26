@@ -32,35 +32,7 @@ void client::Profile::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEve
 	auto profile = dynamic_cast<Account^>(e->Parameter);
 
 	DataContext = profile;
-
-/*	headerbrush->ImageSource = ref new Windows::UI::Xaml::Media::Imaging::BitmapImage(
-		ref new Windows::Foundation::Uri(ref new Platform::String(account.header.data()))
-	);
-	avatar->Source = ref new Windows::UI::Xaml::Media::Imaging::BitmapImage(
-		ref new Windows::Foundation::Uri(ref new Platform::String(account.avatar.data()))
-	);
-	note->Text = ref new Platform::String(account.note.data());
-	const auto& answerTag = U("@") + account.username;
-	tootWriter->Text = ref new Platform::String(answerTag.data());*/
-
-
-	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-	const auto& instance = Mastodon::InstanceConnexion{
-		dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
-		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
-		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data()
-	};
-	instance.statuses(profile->id)
-		.then([this](const std::vector<Mastodon::Status>& v) {
-			auto list = ref new Platform::Collections::Vector<Toot^>();
-			for (const auto& toot : v) {
-				list->Append(ref new Toot(toot));
-			}
-			Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
-				ref new Windows::UI::Core::DispatchedHandler([this, list]() {
-				ProfileToot->DataContext = list;
-			}));
-		});
+	getStatuses(profile->id);
 }
 
 void client::Profile::ProfileToot_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e)
@@ -73,4 +45,17 @@ void client::Profile::ProfileToot_ItemClick(Platform::Object^ sender, Windows::U
 void client::Profile::tootviewer_OnImagePressed(client::tootviewer^ c, Account^ acc)
 {
 	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(Profile::typeid), acc);
+}
+
+concurrency::task<void> client::Profile::getStatuses(const int & id)
+{
+	const auto& statuses = co_await Util::getInstance().statuses(id);
+	auto list = ref new Platform::Collections::Vector<Toot^>();
+	for (const auto& toot : statuses) {
+		list->Append(ref new Toot(toot));
+	}
+	Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
+		ref new Windows::UI::Core::DispatchedHandler([this, list]() {
+		ProfileToot->DataContext = list;
+	}));
 }
