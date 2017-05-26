@@ -26,6 +26,7 @@ namespace client
 	{
 	internal:
 		static Windows::UI::Xaml::Controls::RichTextBlock^ convertParagraph(const utility::string_t& str);
+		static Platform::String^ emojify(const utility::string_t& str);
 	};
 
 	[Windows::UI::Xaml::Data::Bindable]
@@ -76,7 +77,7 @@ namespace client
 		{
 			Platform::String^ get()
 			{
-				return ref new Platform::String(_account.display_name.data());
+				return Util::emojify(_account.display_name.data());
 			}
 		}
 
