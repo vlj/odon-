@@ -91,9 +91,5 @@ Mastodon::InstanceConnexion client::Util::getInstance()
 		localSettings->Values->Lookup("access_token") == nullptr)
 		throw;
 
-	return Mastodon::InstanceConnexion{
-		dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_id"))->Data(),
-		dynamic_cast<Platform::String^>(localSettings->Values->Lookup("client_secret"))->Data(),
-		dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data()
-	};
+	return Mastodon::InstanceConnexion{dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data()};
 }

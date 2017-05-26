@@ -318,26 +318,11 @@ namespace Mastodon
 				return v[U("access_token")].as_string();
 			});
 		}
-
 	};
 
-	struct InstanceAnonymous
+	template<typename InstanceType>
+	struct InstanceBase
 	{
-	protected:
-		auto __api_request(web::uri_builder uri, const web::http::method& method) const
-		{
-			web::http::client::http_client client(base_url);
-			return client.request(method, uri.to_string())
-				// Handle response headers arriving.
-				.then([=](const web::http::http_response& response)
-				{
-					const auto& status = response.status_code();
-					printf("Received response status code:%u\n", response.status_code());
-
-					return response.extract_json();
-				});
-		}
-
 		/**
 		Fetch statuses, most recent ones first.Timeline can be home, mentions, local,
 		public, or tag / hashtag.See the following functions documentation for what those do.
@@ -355,20 +340,30 @@ namespace Mastodon
 
 			return __api_request(f(std::move(builder)), web::http::methods::GET)
 				.then([=](const web::json::value& v)
+			{
+				const auto& json_array = v.as_array();
+				auto&& result = std::vector<Status>{};
+				for (const auto& json_v : json_array)
 				{
-					const auto& json_array = v.as_array();
-					auto&& result = std::vector<Status>{};
-					for (const auto& json_v : json_array)
-					{
-						result.emplace_back(Status{ json_v });
-					}
-					return result;
-				});
+					result.emplace_back(Status{ json_v });
+				}
+				return result;
+			});
 		}
 
+		auto __api_request(web::uri_builder uri, const web::http::method& method) const
+		{
+			return static_cast<const InstanceType&>(*this).__api_request(uri, method);
+		}
 
 	public:
-		const utility::string_t base_url{ U("https://oc.todon.fr") };
+
+		auto account(const int& id) const
+		{
+			auto&& uri = web::uri_builder{ U("/api/v1/accounts/") + std::to_wstring(id) };
+			return __api_request(uri, web::http::methods::GET)
+				.then([](const web::json::value& v) { return Account{ v.as_object() }; });
+		}
 
 		auto account_search(const utility::string_t& search_term) const
 		{
@@ -384,6 +379,50 @@ namespace Mastodon
 				}
 				return result;
 			});
+		}
+
+
+		auto status(const int& id) const
+		{
+			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) };
+			return __api_request(uri, web::http::methods::GET)
+				.then([](const web::json::value& v) {
+				return Status{ v };
+			});
+		}
+
+		auto status_context(const int& id) const
+		{
+			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) + U("/context") };
+			return __api_request(uri, web::http::methods::GET)
+				.then([](const web::json::value& v) {
+				return Context{ v };
+			});
+		}
+
+
+		auto statuses(const int& id) const
+		{
+			auto&& uri = web::uri_builder{ U("/api/v1/accounts/") + std::to_wstring(id) + U("/statuses") };
+			return __api_request(uri, web::http::methods::GET)
+				.then([](const web::json::value& v) {
+				auto&& result = std::vector<Status>{};
+				for (const auto& s : v.as_array())
+				{
+					result.emplace_back(s);
+				}
+				return result;
+			});
+		}
+
+		auto status_favourited_by()
+		{
+
+		}
+
+		auto status_reblogged_by()
+		{
+
 		}
 
 		/**
@@ -412,38 +451,51 @@ namespace Mastodon
 			});
 		}
 
-		auto status(const int& id) const
-		{
-			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) };
-			return __api_request(uri, web::http::methods::GET)
-				.then([](const web::json::value& v) {
-				return Status{ v };
-			});
-		}
+	};
 
-		auto status_context(const int& id) const
+	struct InstanceAnonymous : public InstanceBase<InstanceAnonymous>
+	{
+	private:
+		friend struct InstanceBase<InstanceAnonymous>;
+		const utility::string_t base_url{ U("https://oc.todon.fr") };
+
+		auto __api_request(web::uri_builder uri, const web::http::method& method) const
 		{
-			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) + U("/context")};
-			return __api_request(uri, web::http::methods::GET)
-				.then([](const web::json::value& v) {
-				return Context{ v };
-			});
+			web::http::client::http_client client(base_url);
+			return client.request(method, uri.to_string())
+				// Handle response headers arriving.
+				.then([=](const web::http::http_response& response)
+				{
+					const auto& status = response.status_code();
+					printf("Received response status code:%u\n", response.status_code());
+
+					return response.extract_json();
+				});
 		}
 	};
 
-	struct InstanceConnexion : public InstanceAnonymous
+	struct InstanceConnexion : public InstanceBase<InstanceConnexion>
 	{
-		const utility::string_t client_id;
-		const utility::string_t client_secret;
+	private:
+		friend struct InstanceBase<InstanceConnexion>;
 		const utility::string_t access_token;
 		size_t debug_requests;
 		size_t ratelimit_method;
+		const utility::string_t base_url{ U("https://oc.todon.fr") };
 
-	protected:
 		auto __api_request(web::uri_builder uri, const web::http::method& method = web::http::methods::GET) const
 		{
+			web::http::client::http_client client(base_url);
 			uri.append_query(U("access_token"), access_token);
-			return InstanceAnonymous::__api_request(uri, method);
+			return client.request(method, uri.to_string())
+				// Handle response headers arriving.
+				.then([=](const web::http::http_response& response)
+			{
+				const auto& status = response.status_code();
+				printf("Received response status code:%u\n", response.status_code());
+
+				return response.extract_json();
+			});
 		}
 
 		auto __relationship_update(const int& id, const utility::string_t& key) const
@@ -486,41 +538,43 @@ namespace Mastodon
 		By default, a timeout of 300 seconds is used for all requests.If you wish to change this,
 		pass the desired timeout(in seconds) as request_timeout.
 		*/
-		InstanceConnexion(const utility::string_t& _client_id, const utility::string_t& _client_secret) :
-			client_id(_client_id), client_secret(_client_secret)
+		InstanceConnexion(const utility::string_t& _access_token) : access_token(_access_token)
 		{
 
 		}
 
-		InstanceConnexion(const utility::string_t& _client_id, const utility::string_t& _client_secret,
-			const utility::string_t& _access_token) :
-			client_id(_client_id), client_secret(_client_secret), access_token(_access_token)
+		auto account_block(const int& id)
 		{
-
+			return __relationship_update(id, U("block"));
 		}
 
-		auto account(const int& id) const
+		auto account_unblock(const int& id)
 		{
-			auto&& uri = web::uri_builder{ U("/api/v1/accounts/") + std::to_wstring(id) };
-			return __api_request(uri, web::http::methods::GET)
-				.then([](const web::json::value& v) { return Account{ v.as_object() }; });
+			return __relationship_update(id, U("unblock"));
+		}
+
+		auto account_follow(const int& id)
+		{
+			return __relationship_update(id, U("follow"));
+		}
+
+		auto account_unfollow(const int& id)
+		{
+			return __relationship_update(id, U("unfollow"));
+		}
+
+		auto account_mute(const int& id)
+		{
+			return __relationship_update(id, U("mute"));
+		}
+
+		auto account_unmute(const int& id)
+		{
+			return __relationship_update(id, U("unmute"));
 		}
 
 		/**
-		Fetch the authenticated users home timeline (i.e. followed users and self).
-
-		Returns a list of toot dicts.
-		*/
-		auto timeline_home() const
-		{
-			return Mastodon::InstanceAnonymous::timeline(U("home"),
-				[this](auto&& uri) {
-					uri.append_query(U("access_token"), access_token);
-					return uri; });
-		}
-
-		/**
-		 Note : updating image not supported
+		Note : updating image not supported
 		*/
 		auto update_account(const std::optional<utility::string_t>& display_name, const std::optional<utility::string_t>& note) const
 		{
@@ -532,35 +586,28 @@ namespace Mastodon
 			return __api_request(uri, web::http::methods::PATCH);
 		}
 
+		auto account_verify_credentials()
+		{
+
+		}
+
 		/**
 		Fetches the authenticated users mentions.
 
 		Returns a list of toot dicts.
 		*/
-
-
-		auto statuses(const int& id) const
+		auto notifications() const
 		{
-			auto&& uri = web::uri_builder{ U("/api/v1/accounts/") + std::to_wstring(id) + U("/statuses") };
+			auto&& uri = web::uri_builder{ U("/api/v1/notifications") };
 			return __api_request(uri, web::http::methods::GET)
 				.then([](const web::json::value& v) {
-				auto&& result = std::vector<Status>{};
-				for (const auto& s : v.as_array())
+				auto&& result = std::vector<Notifications>{};
+				for (const auto& relation : v.as_array())
 				{
-					result.emplace_back(s);
+					result.emplace_back(relation);
 				}
 				return result;
 			});
-		}
-
-		auto status_reblogged_by()
-		{
-
-		}
-
-		auto status_favourited_by()
-		{
-
 		}
 
 		auto status_post(const utility::string_t& content,
@@ -603,20 +650,6 @@ namespace Mastodon
 			return __api_request(uri, web::http::methods::POST);
 		}
 
-		auto notifications() const
-		{
-			auto&& uri = web::uri_builder{ U("/api/v1/notifications") };
-			return __api_request(uri, web::http::methods::GET)
-				.then([](const web::json::value& v) {
-					auto&& result = std::vector<Notifications>{};
-					for (const auto& relation : v.as_array())
-					{
-						result.emplace_back(relation);
-					}
-					return result;
-				});
-		}
-
 		auto status_favourite(const int& id) const
 		{
 			return __status_interaction(id, U("/favourite"));
@@ -637,39 +670,17 @@ namespace Mastodon
 			return __status_interaction(id, U("/unreblog"));
 		}
 
-		auto account_verify_credentials()
-		{
+		/**
+		Fetch the authenticated users home timeline (i.e. followed users and self).
 
-		}
-
-		auto account_follow(const int& id)
+		Returns a list of toot dicts.
+		*/
+		auto timeline_home() const
 		{
-			return __relationship_update(id, U("follow"));
-		}
-
-		auto account_unfollow(const int& id)
-		{
-			return __relationship_update(id, U("unfollow"));
-		}
-
-		auto account_block(const int& id)
-		{
-			return __relationship_update(id, U("block"));
-		}
-
-		auto account_unblock(const int& id)
-		{
-			return __relationship_update(id, U("unblock"));
-		}
-
-		auto account_mute(const int& id)
-		{
-			return __relationship_update(id, U("mute"));
-		}
-
-		auto account_unmute(const int& id)
-		{
-			return __relationship_update(id, U("unmute"));
+			return InstanceBase<InstanceConnexion>::timeline(U("home"),
+				[this](auto&& uri) {
+				uri.append_query(U("access_token"), access_token);
+				return uri; });
 		}
 
 		auto follow_request_authorize()
@@ -678,17 +689,6 @@ namespace Mastodon
 		}
 
 		auto follow_request_reject()
-		{
-
-		}
-
-		auto media_post()
-		{
-
-		}
-
-	private:
-		auto __datetime_to_epoch()
 		{
 
 		}
