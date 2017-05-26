@@ -27,90 +27,59 @@ TootWriter::TootWriter()
 	InitializeComponent();
 }
 
-void TootWriter::AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+concurrency::task<void> client::TootWriter::SendStatus()
 {
 	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 	auto access_token = dynamic_cast<String^>(localSettings->Values->Lookup("access_token"));
 
-	NewToot->IsReadOnly = true;
-	SpoilerText->IsReadOnly = true;
-
 	auto client = ref new Windows::Web::Http::HttpClient();
 	auto uri = ref new Windows::Foundation::Uri("https://oc.todon.fr/api/v1/media");
 
-	auto media_ids = std::make_shared<std::vector<int>>();
-	const auto& callback =
-		[access_token, client, uri, media_ids](const Concurrency::task<Windows::Storage::Streams::IBuffer^>& buffer_task)
+	auto media_ids = std::vector<int>();
+	for (const auto& media : medias)
 	{
-		return buffer_task.then([access_token, client, uri, media_ids](Windows::Storage::Streams::IBuffer^ bufferOp)
-		{
-			auto httpBuffer = ref new Windows::Web::Http::HttpBufferContent(bufferOp);
-			auto upload_pic = ref new Windows::Web::Http::HttpMultipartFormDataContent();
-			upload_pic->Add(httpBuffer, "file", "somefile.jpg");
-			upload_pic->Add(ref new Windows::Web::Http::HttpStringContent(access_token), "access_token");
-			return client->PostAsync(uri, upload_pic);
-		}).then([](Windows::Web::Http::HttpResponseMessage^ response)
-		{
-			return response->Content->ReadAsStringAsync();
-		})
-		.then([=](Platform::String^ str)
-		{
-			auto jsonValue = Windows::Data::Json::JsonObject::Parse(str);
-			auto n = jsonValue->GetNamedNumber(ref new Platform::String(U("id")));
-			media_ids->push_back(n);
-		});
-	};
-
-	auto modelView = static_cast<TootListModelView^>(Application::Current->Resources->Lookup("tootlist"));
-	const auto& answer_to = (_answerTo == 0) ? std::optional<int>{} : std::make_optional(_answerTo);
+		auto bufferOp = media;
+		auto httpBuffer = ref new Windows::Web::Http::HttpBufferContent(bufferOp.get());
+		auto upload_pic = ref new Windows::Web::Http::HttpMultipartFormDataContent();
+		upload_pic->Add(httpBuffer, "file", "somefile.jpg");
+		upload_pic->Add(ref new Windows::Web::Http::HttpStringContent(access_token), "access_token");
+		auto response = co_await client->PostAsync(uri, upload_pic);
+		auto str = co_await response->Content->ReadAsStringAsync();
+		auto jsonValue = Windows::Data::Json::JsonObject::Parse(str);
+		auto n = jsonValue->GetNamedNumber(ref new Platform::String(U("id")));
+		media_ids.push_back(n);
+	}
+	medias.clear();
 	const auto& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
 		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data(),
 		dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
+	const auto& answer_to = (_answerTo == 0) ? std::optional<int>{} : std::make_optional(_answerTo);
+	const auto& spoiler_text = SpoilerText->Text->IsEmpty() ?
+		std::make_optional<utility::string_t>() :
+		SpoilerText->Text->Data();
 
-	const auto& continuation = [&]() {
-		const auto& spoiler_text = SpoilerText->Text->IsEmpty() ?
-			std::make_optional<utility::string_t>() :
-			SpoilerText->Text->Data();
-		if (medias.empty())
-		{
-			return instance.status_post(NewToot->Text->Data(),
-				Mastodon::visibility_level::public_level,
-				std::vector<int>{},
-				answer_to,
-				spoiler_text, sensitive->IsOn);
-		}
+	co_await instance.status_post(NewToot->Text->Data(),
+		Mastodon::visibility_level::public_level,
+		media_ids,
+		answer_to,
+		spoiler_text, sensitive->IsOn);
 
-		auto&& chain = callback(medias[0]);
-		for (int i = 1; i < medias.size(); i++)
-		{
-			chain = chain.then([=]() { return callback(medias[i]); });
-		}
-		return chain.then([=](const auto&) {
-			return instance.status_post(NewToot->Text->Data(),
-				Mastodon::visibility_level::public_level,
-				*media_ids,
-				answer_to,
-				spoiler_text, sensitive->IsOn);
-		});
-	}();
-
-	continuation.then([=](const Concurrency::task<web::json::value>& t) {
-		try
-		{
-			t.get();
-		}
-		catch (...)
-		{
-
-		}
-		Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
-			ref new Windows::UI::Core::DispatchedHandler([this, modelView]() {
+	Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
+		ref new Windows::UI::Core::DispatchedHandler([this]() {
 			SpoilerText->IsReadOnly = false;
 			NewToot->IsReadOnly = false;
 			NewToot->Text = ref new Platform::String();
+			mediasToSend->Items->Clear();
+			auto modelView = static_cast<TootListModelView^>(Application::Current->Resources->Lookup("tootlist"));
 			modelView->refresh();
-		}));
-	});
+	}));
+}
+
+void TootWriter::AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
+	NewToot->IsReadOnly = true;
+	SpoilerText->IsReadOnly = true;
+	SendStatus();
 }
 
 
@@ -122,8 +91,6 @@ void client::TootWriter::Button_Click(Platform::Object^ sender, Windows::UI::Xam
 	openPicker->FileTypeFilter->Append(".jpg");
 	openPicker->FileTypeFilter->Append(".jpeg");
 	openPicker->FileTypeFilter->Append(".png");
-
-	// TODO: What happens if buffer is not ready when onclick ?
 
 	const auto& get_file = Concurrency::create_task(openPicker->PickSingleFileAsync());
 
