@@ -141,7 +141,7 @@
     <PRIResource Include="Strings\en-US\Resources.resw">
       <Filter>Strings\en-US</Filter>
     </PRIResource>
-    <PRIResource Include="Strings\fr-FS\Resources.resw">
+    <PRIResource Include="Strings\fr-FR\Resources.resw">
       <Filter>Strings\fr-FR</Filter>
     </PRIResource>
   </ItemGroup>
