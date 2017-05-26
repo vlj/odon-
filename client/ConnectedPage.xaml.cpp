@@ -36,9 +36,9 @@ void client::ConnectedPage::Button_Click(Platform::Object^ sender, Windows::UI::
 {
 	ring->IsActive = true;
 	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
-		dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data());
-		instance.log_in(username->Text->Data(), password->Text->Data())
+		Mastodon::TokenRetrieval::log_in(username->Text->Data(), password->Text->Data(), U("https://oc.todon.fr"),
+			dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
+			dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data())
 			.then([this](const concurrency::task<utility::string_t>& tok_task)
 			{
 			try {

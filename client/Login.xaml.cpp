@@ -31,7 +31,7 @@ Login::Login()
 void client::Login::Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
 	InstanceTokenRing->IsActive = true;
-	Mastodon::InstanceConnexion::create_app(U("odon++client"))
+	Mastodon::TokenRetrieval::create_app(U("odon++client"), U("https://oc.todon.fr"))
 		.then([this](const std::tuple<utility::string_t, utility::string_t>& id_secret)
 	{
 		auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings->Values;

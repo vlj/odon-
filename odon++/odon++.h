@@ -241,6 +241,86 @@ namespace Mastodon
 		}
 	};
 
+	struct TokenRetrieval
+	{
+
+		/**
+		Create a new app with given client_name and scopes(read, write, follow)
+
+		Specify redirect_uris if you want users to be redirected to a certain page after authenticating.
+		Specify to_file to persist your apps info to a file so you can use them in the constructor.
+		Specify api_base_url if you want to register an app on an instance different from the flagship one.
+
+		Presently, app registration is open by default, but this is not guaranteed to be the case for all
+		future mastodon instances or even the flagship instance in the future.
+
+		Returns client_id and client_secret.
+		*/
+		static auto create_app(const utility::string_t& client_name, const utility::string_t& instance_url)
+		{
+			web::http::client::http_client client(instance_url);
+
+			// Build request URI and start the request.
+			web::uri_builder builder(U("/api/v1/apps"));
+			builder.append_query(U("client_name"), client_name);
+			builder.append_query(U("scopes"), U("read write follow"));
+			builder.append_query(U("redirect_uris"), U("urn:ietf:wg:oauth:2.0:oob"));
+			return client.request(web::http::methods::POST, builder.to_string())
+				// Handle response headers arriving.
+				.then([=](const web::http::http_response& response)
+			{
+				printf("Received response status code:%u\n", response.status_code());
+
+				// Write response body into the file.
+				return response.extract_json();
+			})
+				.then([=](web::json::value v)
+			{
+				return std::make_tuple(
+					v[U("client_id")].as_string(),
+					v[U("client_secret")].as_string());
+			});
+		}
+
+		/**
+		Log in and sets access_token to what was returned. Note that your
+		username is the e-mail you use to log in into mastodon.
+
+		Can persist access token to file, to be used in the constructor.
+
+		Will throw a MastodonIllegalArgumentError if username / password
+		are wrong, scopes are not valid or granted scopes differ from requested.
+
+		Returns the access_token.
+		*/
+		static auto log_in(const utility::string_t& username, const utility::string_t& password, const utility::string_t& instance_url, const utility::string_t& client_id, const utility::string_t& client_secret)
+		{
+			web::http::client::http_client client(instance_url);
+			// Build request URI and start the request.
+			web::uri_builder builder(U("/oauth/token"));
+			builder.append_query(U("username"), username);
+			builder.append_query(U("password"), password);
+			builder.append_query(U("client_id"), client_id);
+			builder.append_query(U("client_secret"), client_secret);
+			builder.append_query(U("scope"), U("read write follow"));
+			builder.append_query(U("grant_type"), U("password"));
+			return client.request(web::http::methods::POST, builder.to_string())
+				// Handle response headers arriving.
+				.then([=](const web::http::http_response& response)
+			{
+				printf("Received response status code:%u\n", response.status_code());
+
+				// Write response body into the file.
+				return response.extract_json();
+			})
+				.then([=](web::json::value v)
+			{
+				return v[U("access_token")].as_string();
+			});
+		}
+
+	};
+
 	struct InstanceAnonymous
 	{
 	protected:
@@ -417,82 +497,6 @@ namespace Mastodon
 			client_id(_client_id), client_secret(_client_secret), access_token(_access_token)
 		{
 
-		}
-
-		/**
-		Create a new app with given client_name and scopes(read, write, follow)
-
-		Specify redirect_uris if you want users to be redirected to a certain page after authenticating.
-		Specify to_file to persist your apps info to a file so you can use them in the constructor.
-		Specify api_base_url if you want to register an app on an instance different from the flagship one.
-
-		Presently, app registration is open by default, but this is not guaranteed to be the case for all
-		future mastodon instances or even the flagship instance in the future.
-
-		Returns client_id and client_secret.
-		*/
-		static
-		auto create_app(const  utility::string_t& client_name)
-		{
-			web::http::client::http_client client(U("https://oc.todon.fr"));
-
-			// Build request URI and start the request.
-			web::uri_builder builder(U("/api/v1/apps"));
-			builder.append_query(U("client_name"), client_name);
-			builder.append_query(U("scopes"), U("read write follow"));
-			builder.append_query(U("redirect_uris"), U("urn:ietf:wg:oauth:2.0:oob"));
-			return client.request(web::http::methods::POST, builder.to_string())
-				// Handle response headers arriving.
-				.then([=](const web::http::http_response& response)
-			{
-				printf("Received response status code:%u\n", response.status_code());
-
-				// Write response body into the file.
-				return response.extract_json();
-			})
-				.then([=](web::json::value v)
-			{
-				return std::make_tuple(
-					v[U("client_id")].as_string(),
-					v[U("client_secret")].as_string());
-			});
-		}
-
-		/**
-		Log in and sets access_token to what was returned. Note that your
-		username is the e-mail you use to log in into mastodon.
-
-		Can persist access token to file, to be used in the constructor.
-
-		Will throw a MastodonIllegalArgumentError if username / password
-		are wrong, scopes are not valid or granted scopes differ from requested.
-
-		Returns the access_token.
-		*/
-		auto log_in(const utility::string_t& username, const utility::string_t& password)
-		{
-			web::http::client::http_client client(U("https://oc.todon.fr"));
-			// Build request URI and start the request.
-			web::uri_builder builder(U("/oauth/token"));
-			builder.append_query(U("username"), username);
-			builder.append_query(U("password"), password);
-			builder.append_query(U("client_id"), client_id);
-			builder.append_query(U("client_secret"), client_secret);
-			builder.append_query(U("scope"), U("read write follow"));
-			builder.append_query(U("grant_type"), U("password"));
-			return client.request(web::http::methods::POST, builder.to_string())
-				// Handle response headers arriving.
-				.then([=](const web::http::http_response& response)
-				{
-					printf("Received response status code:%u\n", response.status_code());
-
-					// Write response body into the file.
-					return response.extract_json();
-				})
-				.then([=](web::json::value v)
-				{
-					return v[U("access_token")].as_string();
-				});
 		}
 
 		auto account(const int& id) const
