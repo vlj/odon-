@@ -32,33 +32,28 @@ void client::ConnectedPage::OnNavigatedTo(Windows::UI::Xaml::Navigation::Navigat
 }
 
 
-void client::ConnectedPage::Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+concurrency::task<void> client::ConnectedPage::login()
 {
 	ring->IsActive = true;
 	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-		Mastodon::TokenRetrieval::log_in(username->Text->Data(), password->Text->Data(), U("https://oc.todon.fr"),
+
+	try
+	{
+		auto token = co_await Mastodon::TokenRetrieval::log_in(username->Text->Data(), password->Text->Data(), U("https://oc.todon.fr"),
 			dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
-			dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data())
-			.then([this](const concurrency::task<utility::string_t>& tok_task)
-			{
-			try {
-				String^ access_token = ref new String(tok_task.get().c_str());
-				Windows::Storage::ApplicationData::Current->LocalSettings->Values->Insert("access_token", PropertyValue::CreateString(access_token));
-				Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
-					ref new Windows::UI::Core::DispatchedHandler([this]()
-					{
-						this->Frame->Navigate(Interop::TypeName(Timeline::typeid), nullptr);
-					})
-				);
-			}
-			catch (...)
-			{
-				Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
-					ref new Windows::UI::Core::DispatchedHandler([this]()
-					{
-						ring->IsActive = false;
-					})
-				);
-			}
-		});
+			dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data());
+
+		String^ access_token = ref new String(token.c_str());
+		Windows::Storage::ApplicationData::Current->LocalSettings->Values->Insert("access_token", PropertyValue::CreateString(access_token));
+		Frame->Navigate(Interop::TypeName(Timeline::typeid), nullptr);
+	}
+	catch (...)
+	{
+		ring->IsActive = false;
+	}
+}
+
+void client::ConnectedPage::Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
+	login();
 }

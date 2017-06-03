@@ -64,10 +64,6 @@ concurrency::task<void> client::FocusedToot::getConversation(const int& id)
 	{
 		descendants->Append(ref new Toot{ d });
 	}
-	Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
-		ref new Windows::UI::Core::DispatchedHandler([this, ancestors, descendants]()
-	{
-		ancestorslist->DataContext = ancestors;
-		descendantslist->DataContext = descendants;
-	}));
+	ancestorslist->DataContext = ancestors;
+	descendantslist->DataContext = descendants;
 }

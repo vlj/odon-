@@ -84,7 +84,7 @@ Mastodon::InstanceConnexion client::Util::getInstance()
 	if (localSettings->Values->Lookup("client_id") == nullptr ||
 		localSettings->Values->Lookup("client_secret") == nullptr ||
 		localSettings->Values->Lookup("access_token") == nullptr)
-		throw;
+		throw ref new Platform::FailureException("Not logged properly");
 
 	return Mastodon::InstanceConnexion{dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data()};
 }

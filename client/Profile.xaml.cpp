@@ -54,8 +54,5 @@ concurrency::task<void> client::Profile::getStatuses(const int & id)
 	for (const auto& toot : statuses) {
 		list->Append(ref new Toot(toot));
 	}
-	Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
-		ref new Windows::UI::Core::DispatchedHandler([this, list]() {
-		ProfileToot->DataContext = list;
-	}));
+	ProfileToot->DataContext = list;
 }

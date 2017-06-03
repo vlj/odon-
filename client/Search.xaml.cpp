@@ -46,8 +46,5 @@ concurrency::task<void> client::Search::getSearchResults(const std::wstring& Sea
 	{
 		list->Append(ref new Account(acc));
 	}
-	Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low, ref new Windows::UI::Core::DispatchedHandler([this, list]()
-	{
-		this->displaySearch->DataContext = list;
-	}));
+	displaySearch->DataContext = list;
 }
