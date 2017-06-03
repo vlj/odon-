@@ -76,6 +76,16 @@ namespace client
 		{
 			Platform::String^ get()
 			{
+				return ref new Platform::String(_account.acct.data());
+			}
+		}
+
+		property Platform::String^ DisplayName
+		{
+			Platform::String^ get()
+			{
+				if (!_account.display_name.empty())
+					return Util::emojify(_account.display_name.data());
 				return Util::emojify(_account.username.data());
 			}
 		}
@@ -231,7 +241,9 @@ namespace client
 		{
 			Platform::String^ get()
 			{
-				return ref new Platform::String(status._account.display_name.data());
+				if (!status._account.display_name.empty())
+					return Util::emojify(status._account.display_name.data());
+				return Util::emojify(status._account.username.data());
 			}
 		}
 

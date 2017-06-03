@@ -21,7 +21,7 @@
                 <DataTemplate x:DataType="local:Account">
                     <StackPanel Orientation="Horizontal" BorderBrush="Black" Margin="1">
                         <Image Source="{x:Bind Avatar}" Width="100" Height="100" />
-                        <TextBlock Text="{Binding Username}" />
+                        <TextBlock Text="{Binding DisplayName}" />
                         <Button Content="Fav" Command="{x:Bind OnClick}" />
                     </StackPanel>
                 </DataTemplate>

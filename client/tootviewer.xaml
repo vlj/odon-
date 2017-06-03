@@ -72,7 +72,7 @@
         <Button VerticalAlignment="Top" Grid.Row="1" Grid.RowSpan="5" Click="Button_Click" Background="{x:Null}">
             <Image Source="{Binding Author.Avatar}" Width="100" Height="100" />
         </Button>
-        <TextBlock Text="{Binding Author.Username}" Grid.Column="1" Grid.Row="1" FontWeight="Bold" />
+        <TextBlock Text="{Binding Author.DisplayName}" Grid.Column="1" Grid.Row="1" FontWeight="Bold" />
         <RichTextBlock Visibility="{Binding Sensitive}" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="2" VerticalAlignment="Center" IsTextSelectionEnabled="False">
             <Paragraph>
                 <Run Text="{Binding SpoilerText}" />
