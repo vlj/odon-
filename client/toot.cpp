@@ -1,6 +1,7 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include <regex>
 #include "emojimap.h"
+
 
 Windows::UI::Xaml::Controls::RichTextBlock ^ client::Util::convertParagraph(const utility::string_t & str)
 {
@@ -32,7 +33,7 @@ Windows::UI::Xaml::Controls::RichTextBlock ^ client::Util::convertParagraph(cons
 			if (ndname == "#text")
 			{
 				auto run = ref new Windows::UI::Xaml::Documents::Run();
-				run->Text = node->InnerText;
+				run->Text = emojify(node->InnerText->Data());
 				container->Append(run);
 				continue;
 			}
@@ -67,18 +68,12 @@ Windows::UI::Xaml::Controls::RichTextBlock ^ client::Util::convertParagraph(cons
 		ctrl->Blocks->Append(paragraph);
 	}
 	return ctrl;
-
 }
+
 
 Platform::String ^ client::Util::emojify(const utility::string_t & str)
 {
-	auto&& result = utility::string_t{ str };
-	for (const auto& emoji : emoji_map)
-	{
-		const size_t& It = result.find(emoji.first, 0);
-		if (It == std::wstring::npos) continue;
-		result.replace(It, emoji.first.length(), emoji.second);
-	}
+	auto&& result = replace(utility::string_t{ str });
 	return ref new Platform::String(result.data());
 }
 

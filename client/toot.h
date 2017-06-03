@@ -76,7 +76,7 @@ namespace client
 		{
 			Platform::String^ get()
 			{
-				return Util::emojify(_account.display_name.data());
+				return Util::emojify(_account.username.data());
 			}
 		}
 
