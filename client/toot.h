@@ -388,7 +388,9 @@ namespace client
 		{
 			Platform::String^ get()
 			{
-				return ref new Platform::String(notification.account.username.data());
+				if (!notification.account.display_name.empty())
+					return Util::emojify(notification.account.display_name.data());
+				return Util::emojify(notification.account.username.data());
 			}
 		}
 
