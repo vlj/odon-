@@ -7,6 +7,8 @@ namespace client
 	public ref class TootListModelView sealed : Windows::UI::Xaml::Data::INotifyPropertyChanged
 	{
 		Windows::System::Threading::ThreadPoolTimer^ periodicTimer;
+		int statuses_current_max_id;
+		int notifications_current_max_id;
 	public:
 		TootListModelView();
 

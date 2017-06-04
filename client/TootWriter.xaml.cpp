@@ -68,7 +68,7 @@ concurrency::task<void> client::TootWriter::SendStatus()
 			NewToot->Text = ref new Platform::String();
 			mediasToSend->Items->Clear();
 			auto modelView = static_cast<TootListModelView^>(Application::Current->Resources->Lookup("tootlist"));
-			modelView->refresh();
+			//modelView->refresh();
 	}));
 }
 

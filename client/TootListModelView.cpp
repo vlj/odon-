@@ -3,7 +3,7 @@
 
 using namespace Platform;
 
-client::TootListModelView::TootListModelView()
+client::TootListModelView::TootListModelView() : statuses_current_max_id(0), notifications_current_max_id(0)
 {
 	_timeline = ref new Collections::Vector<Toot^>();
 	_notifications = ref new Collections::Vector<Notification^>();
@@ -34,37 +34,33 @@ void client::TootListModelView::SuspendTimer()
 
 concurrency::task<void> client::TootListModelView::fetchStatuses(const Mastodon::InstanceConnexion instance)
 {
-	const auto& statuses = co_await instance.timeline_home();
-	auto refreshedtimeline = ref new Platform::Collections::Vector<Toot^>();
-	for (const auto& toot : statuses)
-	{
-		refreshedtimeline->Append(ref new Toot(toot));
-	}
-	_timeline = refreshedtimeline;
+	const auto& statuses = co_await instance.timeline_home(Mastodon::range{ statuses_current_max_id });
 	Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
 		Windows::UI::Core::CoreDispatcherPriority::Low,
-		ref new Windows::UI::Core::DispatchedHandler([this]()
+		ref new Windows::UI::Core::DispatchedHandler([this, statuses]()
 	{
-		PropertyChanged(this, ref new Windows::UI::Xaml::Data::PropertyChangedEventArgs("TimelineToots"));
+		unsigned int position = 0;
+		for (const auto& toot : statuses)
+		{
+			statuses_current_max_id = std::max<int>(statuses_current_max_id, toot.id);
+			_timeline->InsertAt(position++, ref new Toot(toot));
+		}
+		//PropertyChanged(this, ref new Windows::UI::Xaml::Data::PropertyChangedEventArgs("TimelineToots"));
 	}));
 }
 
 concurrency::task<void> client::TootListModelView::fetchNotifications(const Mastodon::InstanceConnexion instance)
 {
-	auto notifications = co_await instance.notifications();
-	auto refreshednotifications = ref new Platform::Collections::Vector<Notification^>();
-	auto toastNotifier = Windows::UI::Notifications::ToastNotificationManager::CreateToastNotifier();
+	auto notifications = co_await instance.notifications(Mastodon::range{ notifications_current_max_id });
+
 	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 	auto ptrvalue = localSettings->Values->Lookup("last_notification");
 	const auto& lastId = ptrvalue == nullptr ? 0 : (int)ptrvalue;
 	auto newLastId = lastId;
-	for (const auto& n : notifications)
-	{
-		refreshednotifications->Append(ref new Notification(n));
 
-		if (n.id <= lastId)
-			continue;
-		newLastId = std::max<int>(newLastId, n.id);
+	auto toastNotifier = Windows::UI::Notifications::ToastNotificationManager::CreateToastNotifier();
+	const auto notify = [&](const auto& n)
+	{
 		const auto& removeHtml = [](const auto& content)
 		{
 			return std::wstring{
@@ -103,17 +99,29 @@ concurrency::task<void> client::TootListModelView::fetchNotifications(const Mast
 		xml->LoadXml(ref new Platform::String(toastVisual.data()));
 		auto notif = ref new Windows::UI::Notifications::ToastNotification(xml);
 		toastNotifier->Show(notif);
+
+	};
+	for (const auto& n : notifications)
+	{
+		if (n.id <= lastId)
+			continue;
+		newLastId = std::max<int>(newLastId, n.id);
+		notify(n);
 	}
 	Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
 		Windows::UI::Core::CoreDispatcherPriority::Low,
-		ref new Windows::UI::Core::DispatchedHandler([this, lastId, newLastId, refreshednotifications]() {
+		ref new Windows::UI::Core::DispatchedHandler([this, lastId, newLastId, notifications]() {
 		if (lastId != newLastId)
 		{
 			auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 			const auto& lastId = localSettings->Values->Insert("last_notification", newLastId);
 		}
-		_notifications = refreshednotifications;
-		PropertyChanged(this, ref new Windows::UI::Xaml::Data::PropertyChangedEventArgs("Notifications"));
+		for (const auto& n : notifications)
+		{
+			_notifications->Append(ref new Notification(n));
+			notifications_current_max_id = std::max<int>(notifications_current_max_id, n.id);
+		}
+		//PropertyChanged(this, ref new Windows::UI::Xaml::Data::PropertyChangedEventArgs("Notifications"));
 	}));
 }
 

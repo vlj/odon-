@@ -244,6 +244,25 @@ namespace Mastodon
 		}
 	};
 
+	struct range
+	{
+		std::optional<int> since_id;
+		std::optional<int> max_id;
+
+		range() {}
+
+		range(const int& since) : since_id(since)
+		{
+
+		}
+
+		void set_range(web::uri_builder& uri) const
+		{
+			if (since_id.has_value())
+				uri.append_query(U("since_id"), since_id.value());
+		}
+	};
+
 	struct TokenRetrieval
 	{
 
@@ -326,6 +345,7 @@ namespace Mastodon
 	template<typename InstanceType>
 	struct InstanceBase
 	{
+	protected:
 		/**
 		Fetch statuses, most recent ones first.Timeline can be home, mentions, local,
 		public, or tag / hashtag.See the following functions documentation for what those do.
@@ -335,11 +355,12 @@ namespace Mastodon
 		Returns a list of toot dicts.
 		*/
 		template<typename URIFixFunction>
-		auto timeline(const utility::string_t& timeline, URIFixFunction&& f) const
+		auto timeline(const utility::string_t& timeline, URIFixFunction&& f, const range& id_range) const
 		{
 			// Build request URI and start the request.
 			auto&& builder = web::uri_builder(U("/api/v1/timelines/"));
 			builder.append_path(timeline);
+			id_range.set_range(builder);
 
 			return __api_request(f(std::move(builder)), web::http::methods::GET)
 				.then([=](const web::json::value& v)
@@ -599,9 +620,10 @@ namespace Mastodon
 
 		Returns a list of toot dicts.
 		*/
-		auto notifications() const
+		auto notifications(const range& id_range) const
 		{
 			auto&& uri = web::uri_builder{ U("/api/v1/notifications") };
+			id_range.set_range(uri);
 			return __api_request(uri, web::http::methods::GET)
 				.then([](const web::json::value& v) {
 				auto&& result = std::vector<Notifications>{};
@@ -678,12 +700,12 @@ namespace Mastodon
 
 		Returns a list of toot dicts.
 		*/
-		auto timeline_home() const
+		auto timeline_home(const range& id_range = range{}) const
 		{
 			return InstanceBase<InstanceConnexion>::timeline(U("home"),
 				[this](auto&& uri) {
 				uri.append_query(U("access_token"), access_token);
-				return uri; });
+				return uri; }, id_range);
 		}
 
 		auto follow_request_authorize()
