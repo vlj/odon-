@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <optional>
+#include <regex>
 #include <cpprest/http_client.h>
 #include <cpprest/filestream.h>
 #include <cpprest/json.h>
@@ -256,6 +257,11 @@ namespace Mastodon
 
 		}
 
+		range(const int& since, const int& max) : since_id(since), max_id(max)
+		{
+
+		}
+
 		void set_range(web::uri_builder& uri) const
 		{
 			if (since_id.has_value())
@@ -362,9 +368,10 @@ namespace Mastodon
 			builder.append_path(timeline);
 			id_range.set_range(builder);
 
-			return __api_request(f(std::move(builder)), web::http::methods::GET)
-				.then([=](const web::json::value& v)
+			return __api_request_paged(f(std::move(builder)), web::http::methods::GET)
+				.then([=](const std::tuple<web::json::value, std::optional<range> >& res)
 			{
+				const auto& v = std::get<0>(res);
 				const auto& json_array = v.as_array();
 				auto&& result = std::vector<Status>{};
 				for (const auto& json_v : json_array)
@@ -378,6 +385,11 @@ namespace Mastodon
 		auto __api_request(web::uri_builder uri, const web::http::method& method) const
 		{
 			return static_cast<const InstanceType&>(*this).__api_request(uri, method);
+		}
+
+		auto __api_request_paged(web::uri_builder uri, const web::http::method& method) const
+		{
+			return static_cast<const InstanceType&>(*this).__api_request_paged(uri, method);
 		}
 
 	public:
@@ -519,6 +531,34 @@ namespace Mastodon
 				printf("Received response status code:%u\n", response.status_code());
 
 				return response.extract_json();
+			});
+		}
+
+		auto __api_request_paged(web::uri_builder uri, const web::http::method& method = web::http::methods::GET) const
+		{
+			web::http::client::http_client client(base_url);
+			uri.append_query(U("access_token"), access_token);
+			return client.request(method, uri.to_string())
+				// Handle response headers arriving.
+				.then([=](const web::http::http_response& response)
+			{
+				const auto& status = response.status_code();
+				const auto& headers = response.headers();
+				const auto& link = headers.find(U("link"));
+				const auto& prev_next = [&]() -> std::optional<range> {
+
+					if (link == headers.end()) return std::make_optional<range>();
+					const auto& get_matches = [&](const auto& regex_str) {
+						const auto& regex = std::wregex{ regex_str + std::wstring(U("=(\\d+)")) };
+						std::wsmatch matches;
+						const auto& result = std::regex_search(link->second, matches, regex);
+						return std::stoi(matches[1].str());
+					};
+					return range{ get_matches(U("max_id")), get_matches(U("since_id")) };
+				}();
+				printf("Received response status code:%u\n", response.status_code());
+
+				return std::make_tuple(response.extract_json().get(), prev_next);
 			});
 		}
 
