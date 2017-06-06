@@ -5,7 +5,7 @@ using namespace Platform;
 
 client::TootListModelView::TootListModelView() : statuses_current_max_id(0), notifications_current_max_id(0)
 {
-	_timeline = ref new Collections::Vector<Toot^>();
+	_timeline = ref new DeferredList();
 	_notifications = ref new Collections::Vector<Notification^>();
 	refresh();
 	SetTimer();
@@ -137,3 +137,29 @@ void client::TootListModelView::refresh()
 		return;
 	}
 }
+
+/*bool client::DeferredList::HasMoreItems::get()
+{
+	return true;
+}*/
+
+
+
+client::DeferredList::DeferredList()
+{
+	_internalVector = ref new Collections::Vector<Platform::Object^>();
+	_internalVector->VectorChanged += ref new Windows::Foundation::Collections::VectorChangedEventHandler<Platform::Object^>(
+		this, &DeferredList::OnVectorChanged);
+}
+
+void client::DeferredList::OnVectorChanged(Windows::Foundation::Collections::IObservableVector<Platform::Object^>^ sender, Windows::Foundation::Collections::IVectorChangedEventArgs ^ e)
+{
+	VectorChanged(this, e);
+}
+
+/*Windows::Foundation::IAsyncOperation<Windows::UI::Xaml::Data::LoadMoreItemsResult> ^ client::DeferredList::LoadMoreItemsAsync(unsigned int count)
+{
+	return nullptr;
+	throw ref new Platform::NotImplementedException();
+	// TODO: insert return statement here
+}*/
