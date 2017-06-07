@@ -169,16 +169,15 @@ Windows::Foundation::IAsyncOperation<Windows::UI::Xaml::Data::LoadMoreItemsResul
 				Windows::UI::Core::CoreDispatcherPriority::Low,
 				ref new Windows::UI::Core::DispatchedHandler([this, statuses]()
 			{
-				unsigned int position = 0;
 				for (const auto& toot : statuses)
 				{
 					if (toot.id > currentMinId) continue;
-					InsertAt(position++, ref new Toot(toot));
+					Append(ref new Toot(toot));
 				}
 			}));
 
 			Windows::UI::Xaml::Data::LoadMoreItemsResult res;
-			res.Count = 1;
+			res.Count = statuses.size();
 			return res;
 		});
 	return concurrency::create_async([f]() {return f.get(); });
