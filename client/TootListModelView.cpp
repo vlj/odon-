@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "TootListModelView.h"
+#include <limits>
 
 using namespace Platform;
 
@@ -34,15 +35,15 @@ void client::TootListModelView::SuspendTimer()
 
 concurrency::task<void> client::TootListModelView::fetchStatuses(const Mastodon::InstanceConnexion instance)
 {
-	const auto& statuses = co_await instance.timeline_home(Mastodon::range{ statuses_current_max_id });
+	const auto& statuses = co_await instance.timeline_home(Mastodon::range{ _timeline->MaxId });
 	Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
 		Windows::UI::Core::CoreDispatcherPriority::Low,
 		ref new Windows::UI::Core::DispatchedHandler([this, statuses]()
 	{
 		unsigned int position = 0;
-		for (const auto& toot : statuses)
+		for (const auto& toot : std::get<0>(statuses))
 		{
-			statuses_current_max_id = std::max<int>(statuses_current_max_id, toot.id);
+			_timeline->MaxId = std::max<int>(_timeline->MaxId, toot.id);
 			_timeline->InsertAt(position++, ref new Toot(toot));
 		}
 		//PropertyChanged(this, ref new Windows::UI::Xaml::Data::PropertyChangedEventArgs("TimelineToots"));
@@ -138,18 +139,12 @@ void client::TootListModelView::refresh()
 	}
 }
 
-/*bool client::DeferredList::HasMoreItems::get()
-{
-	return true;
-}*/
-
-
-
 client::DeferredList::DeferredList()
 {
 	_internalVector = ref new Collections::Vector<Platform::Object^>();
 	_internalVector->VectorChanged += ref new Windows::Foundation::Collections::VectorChangedEventHandler<Platform::Object^>(
 		this, &DeferredList::OnVectorChanged);
+	currentMaxId = -1;
 }
 
 void client::DeferredList::OnVectorChanged(Windows::Foundation::Collections::IObservableVector<Platform::Object^>^ sender, Windows::Foundation::Collections::IVectorChangedEventArgs ^ e)
@@ -157,9 +152,34 @@ void client::DeferredList::OnVectorChanged(Windows::Foundation::Collections::IOb
 	VectorChanged(this, e);
 }
 
-/*Windows::Foundation::IAsyncOperation<Windows::UI::Xaml::Data::LoadMoreItemsResult> ^ client::DeferredList::LoadMoreItemsAsync(unsigned int count)
+bool client::DeferredList::HasMoreItems::get()
 {
-	return nullptr;
-	throw ref new Platform::NotImplementedException();
-	// TODO: insert return statement here
-}*/
+	if (currentMinId.has_value()) return *currentMinId;
+	return true;
+}
+
+Windows::Foundation::IAsyncOperation<Windows::UI::Xaml::Data::LoadMoreItemsResult> ^ client::DeferredList::LoadMoreItemsAsync(unsigned int count)
+{
+	const auto& f = Util::getInstance().timeline_home(Mastodon::range{ std::make_optional<int>(), currentMinId })
+		.then([this](const std::tuple<std::vector<Mastodon::Status>, std::optional<Mastodon::range>>& timelineresult)
+		{
+			const auto& statuses = std::get<0>(timelineresult);
+			currentMinId = std::get<1>(timelineresult).value().max_id.value();
+			Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
+				Windows::UI::Core::CoreDispatcherPriority::Low,
+				ref new Windows::UI::Core::DispatchedHandler([this, statuses]()
+			{
+				unsigned int position = 0;
+				for (const auto& toot : statuses)
+				{
+					if (toot.id > currentMinId) continue;
+					InsertAt(position++, ref new Toot(toot));
+				}
+			}));
+
+			Windows::UI::Xaml::Data::LoadMoreItemsResult res;
+			res.Count = 1;
+			return res;
+		});
+	return concurrency::create_async([f]() {return f.get(); });
+}

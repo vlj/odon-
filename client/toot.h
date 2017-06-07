@@ -165,6 +165,8 @@ namespace client
 	{
 	internal:
 		Mastodon::Status status;
+
+		Toot() {}
 		
 		Toot(const Mastodon::Status& _status) : status(_status)
 		{

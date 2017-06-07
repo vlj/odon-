@@ -257,7 +257,7 @@ namespace Mastodon
 
 		}
 
-		range(const int& since, const int& max) : since_id(since), max_id(max)
+		range(const std::optional<int>& since, const std::optional<int>& max) : since_id(since), max_id(max)
 		{
 
 		}
@@ -266,6 +266,8 @@ namespace Mastodon
 		{
 			if (since_id.has_value())
 				uri.append_query(U("since_id"), since_id.value());
+			if (max_id.has_value())
+				uri.append_query(U("max_id"), max_id.value());
 		}
 	};
 
@@ -378,7 +380,7 @@ namespace Mastodon
 				{
 					result.emplace_back(Status{ json_v });
 				}
-				return result;
+				return std::make_tuple(result, std::get<1>(res));
 			});
 		}
 
