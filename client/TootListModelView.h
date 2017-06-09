@@ -34,6 +34,11 @@ namespace client
 				if (currentMinId.has_value()) return 0x8FFF;
 				return *currentMinId;
 			}
+
+			void set(int v)
+			{
+				currentMinId = v;
+			}
 		}
 
 		virtual Windows::UI::Xaml::Interop::IBindableIterator ^ First()

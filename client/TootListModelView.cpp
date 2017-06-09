@@ -44,6 +44,7 @@ concurrency::task<void> client::TootListModelView::fetchStatuses(const Mastodon:
 		for (const auto& toot : std::get<0>(statuses))
 		{
 			_timeline->MaxId = std::max<int>(_timeline->MaxId, toot.id);
+			_timeline->MinId = std::min<int>(_timeline->MinId, toot.id);
 			_timeline->InsertAt(position++, ref new Toot(toot));
 		}
 		//PropertyChanged(this, ref new Windows::UI::Xaml::Data::PropertyChangedEventArgs("TimelineToots"));
