@@ -138,8 +138,9 @@ namespace client
 	internal:
 		concurrency::task<Windows::UI::Xaml::Data::LoadMoreItemsResult> callback()
 		{
-			const auto& nativeNextMinTarget = (nextMinTarget == nullptr) ? std::optional<int>() : std::make_optional<int>(nextMinTarget->Value);
-			const auto& timelineresult = co_await Util::getInstance().timeline_home(Mastodon::range{ std::make_optional<int>(), nativeNextMinTarget });
+			auto&& idRange = Mastodon::range{};
+			if (nextMinTarget != nullptr) idRange = idRange.set_max(nextMinTarget->Value);
+			const auto& timelineresult = co_await Util::getInstance().timeline_home(idRange);
 
 			nextMinTarget = std::get<1>(timelineresult).value().since_id.has_value() ?
 				ref new Platform::Box<int>(std::get<1>(timelineresult).value().since_id.value()) :
@@ -177,8 +178,9 @@ namespace client
 	internal:
 		concurrency::task<Windows::UI::Xaml::Data::LoadMoreItemsResult> callback()
 		{
-			const auto& nativeNextMinTarget = (nextMinTarget == nullptr) ? std::optional<int>() : std::make_optional<int>(nextMinTarget->Value);
-			const auto& timelineresult = co_await Util::getInstance().notifications(Mastodon::range{ std::make_optional<int>(), nativeNextMinTarget });
+			auto&& idRange = Mastodon::range{};
+			if (nextMinTarget != nullptr) idRange = idRange.set_max(nextMinTarget->Value);
+			const auto& timelineresult = co_await Util::getInstance().notifications(idRange);
 
 			nextMinTarget = std::get<1>(timelineresult).value().since_id.has_value() ?
 				ref new Platform::Box<int>(std::get<1>(timelineresult).value().since_id.value()) :

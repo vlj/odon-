@@ -35,7 +35,7 @@ void client::TootListModelView::SuspendTimer()
 
 concurrency::task<void> client::TootListModelView::fetchStatuses(const Mastodon::InstanceConnexion instance)
 {
-	const auto& statuses = co_await instance.timeline_home(Mastodon::range{ _timeline->MaxId });
+	const auto& statuses = co_await instance.timeline_home(Mastodon::range{}.set_min(_timeline->MaxId));
 	Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
 		Windows::UI::Core::CoreDispatcherPriority::Low,
 		ref new Windows::UI::Core::DispatchedHandler([this, statuses]()
@@ -45,13 +45,12 @@ concurrency::task<void> client::TootListModelView::fetchStatuses(const Mastodon:
 		{
 			_timeline->InsertAt(position++, ref new Toot(toot));
 		}
-		//PropertyChanged(this, ref new Windows::UI::Xaml::Data::PropertyChangedEventArgs("TimelineToots"));
 	}));
 }
 
 concurrency::task<void> client::TootListModelView::fetchNotifications(const Mastodon::InstanceConnexion instance)
 {
-	auto notifications = co_await instance.notifications(Mastodon::range{ notifications_current_max_id });
+	auto notifications = co_await instance.notifications(Mastodon::range{}.set_min(notifications_current_max_id));
 
 	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 	auto ptrvalue = localSettings->Values->Lookup("last_notification");

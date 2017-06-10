@@ -86,5 +86,5 @@ Mastodon::InstanceConnexion client::Util::getInstance()
 		localSettings->Values->Lookup("access_token") == nullptr)
 		throw ref new Platform::FailureException("Not logged properly");
 
-	return Mastodon::InstanceConnexion{dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data()};
+	return Mastodon::InstanceConnexion{U("https://oc.todon.fr"), dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data()};
 }

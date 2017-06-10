@@ -36,7 +36,7 @@ void client::Settings::Button_Click(Platform::Object^ sender, Windows::UI::Xaml:
 		localSettings->Values->Lookup("access_token") == nullptr)
 		return;
 
-	auto&& instance = Mastodon::InstanceConnexion(dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
+	auto&& instance = Mastodon::InstanceConnexion(U("https://oc.todon.fr"), dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
 
 	instance.update_account({ DisplayName->Text->Data() }, std::make_optional<utility::string_t>());
 }

@@ -252,17 +252,19 @@ namespace Mastodon
 
 		range() {}
 
-		range(const int& since) : since_id(since)
+		auto set_min(const int& v)
 		{
-
+			since_id = v;
+			return *this;
 		}
 
-		range(const std::optional<int>& since, const std::optional<int>& max) : since_id(since), max_id(max)
+		auto set_max(const int& v)
 		{
-
+			max_id = v;
+			return *this;
 		}
 
-		void set_range(web::uri_builder& uri) const
+		void update_uri(web::uri_builder& uri) const
 		{
 			if (since_id.has_value())
 				uri.append_query(U("since_id"), since_id.value());
@@ -368,7 +370,7 @@ namespace Mastodon
 			// Build request URI and start the request.
 			auto&& builder = web::uri_builder(U("/api/v1/timelines/"));
 			builder.append_path(timeline);
-			id_range.set_range(builder);
+			id_range.update_uri(builder);
 
 			return __api_request_paged(f(std::move(builder)), web::http::methods::GET)
 				.then([=](const std::tuple<web::json::value, std::optional<range> >& res)
@@ -384,17 +386,51 @@ namespace Mastodon
 			});
 		}
 
-		auto __api_request(web::uri_builder uri, const web::http::method& method) const
+		auto __api_request(const web::uri_builder& uri, const web::http::method& method) const
 		{
-			return static_cast<const InstanceType&>(*this).__api_request(uri, method);
+			return web::http::client::http_client{ base_url }
+				.request(method, static_cast<const InstanceType&>(*this).fix_uri(uri).to_string())
+				.then([=](const web::http::http_response& response)
+				{
+					if (response.status_code() != 200)
+						throw std::exception("Error with server");
+					return response.extract_json();
+				});
 		}
 
-		auto __api_request_paged(web::uri_builder uri, const web::http::method& method) const
+		auto __api_request_paged(web::uri_builder uri, const web::http::method& method = web::http::methods::GET) const
 		{
-			return static_cast<const InstanceType&>(*this).__api_request_paged(uri, method);
+			return web::http::client::http_client{ base_url }
+				.request(method, static_cast<const InstanceType&>(*this).fix_uri(uri).to_string())
+				.then([=](const web::http::http_response& response)
+				{
+					if (response.status_code() != 200)
+						throw std::exception("Error with server");
+					const auto& status = response.status_code();
+					const auto& headers = response.headers();
+					const auto& link = headers.find(U("link"));
+					const auto& prev_next = [&]() -> std::optional<range> {
+
+						if (link == headers.end()) return std::make_optional<range>();
+						const auto& get_matches = [&](const auto& regex_str) {
+							const auto& regex = std::wregex{ regex_str + std::wstring(U("=(\\d+)")) };
+							std::wsmatch matches;
+							const auto& result = std::regex_search(link->second, matches, regex);
+							return std::stoi(matches[1].str());
+						};
+						return range{}
+							.set_min(get_matches(U("max_id")))
+							.set_max(get_matches(U("since_id")));
+					}();
+
+					return std::make_tuple(response.extract_json().get(), prev_next);
+				});
 		}
 
+		const utility::string_t base_url;
 	public:
+		InstanceBase(const utility::string_t& url) : base_url(url)
+		{}
 
 		auto account(const int& id) const
 		{
@@ -419,7 +455,9 @@ namespace Mastodon
 			});
 		}
 
-
+		/**
+		 * Fetch status. Return a Status.
+		 */
 		auto status(const int& id) const
 		{
 			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) };
@@ -429,6 +467,9 @@ namespace Mastodon
 			});
 		}
 
+		/**
+		 * Get status context.
+		 */
 		auto status_context(const int& id) const
 		{
 			auto&& uri = web::uri_builder{ U("/api/v1/statuses/") + std::to_wstring(id) + U("/context") };
@@ -438,11 +479,13 @@ namespace Mastodon
 			});
 		}
 
-
+		/**
+		 * Get an account's statuses, return a vector of Status.
+		 */
 		auto statuses(const int& id, const range& range_id = {}) const
 		{
 			auto&& uri = web::uri_builder{ U("/api/v1/accounts/") + std::to_wstring(id) + U("/statuses") };
-			range_id.set_range(uri);
+			range_id.update_uri(uri);
 			return __api_request_paged(uri, web::http::methods::GET)
 				.then([](const std::tuple<web::json::value, std::optional<range>>& res) {
 				auto&& result = std::vector<Status>{};
@@ -465,10 +508,9 @@ namespace Mastodon
 		}
 
 		/**
-		Fetches the public / visible-network timeline.
-
-		Returns a list of toot dicts.
-		*/
+		 * Fetches the public / visible-network timeline.
+		 * Returns a vector of Status
+		 */
 		auto timeline_public(const bool& local) const
 		{
 			return timeline(U("public"), [local](auto&& uri) {
@@ -478,10 +520,9 @@ namespace Mastodon
 		}
 
 		/**
-		Fetch a timeline of toots with a given hashtag.
-
-		Returns a list of toot dicts.
-		*/
+		 * Fetch a timeline of toots with a given hashtag.
+		 * Returns a vector of Status.
+		 */
 		auto timeline_hashtag(const utility::string_t& hashtag, const bool& local) const
 		{
 			return timeline(U("tag/") + hashtag, [local](auto&& uri) {
@@ -496,20 +537,10 @@ namespace Mastodon
 	{
 	private:
 		friend struct InstanceBase<InstanceAnonymous>;
-		const utility::string_t base_url{ U("https://oc.todon.fr") };
 
-		auto __api_request(web::uri_builder uri, const web::http::method& method) const
+		auto fix_uri(const web::uri_builder& uri) const
 		{
-			web::http::client::http_client client(base_url);
-			return client.request(method, uri.to_string())
-				// Handle response headers arriving.
-				.then([=](const web::http::http_response& response)
-				{
-					const auto& status = response.status_code();
-					printf("Received response status code:%u\n", response.status_code());
-
-					return response.extract_json();
-				});
+			return uri;
 		}
 	};
 
@@ -520,49 +551,11 @@ namespace Mastodon
 		const utility::string_t access_token;
 		size_t debug_requests;
 		size_t ratelimit_method;
-		const utility::string_t base_url{ U("https://oc.todon.fr") };
 
-		auto __api_request(web::uri_builder uri, const web::http::method& method = web::http::methods::GET) const
+		auto fix_uri(web::uri_builder uri) const
 		{
-			web::http::client::http_client client(base_url);
 			uri.append_query(U("access_token"), access_token);
-			return client.request(method, uri.to_string())
-				// Handle response headers arriving.
-				.then([=](const web::http::http_response& response)
-			{
-				const auto& status = response.status_code();
-				printf("Received response status code:%u\n", response.status_code());
-
-				return response.extract_json();
-			});
-		}
-
-		auto __api_request_paged(web::uri_builder uri, const web::http::method& method = web::http::methods::GET) const
-		{
-			web::http::client::http_client client(base_url);
-			uri.append_query(U("access_token"), access_token);
-			return client.request(method, uri.to_string())
-				// Handle response headers arriving.
-				.then([=](const web::http::http_response& response)
-			{
-				const auto& status = response.status_code();
-				const auto& headers = response.headers();
-				const auto& link = headers.find(U("link"));
-				const auto& prev_next = [&]() -> std::optional<range> {
-
-					if (link == headers.end()) return std::make_optional<range>();
-					const auto& get_matches = [&](const auto& regex_str) {
-						const auto& regex = std::wregex{ regex_str + std::wstring(U("=(\\d+)")) };
-						std::wsmatch matches;
-						const auto& result = std::regex_search(link->second, matches, regex);
-						return std::stoi(matches[1].str());
-					};
-					return range{ get_matches(U("max_id")), get_matches(U("since_id")) };
-				}();
-				printf("Received response status code:%u\n", response.status_code());
-
-				return std::make_tuple(response.extract_json().get(), prev_next);
-			});
+			return uri;
 		}
 
 		auto __relationship_update(const int& id, const utility::string_t& key) const
@@ -605,43 +598,63 @@ namespace Mastodon
 		By default, a timeout of 300 seconds is used for all requests.If you wish to change this,
 		pass the desired timeout(in seconds) as request_timeout.
 		*/
-		InstanceConnexion(const utility::string_t& _access_token) : access_token(_access_token)
+		InstanceConnexion(const utility::string_t& url, const utility::string_t& _access_token) : InstanceBase<InstanceConnexion>(url),
+			access_token(_access_token)
 		{
 
 		}
 
+		/**
+		 * Block an account. Return a Relationship.
+		 */
 		auto account_block(const int& id)
 		{
 			return __relationship_update(id, U("block"));
 		}
 
+		/**
+		 * Unblock an account. Return a Relationship.
+		 */
 		auto account_unblock(const int& id)
 		{
 			return __relationship_update(id, U("unblock"));
 		}
 
+		/**
+		 * Follow an account. Return a Relationship.
+		 */
 		auto account_follow(const int& id)
 		{
 			return __relationship_update(id, U("follow"));
 		}
 
+		/**
+		 * Unfollow an account. Return a Relationship.
+		 */
 		auto account_unfollow(const int& id)
 		{
 			return __relationship_update(id, U("unfollow"));
 		}
 
+		/**
+		 * Mute an account. Return a Relationship.
+		 */
 		auto account_mute(const int& id)
 		{
 			return __relationship_update(id, U("mute"));
 		}
 
+		/**
+		 * Unmute an account. Return a Relationship.
+		 */
 		auto account_unmute(const int& id)
 		{
 			return __relationship_update(id, U("unmute"));
 		}
 
 		/**
-		Note : updating image not supported
+		 * Update the current user.
+		* Note : updating image not supported
 		*/
 		auto update_account(const std::optional<utility::string_t>& display_name, const std::optional<utility::string_t>& note) const
 		{
@@ -659,14 +672,12 @@ namespace Mastodon
 		}
 
 		/**
-		Fetches the authenticated users mentions.
-
-		Returns a list of toot dicts.
-		*/
+		 * Fetches the authenticated users notifications. Return a vector of Notification.
+		 */
 		auto notifications(const range& id_range) const
 		{
 			auto&& uri = web::uri_builder{ U("/api/v1/notifications") };
-			id_range.set_range(uri);
+			id_range.update_uri(uri);
 			return __api_request_paged(uri, web::http::methods::GET)
 				.then([](const std::tuple<web::json::value, std::optional<range>> & res) {
 				auto&& result = std::vector<Notifications>{};
@@ -678,6 +689,9 @@ namespace Mastodon
 			});
 		}
 
+		/**
+		 * Post a new status, return the new Status.
+		 */
 		auto status_post(const utility::string_t& content,
 			const visibility_level& visibility,
 			const std::vector<int>& media_ids,
@@ -718,31 +732,42 @@ namespace Mastodon
 			return __api_request(uri, web::http::methods::POST);
 		}
 
+		/**
+		 * Favourite a status. Return the updated Status.
+		 */
 		auto status_favourite(const int& id) const
 		{
 			return __status_interaction(id, U("/favourite"));
 		}
 
+		/**
+		 * Unfavourite a status. Return the updated Status.
+		 */
 		auto status_unfavourite(const int& id) const
 		{
 			return __status_interaction(id, U("/unfavourite"));
 		}
 
+		/**
+		 * Reblog a status. Return the updated Status.
+		 */
 		auto status_reblog(const int& id) const
 		{
 			return __status_interaction(id, U("/reblog"));
 		}
 
+		/**
+		 * Uneblog a status. Return the updated Status.
+		 */
 		auto status_unreblog(const int& id) const
 		{
 			return __status_interaction(id, U("/unreblog"));
 		}
 
 		/**
-		Fetch the authenticated users home timeline (i.e. followed users and self).
-
-		Returns a list of toot dicts.
-		*/
+		 * Fetch the authenticated users home timeline (i.e. followed users and self).
+		 * Returns a vector of Status.
+		 */
 		auto timeline_home(const range& id_range = range{}) const
 		{
 			return InstanceBase<InstanceConnexion>::timeline(U("home"),
