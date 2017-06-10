@@ -37,6 +37,11 @@ namespace client
 			{
 				NewToot->Text = v;
 			}
+
+			Platform::String^ get()
+			{
+				return NewToot->Text;
+			}
 		}
 
 		property Platform::String^ Spoiler
@@ -44,6 +49,11 @@ namespace client
 			void set(Platform::String^ v)
 			{
 				SpoilerText->Text = v;
+			}
+
+			Platform::String^ get()
+			{
+				return SpoilerText->Text;
 			}
 		}
 
