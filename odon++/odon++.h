@@ -442,14 +442,14 @@ namespace Mastodon
 		auto statuses(const int& id) const
 		{
 			auto&& uri = web::uri_builder{ U("/api/v1/accounts/") + std::to_wstring(id) + U("/statuses") };
-			return __api_request(uri, web::http::methods::GET)
-				.then([](const web::json::value& v) {
+			return __api_request_paged(uri, web::http::methods::GET)
+				.then([](const std::tuple<web::json::value, std::optional<range>>& res) {
 				auto&& result = std::vector<Status>{};
-				for (const auto& s : v.as_array())
+				for (const auto& s : std::get<0>(res).as_array())
 				{
 					result.emplace_back(s);
 				}
-				return result;
+				return std::make_tuple(result, std::get<1>(res));
 			});
 		}
 

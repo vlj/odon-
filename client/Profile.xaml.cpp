@@ -51,7 +51,7 @@ concurrency::task<void> client::Profile::getStatuses(const int & id)
 {
 	const auto& statuses = co_await Util::getInstance().statuses(id);
 	auto list = ref new Platform::Collections::Vector<Toot^>();
-	for (const auto& toot : statuses) {
+	for (const auto& toot : std::get<0>(statuses)) {
 		list->Append(ref new Toot(toot));
 	}
 	ProfileToot->DataContext = list;
