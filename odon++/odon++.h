@@ -439,9 +439,10 @@ namespace Mastodon
 		}
 
 
-		auto statuses(const int& id) const
+		auto statuses(const int& id, const range& range_id = {}) const
 		{
 			auto&& uri = web::uri_builder{ U("/api/v1/accounts/") + std::to_wstring(id) + U("/statuses") };
+			range_id.set_range(uri);
 			return __api_request_paged(uri, web::http::methods::GET)
 				.then([](const std::tuple<web::json::value, std::optional<range>>& res) {
 				auto&& result = std::vector<Status>{};

@@ -32,6 +32,8 @@ void client::Profile::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEve
 	auto profile = dynamic_cast<Account^>(e->Parameter);
 
 	DataContext = profile;
+	statuses = ref new DeferredProfile(profile->id);
+	ProfileToot->DataContext = statuses;
 	getStatuses(profile->id);
 }
 
@@ -49,10 +51,13 @@ void client::Profile::tootviewer_OnImagePressed(client::tootviewer^ c, Account^ 
 
 concurrency::task<void> client::Profile::getStatuses(const int & id)
 {
-	const auto& statuses = co_await Util::getInstance().statuses(id);
-	auto list = ref new Platform::Collections::Vector<Toot^>();
-	for (const auto& toot : std::get<0>(statuses)) {
-		list->Append(ref new Toot(toot));
-	}
-	ProfileToot->DataContext = list;
+	const auto& s = co_await Util::getInstance().statuses(id);
+	co_await Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
+		ref new Windows::UI::Core::DispatchedHandler([&]()
+		{
+			for (const auto& toot : std::get<0>(s)) {
+				statuses->Append(ref new Toot(toot));
+			}
+		}
+	));
 }
