@@ -6,7 +6,7 @@ using namespace Platform;
 
 client::TootListModelView::TootListModelView() : statuses_current_max_id(0), notifications_current_max_id(0)
 {
-	_timeline = ref new DeferredList();
+	_timeline = ref new DeferredTimeline();
 	_notifications = ref new Collections::Vector<Notification^>();
 	refresh();
 	SetTimer();
@@ -136,38 +136,4 @@ void client::TootListModelView::refresh()
 	{
 		return;
 	}
-}
-
-Windows::Foundation::IAsyncOperation<Windows::UI::Xaml::Data::LoadMoreItemsResult> ^ client::DeferredList::LoadMoreItemsAsync(unsigned int count)
-{
-	return concurrency::create_async([this]() { return callback(); });
-}
-
-concurrency::task<Windows::UI::Xaml::Data::LoadMoreItemsResult> client::DeferredList::callback()
-{
-	const auto& nativeNextMinTarget = (nextMinTarget == nullptr) ? std::optional<int>() : std::make_optional<int>(nextMinTarget->Value);
-	const auto& timelineresult = co_await Util::getInstance().timeline_home(Mastodon::range{ std::make_optional<int>(), nativeNextMinTarget });
-
-	nextMinTarget = std::get<1>(timelineresult).value().since_id.has_value() ?
-		ref new Platform::Box<int>(std::get<1>(timelineresult).value().since_id.value()) :
-		nullptr;
-	const auto& statuses = std::get<0>(timelineresult);
-
-	int OldSize;
-	int NewSize;
-	co_await Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
-		Windows::UI::Core::CoreDispatcherPriority::Low,
-		ref new Windows::UI::Core::DispatchedHandler([&]()
-	{
-		OldSize = Size;
-		for (const auto& toot : statuses)
-		{
-			Append(ref new Toot(toot));
-		}
-		NewSize = Size;
-	}));
-
-	Windows::UI::Xaml::Data::LoadMoreItemsResult res;
-	res.Count = NewSize - OldSize;
-	return res;
 }

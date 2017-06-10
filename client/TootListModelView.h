@@ -3,14 +3,24 @@
 
 namespace client
 {
-	public ref class DeferredList sealed : Windows::UI::Xaml::Interop::IBindableObservableVector,
+	template<typename T>
+	ref class DeferredList : Windows::UI::Xaml::Interop::IBindableObservableVector,
 		Windows::UI::Xaml::Data::ISupportIncrementalLoading
 	{
-	private:
+	protected private:
 		Platform::Collections::Vector<Platform::Object^>^ _internalVector;
 		int currentMaxId;
 		int currentMinId;
 		Platform::IBox<int>^ nextMinTarget;
+
+		DeferredList()
+		{
+			_internalVector = ref new Platform::Collections::Vector<Platform::Object^>();
+			_internalVector->VectorChanged += ref new Windows::Foundation::Collections::VectorChangedEventHandler<Platform::Object^>(
+				this, &DeferredList::OnVectorChanged);
+			currentMaxId = std::numeric_limits<int>::min();
+			currentMinId = std::numeric_limits<int>::max();
+		}
 	public:
 		property int MaxId
 		{
@@ -63,7 +73,7 @@ namespace client
 
 		virtual void InsertAt(unsigned int index, Platform::Object ^value)
 		{
-			auto toot = dynamic_cast<client::Toot^>(value);
+			auto toot = dynamic_cast<T^>(value);
 			if (toot->Id < currentMaxId && toot->Id > currentMinId) return;
 			currentMinId = std::min<int>(currentMinId, toot->Id);
 			currentMaxId = std::max<int>(currentMaxId, toot->Id);
@@ -78,7 +88,7 @@ namespace client
 
 		virtual void Append(Platform::Object ^value)
 		{
-			auto toot = dynamic_cast<client::Toot^>(value);
+			auto toot = dynamic_cast<T^>(value);
 			if (toot->Id <= currentMaxId && toot->Id >= currentMinId) return;
 			currentMinId = std::min<int>(currentMinId, toot->Id);
 			currentMaxId = std::max<int>(currentMaxId, toot->Id);
@@ -97,15 +107,6 @@ namespace client
 
 		virtual event Windows::UI::Xaml::Interop::BindableVectorChangedEventHandler ^ VectorChanged;
 
-		DeferredList()
-		{
-			_internalVector = ref new Platform::Collections::Vector<Platform::Object^>();
-			_internalVector->VectorChanged += ref new Windows::Foundation::Collections::VectorChangedEventHandler<Platform::Object^>(
-				this, &DeferredList::OnVectorChanged);
-			currentMaxId = std::numeric_limits<int>::min();
-			currentMinId = std::numeric_limits<int>::max();
-		}
-
 		void OnVectorChanged(Windows::Foundation::Collections::IObservableVector<Platform::Object^>^ sender, Windows::Foundation::Collections::IVectorChangedEventArgs ^ e)
 		{
 			VectorChanged(this, e);
@@ -119,9 +120,50 @@ namespace client
 			}
 		}
 
-		virtual Windows::Foundation::IAsyncOperation<Windows::UI::Xaml::Data::LoadMoreItemsResult> ^ LoadMoreItemsAsync(unsigned int count);
+		virtual Windows::Foundation::IAsyncOperation<Windows::UI::Xaml::Data::LoadMoreItemsResult> ^ LoadMoreItemsAsync(unsigned int count)
+		{
+			throw ref new Platform::NotImplementedException();
+		}
+
+	};
+
+	ref class DeferredTimeline sealed: public DeferredList<Toot>
+	{
+	public:
+		virtual Windows::Foundation::IAsyncOperation<Windows::UI::Xaml::Data::LoadMoreItemsResult> ^ LoadMoreItemsAsync(unsigned int count) override
+		{
+			return concurrency::create_async([this]() { return callback(); });
+		}
+
 	internal:
-		concurrency::task<Windows::UI::Xaml::Data::LoadMoreItemsResult> callback();
+		concurrency::task<Windows::UI::Xaml::Data::LoadMoreItemsResult> callback()
+		{
+			const auto& nativeNextMinTarget = (nextMinTarget == nullptr) ? std::optional<int>() : std::make_optional<int>(nextMinTarget->Value);
+			const auto& timelineresult = co_await Util::getInstance().timeline_home(Mastodon::range{ std::make_optional<int>(), nativeNextMinTarget });
+
+			nextMinTarget = std::get<1>(timelineresult).value().since_id.has_value() ?
+				ref new Platform::Box<int>(std::get<1>(timelineresult).value().since_id.value()) :
+				nullptr;
+			const auto& statuses = std::get<0>(timelineresult);
+
+			int OldSize;
+			int NewSize;
+			co_await Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
+				Windows::UI::Core::CoreDispatcherPriority::Low,
+				ref new Windows::UI::Core::DispatchedHandler([&]()
+			{
+				OldSize = Size;
+				for (const auto& toot : statuses)
+				{
+					Append(ref new Toot(toot));
+				}
+				NewSize = Size;
+			}));
+
+			Windows::UI::Xaml::Data::LoadMoreItemsResult res;
+			res.Count = NewSize - OldSize;
+			return res;
+		}
 	};
 
 	[Windows::UI::Xaml::Data::Bindable]
@@ -157,7 +199,7 @@ namespace client
 		void refresh();
 
 	private:
-		DeferredList^ _timeline;
+		DeferredTimeline^ _timeline;
 		Platform::Collections::Vector<Notification^>^ _notifications;
 
 		concurrency::task<void> fetchStatuses(const Mastodon::InstanceConnexion instance);
