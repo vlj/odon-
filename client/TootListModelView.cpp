@@ -140,24 +140,31 @@ void client::TootListModelView::refresh()
 
 Windows::Foundation::IAsyncOperation<Windows::UI::Xaml::Data::LoadMoreItemsResult> ^ client::DeferredList::LoadMoreItemsAsync(unsigned int count)
 {
-	const auto& f = Util::getInstance().timeline_home(Mastodon::range{ std::make_optional<int>(), nextMinTarget })
-		.then([this](const std::tuple<std::vector<Mastodon::Status>, std::optional<Mastodon::range>>& timelineresult)
-		{
-			nextMinTarget = std::get<1>(timelineresult).value().since_id;
-			const auto& statuses = std::get<0>(timelineresult);
-			Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
-				Windows::UI::Core::CoreDispatcherPriority::Low,
-				ref new Windows::UI::Core::DispatchedHandler([=]()
-			{
-				for (const auto& toot : statuses)
-				{
-					Append(ref new Toot(toot));
-				}
-			}));
+	return concurrency::create_async([this]() { return callback(); });
+}
 
-			Windows::UI::Xaml::Data::LoadMoreItemsResult res;
-			res.Count = statuses.size();
-			return res;
-		});
-	return concurrency::create_async([f]() {return f.get(); });
+concurrency::task<Windows::UI::Xaml::Data::LoadMoreItemsResult> client::DeferredList::callback()
+{
+	const auto& timelineresult = co_await Util::getInstance().timeline_home(Mastodon::range{ std::make_optional<int>(), nextMinTarget });
+
+	nextMinTarget = std::get<1>(timelineresult).value().since_id;
+	const auto& statuses = std::get<0>(timelineresult);
+
+	int OldSize;
+	int NewSize;
+	co_await Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
+		Windows::UI::Core::CoreDispatcherPriority::Low,
+		ref new Windows::UI::Core::DispatchedHandler([&]()
+	{
+		OldSize = Size;
+		for (const auto& toot : statuses)
+		{
+			Append(ref new Toot(toot));
+		}
+		NewSize = Size;
+	}));
+
+	Windows::UI::Xaml::Data::LoadMoreItemsResult res;
+	res.Count = NewSize - OldSize;
+	return res;
 }

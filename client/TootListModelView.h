@@ -122,6 +122,8 @@ namespace client
 		}
 
 		virtual Windows::Foundation::IAsyncOperation<Windows::UI::Xaml::Data::LoadMoreItemsResult> ^ LoadMoreItemsAsync(unsigned int count);
+	internal:
+		concurrency::task<Windows::UI::Xaml::Data::LoadMoreItemsResult> callback();
 	};
 
 	[Windows::UI::Xaml::Data::Bindable]
