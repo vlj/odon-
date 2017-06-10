@@ -138,25 +138,6 @@ void client::TootListModelView::refresh()
 	}
 }
 
-client::DeferredList::DeferredList()
-{
-	_internalVector = ref new Collections::Vector<Platform::Object^>();
-	_internalVector->VectorChanged += ref new Windows::Foundation::Collections::VectorChangedEventHandler<Platform::Object^>(
-		this, &DeferredList::OnVectorChanged);
-	currentMaxId = std::numeric_limits<int>::min();
-	currentMinId = std::numeric_limits<int>::max();
-}
-
-void client::DeferredList::OnVectorChanged(Windows::Foundation::Collections::IObservableVector<Platform::Object^>^ sender, Windows::Foundation::Collections::IVectorChangedEventArgs ^ e)
-{
-	VectorChanged(this, e);
-}
-
-bool client::DeferredList::HasMoreItems::get()
-{
-	return currentMinId > 0;
-}
-
 Windows::Foundation::IAsyncOperation<Windows::UI::Xaml::Data::LoadMoreItemsResult> ^ client::DeferredList::LoadMoreItemsAsync(unsigned int count)
 {
 	const auto& f = Util::getInstance().timeline_home(Mastodon::range{ std::make_optional<int>(), nextMinTarget })

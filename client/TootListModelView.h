@@ -3,7 +3,6 @@
 
 namespace client
 {
-	[Windows::UI::Xaml::Data::Bindable]
 	public ref class DeferredList sealed : Windows::UI::Xaml::Interop::IBindableObservableVector,
 		Windows::UI::Xaml::Data::ISupportIncrementalLoading
 	{
@@ -13,8 +12,6 @@ namespace client
 		int currentMinId;
 		std::optional<int> nextMinTarget;
 	public:
-		DeferredList();
-
 		property int MaxId
 		{
 			int get()
@@ -102,12 +99,26 @@ namespace client
 
 		virtual event Windows::UI::Xaml::Interop::BindableVectorChangedEventHandler ^ VectorChanged;
 
+		DeferredList()
+		{
+			_internalVector = ref new Platform::Collections::Vector<Platform::Object^>();
+			_internalVector->VectorChanged += ref new Windows::Foundation::Collections::VectorChangedEventHandler<Platform::Object^>(
+				this, &DeferredList::OnVectorChanged);
+			currentMaxId = std::numeric_limits<int>::min();
+			currentMinId = std::numeric_limits<int>::max();
+		}
 
-		void OnVectorChanged(Windows::Foundation::Collections::IObservableVector<Platform::Object^>^ sender, Windows::Foundation::Collections::IVectorChangedEventArgs ^ e);
+		void OnVectorChanged(Windows::Foundation::Collections::IObservableVector<Platform::Object^>^ sender, Windows::Foundation::Collections::IVectorChangedEventArgs ^ e)
+		{
+			VectorChanged(this, e);
+		}
 
 		virtual property bool HasMoreItems
 		{
-			bool get();
+			bool get()
+			{
+				return currentMinId > 0;
+			}
 		}
 
 		virtual Windows::Foundation::IAsyncOperation<Windows::UI::Xaml::Data::LoadMoreItemsResult> ^ LoadMoreItemsAsync(unsigned int count);
