@@ -3,7 +3,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{cd3f66c4-a4d6-45f4-84a9-050e2f8794eb}</ProjectGuid>
     <RootNamespace>client</RootNamespace>
-    <DefaultLanguage>fr-FR</DefaultLanguage>
+    <DefaultLanguage>en-us</DefaultLanguage>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
@@ -151,8 +151,8 @@
     <ClInclude Include="ConnectedPage.xaml.h">
       <DependentUpon>ConnectedPage.xaml</DependentUpon>
     </ClInclude>
-    <ClInclude Include="datatemplates.xaml.h">
-      <DependentUpon>datatemplates.xaml</DependentUpon>
+    <ClInclude Include="DataTemplates.xaml.h">
+      <DependentUpon>DataTemplates.xaml</DependentUpon>
     </ClInclude>
     <ClInclude Include="FocusedToot.xaml.h">
       <DependentUpon>FocusedToot.xaml</DependentUpon>
@@ -182,8 +182,8 @@
     </ClInclude>
     <ClInclude Include="toot.h" />
     <ClInclude Include="TootListModelView.h" />
-    <ClInclude Include="tootviewer.xaml.h">
-      <DependentUpon>tootviewer.xaml</DependentUpon>
+    <ClInclude Include="TootViewer.xaml.h">
+      <DependentUpon>TootViewer.xaml</DependentUpon>
     </ClInclude>
     <ClInclude Include="TootWriter.xaml.h">
       <DependentUpon>TootWriter.xaml</DependentUpon>
@@ -196,7 +196,7 @@
     <Page Include="ConnectedPage.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="datatemplates.xaml">
+    <Page Include="DataTemplates.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="FocusedToot.xaml">
@@ -220,7 +220,7 @@
     <Page Include="Timeline.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="tootviewer.xaml">
+    <Page Include="TootViewer.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="TootWriter.xaml">
@@ -235,13 +235,48 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Assets\LargeTile.scale-100.png" />
+    <Image Include="Assets\LargeTile.scale-125.png" />
+    <Image Include="Assets\LargeTile.scale-150.png" />
+    <Image Include="Assets\LargeTile.scale-200.png" />
+    <Image Include="Assets\LargeTile.scale-400.png" />
     <Image Include="Assets\LockScreenLogo.scale-200.png" />
+    <Image Include="Assets\SmallTile.scale-100.png" />
+    <Image Include="Assets\SmallTile.scale-125.png" />
+    <Image Include="Assets\SmallTile.scale-150.png" />
+    <Image Include="Assets\SmallTile.scale-200.png" />
+    <Image Include="Assets\SmallTile.scale-400.png" />
+    <Image Include="Assets\SplashScreen.scale-100.png" />
+    <Image Include="Assets\SplashScreen.scale-125.png" />
+    <Image Include="Assets\SplashScreen.scale-150.png" />
     <Image Include="Assets\SplashScreen.scale-200.png" />
+    <Image Include="Assets\SplashScreen.scale-400.png" />
+    <Image Include="Assets\Square150x150Logo.scale-100.png" />
+    <Image Include="Assets\Square150x150Logo.scale-125.png" />
+    <Image Include="Assets\Square150x150Logo.scale-150.png" />
     <Image Include="Assets\Square150x150Logo.scale-200.png" />
+    <Image Include="Assets\Square150x150Logo.scale-400.png" />
+    <Image Include="Assets\Square44x44Logo.altform-unplated_targetsize-16.png" />
+    <Image Include="Assets\Square44x44Logo.altform-unplated_targetsize-256.png" />
+    <Image Include="Assets\Square44x44Logo.altform-unplated_targetsize-32.png" />
+    <Image Include="Assets\Square44x44Logo.altform-unplated_targetsize-48.png" />
+    <Image Include="Assets\Square44x44Logo.scale-100.png" />
+    <Image Include="Assets\Square44x44Logo.scale-125.png" />
+    <Image Include="Assets\Square44x44Logo.scale-150.png" />
     <Image Include="Assets\Square44x44Logo.scale-200.png" />
+    <Image Include="Assets\Square44x44Logo.scale-400.png" />
+    <Image Include="Assets\Square44x44Logo.targetsize-16.png" />
+    <Image Include="Assets\Square44x44Logo.targetsize-24.png" />
     <Image Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Image Include="Assets\Square44x44Logo.targetsize-256.png" />
+    <Image Include="Assets\Square44x44Logo.targetsize-32.png" />
+    <Image Include="Assets\Square44x44Logo.targetsize-48.png" />
     <Image Include="Assets\StoreLogo.png" />
+    <Image Include="Assets\Wide310x150Logo.scale-100.png" />
+    <Image Include="Assets\Wide310x150Logo.scale-125.png" />
+    <Image Include="Assets\Wide310x150Logo.scale-150.png" />
     <Image Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Image Include="Assets\Wide310x150Logo.scale-400.png" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.xaml.cpp">
@@ -250,8 +285,8 @@
     <ClCompile Include="ConnectedPage.xaml.cpp">
       <DependentUpon>ConnectedPage.xaml</DependentUpon>
     </ClCompile>
-    <ClCompile Include="datatemplates.xaml.cpp">
-      <DependentUpon>datatemplates.xaml</DependentUpon>
+    <ClCompile Include="DataTemplates.xaml.cpp">
+      <DependentUpon>DataTemplates.xaml</DependentUpon>
     </ClCompile>
     <ClCompile Include="FocusedToot.xaml.cpp">
       <DependentUpon>FocusedToot.xaml</DependentUpon>
@@ -284,8 +319,8 @@
     </ClCompile>
     <ClCompile Include="toot.cpp" />
     <ClCompile Include="TootListModelView.cpp" />
-    <ClCompile Include="tootviewer.xaml.cpp">
-      <DependentUpon>tootviewer.xaml</DependentUpon>
+    <ClCompile Include="TootViewer.xaml.cpp">
+      <DependentUpon>TootViewer.xaml</DependentUpon>
     </ClCompile>
     <ClCompile Include="TootWriter.xaml.cpp">
       <DependentUpon>TootWriter.xaml</DependentUpon>

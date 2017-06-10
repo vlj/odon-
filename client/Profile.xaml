@@ -64,7 +64,7 @@
             </ListView.ItemContainerTransitions>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" />
+                    <local:TootViewer OnImagePressed="tootviewer_OnImagePressed" />
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>

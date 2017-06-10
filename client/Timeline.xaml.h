@@ -7,7 +7,7 @@
 
 #include "toot.h"
 #include "Timeline.g.h"
-#include "tootviewer.xaml.h"
+#include "TootViewer.xaml.h"
 
 namespace client
 {
@@ -21,7 +21,7 @@ namespace client
 		Timeline();
 	private:
 		void ListView_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e);
-		void tootviewer_OnImagePressed(client::tootviewer^ c, Account^ acc);
+		void tootviewer_OnImagePressed(client::TootViewer^ c, Account^ acc);
 		void mentionsection_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e);
 	};
 }

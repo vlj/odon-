@@ -4,7 +4,7 @@
 //
 
 #include "pch.h"
-#include "tootviewer.xaml.h"
+#include "TootViewer.xaml.h"
 #include "FocusedToot.xaml.h"
 #include "Profile.xaml.h"
 
@@ -39,7 +39,7 @@ void FocusedToot::OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventAr
 }
 
 
-void client::FocusedToot::tootviewer_OnImagePressed(client::tootviewer^ c, Account^ acc)
+void client::FocusedToot::tootviewer_OnImagePressed(client::TootViewer^ c, Account^ acc)
 {
 	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(Profile::typeid), acc);
 }

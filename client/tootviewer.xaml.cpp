@@ -1,10 +1,10 @@
 ﻿//
-// tootviewer.xaml.cpp
-// Implementation of the tootviewer class
+// TootViewer.xaml.cpp
+// Implementation of the TootViewer class
 //
 
 #include "pch.h"
-#include "tootviewer.xaml.h"
+#include "TootViewer.xaml.h"
 
 using namespace client;
 
@@ -21,13 +21,13 @@ using namespace Windows::UI::Xaml::Navigation;
 
 // The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
 
-tootviewer::tootviewer()
+TootViewer::TootViewer()
 {
 	InitializeComponent();
 }
 
 
-void client::tootviewer::Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+void client::TootViewer::Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
 	auto toot = dynamic_cast<Toot^>(DataContext);
 	OnImagePressed(this, toot->Author);

@@ -46,7 +46,7 @@
                     </ListView.ItemContainerTransitions>
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="local:Toot">
-                            <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" />
+                            <local:TootViewer OnImagePressed="tootviewer_OnImagePressed" />
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
@@ -130,7 +130,7 @@
                                     <TextBlock x:Name="fav" Text=" has faved" />
                                     <TextBlock x:Name="reblog" Text=" has reblogged" />
                                 </StackPanel>
-                                <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" Grid.Row="1" x:Name="tootcontent" DataContext="{x:Bind toot}" />
+                                <local:TootViewer OnImagePressed="tootviewer_OnImagePressed" Grid.Row="1" x:Name="tootcontent" DataContext="{x:Bind toot}" />
                             </Grid>
                         </UserControl>
                     </DataTemplate>

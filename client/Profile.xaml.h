@@ -6,7 +6,7 @@
 #pragma once
 
 #include "Profile.g.h"
-#include "tootviewer.xaml.h"
+#include "TootViewer.xaml.h"
 #include "TootListModelView.h"
 
 namespace client
@@ -70,7 +70,7 @@ namespace client
 
 	private:
 		void ProfileToot_ItemClick(Platform::Object^ sender, Windows::UI::Xaml::Controls::ItemClickEventArgs^ e);
-		void tootviewer_OnImagePressed(client::tootviewer^ c, Account^ acc);
+		void tootviewer_OnImagePressed(client::TootViewer^ c, Account^ acc);
 		concurrency::task<void> getStatuses(const int& id);
 	};
 }

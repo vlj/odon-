@@ -1,6 +1,6 @@
 ﻿//
-// tootviewer.xaml.h
-// Declaration of the tootviewer class
+// TootViewer.xaml.h
+// Declaration of the TootViewer class
 //
 
 #pragma once
@@ -10,16 +10,16 @@
 
 namespace client
 {
-	ref class tootviewer;
-	public delegate void ImagePressed(tootviewer^ c, Account^ account);
+	ref class TootViewer;
+	public delegate void ImagePressed(TootViewer^ c, Account^ account);
 
 
 	[Windows::Foundation::Metadata::WebHostHidden]
-	public ref class tootviewer sealed
+	public ref class TootViewer sealed
 	{
 		Toot^ _toot;
 	public:
-		tootviewer();
+		TootViewer();
 
 		event ImagePressed^ OnImagePressed;
 

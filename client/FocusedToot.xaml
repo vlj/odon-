@@ -38,13 +38,13 @@
                                 <Border.Background>
                                     <SolidColorBrush Color="{ThemeResource SystemBaseMediumColor}" />
                                 </Border.Background>
-                                <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" />
+                                <local:TootViewer OnImagePressed="tootviewer_OnImagePressed" />
                             </Border>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
 
-                <local:tootviewer x:Name="tootpresenter" OnImagePressed="tootviewer_OnImagePressed" />
+                <local:TootViewer x:Name="tootpresenter" OnImagePressed="tootviewer_OnImagePressed" />
                 <ListView x:Name="descendantslist" ItemsSource="{Binding}" IsItemClickEnabled="True" ItemClick="ancestorslist_ItemClick">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
@@ -57,7 +57,7 @@
                                 <Border.Background>
                                     <SolidColorBrush Color="{ThemeResource SystemBaseMediumColor}" />
                                 </Border.Background>
-                                <local:tootviewer OnImagePressed="tootviewer_OnImagePressed" />
+                                <local:TootViewer OnImagePressed="tootviewer_OnImagePressed" />
                             </Border>
                         </DataTemplate>
                     </ListView.ItemTemplate>

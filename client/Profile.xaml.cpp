@@ -44,7 +44,7 @@ void client::Profile::ProfileToot_ItemClick(Platform::Object^ sender, Windows::U
 }
 
 
-void client::Profile::tootviewer_OnImagePressed(client::tootviewer^ c, Account^ acc)
+void client::Profile::tootviewer_OnImagePressed(client::TootViewer^ c, Account^ acc)
 {
 	Frame->Navigate(Windows::UI::Xaml::Interop::TypeName(Profile::typeid), acc);
 }
