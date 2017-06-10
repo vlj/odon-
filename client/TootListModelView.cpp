@@ -145,9 +145,12 @@ Windows::Foundation::IAsyncOperation<Windows::UI::Xaml::Data::LoadMoreItemsResul
 
 concurrency::task<Windows::UI::Xaml::Data::LoadMoreItemsResult> client::DeferredList::callback()
 {
-	const auto& timelineresult = co_await Util::getInstance().timeline_home(Mastodon::range{ std::make_optional<int>(), nextMinTarget });
+	const auto& nativeNextMinTarget = (nextMinTarget == nullptr) ? std::optional<int>() : std::make_optional<int>(nextMinTarget->Value);
+	const auto& timelineresult = co_await Util::getInstance().timeline_home(Mastodon::range{ std::make_optional<int>(), nativeNextMinTarget });
 
-	nextMinTarget = std::get<1>(timelineresult).value().since_id;
+	nextMinTarget = std::get<1>(timelineresult).value().since_id.has_value() ?
+		ref new Platform::Box<int>(std::get<1>(timelineresult).value().since_id.value()) :
+		nullptr;
 	const auto& statuses = std::get<0>(timelineresult);
 
 	int OldSize;

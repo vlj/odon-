@@ -10,7 +10,7 @@ namespace client
 		Platform::Collections::Vector<Platform::Object^>^ _internalVector;
 		int currentMaxId;
 		int currentMinId;
-		std::optional<int> nextMinTarget;
+		Platform::IBox<int>^ nextMinTarget;
 	public:
 		property int MaxId
 		{
@@ -40,7 +40,6 @@ namespace client
 				return _internalVector->Size;
 			}
 		}
-
 
 		virtual Platform::Object ^ GetAt(unsigned int index)
 		{
@@ -95,7 +94,6 @@ namespace client
 		{
 			_internalVector->Clear();
 		}
-
 
 		virtual event Windows::UI::Xaml::Interop::BindableVectorChangedEventHandler ^ VectorChanged;
 
