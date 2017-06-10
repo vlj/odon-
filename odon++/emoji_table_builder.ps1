@@ -60,7 +60,7 @@ function TreeToTable {
         "
     if ($tree.leaves)
     {
-        $result += "if (current_char == ':') { string_to_parse.replace(first_double_colon, " + ($prefix.Length + 3) + ', U("' + $tree.leaves.Char + '")' + "); current_position -= " + ($prefix.Length - 1) + "; return;}
+        $result += "if (current_char == ':') { string_to_parse.replace(first_double_colon, " + ($prefix.Length + 3) + ', U("' + $tree.leaves.Char + '")' + "); current_position -= " + ($prefix.Length + 2) + "; return;}
         "
     }
 
