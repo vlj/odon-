@@ -166,6 +166,45 @@ namespace client
 		}
 	};
 
+	ref class DeferredNotifications sealed : public DeferredList<Notification>
+	{
+	public:
+		virtual Windows::Foundation::IAsyncOperation<Windows::UI::Xaml::Data::LoadMoreItemsResult> ^ LoadMoreItemsAsync(unsigned int count) override
+		{
+			return concurrency::create_async([this]() { return callback(); });
+		}
+
+	internal:
+		concurrency::task<Windows::UI::Xaml::Data::LoadMoreItemsResult> callback()
+		{
+			const auto& nativeNextMinTarget = (nextMinTarget == nullptr) ? std::optional<int>() : std::make_optional<int>(nextMinTarget->Value);
+			const auto& timelineresult = co_await Util::getInstance().notifications(Mastodon::range{ std::make_optional<int>(), nativeNextMinTarget });
+
+			nextMinTarget = std::get<1>(timelineresult).value().since_id.has_value() ?
+				ref new Platform::Box<int>(std::get<1>(timelineresult).value().since_id.value()) :
+				nullptr;
+			const auto& statuses = std::get<0>(timelineresult);
+
+			int OldSize;
+			int NewSize;
+			co_await Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
+				Windows::UI::Core::CoreDispatcherPriority::Low,
+				ref new Windows::UI::Core::DispatchedHandler([&]()
+			{
+				OldSize = Size;
+				for (const auto& toot : statuses)
+				{
+					Append(ref new Notification(toot));
+				}
+				NewSize = Size;
+			}));
+
+			Windows::UI::Xaml::Data::LoadMoreItemsResult res;
+			res.Count = NewSize - OldSize;
+			return res;
+		}
+	};
+
 	[Windows::UI::Xaml::Data::Bindable]
 	public ref class TootListModelView sealed : Windows::UI::Xaml::Data::INotifyPropertyChanged
 	{
@@ -186,9 +225,9 @@ namespace client
 			}
 		}
 
-		property Windows::Foundation::Collections::IObservableVector<Notification^> ^ Notifications
+		property Windows::UI::Xaml::Interop::IBindableObservableVector^ Notifications
 		{
-			Windows::Foundation::Collections::IObservableVector<Notification^>^ get()
+			Windows::UI::Xaml::Interop::IBindableObservableVector^ get()
 			{
 				return _notifications;
 			}
@@ -200,7 +239,7 @@ namespace client
 
 	private:
 		DeferredTimeline^ _timeline;
-		Platform::Collections::Vector<Notification^>^ _notifications;
+		DeferredNotifications^ _notifications;
 
 		concurrency::task<void> fetchStatuses(const Mastodon::InstanceConnexion instance);
 		concurrency::task<void> fetchNotifications(const Mastodon::InstanceConnexion instance);

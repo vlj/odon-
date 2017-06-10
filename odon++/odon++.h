@@ -666,14 +666,14 @@ namespace Mastodon
 		{
 			auto&& uri = web::uri_builder{ U("/api/v1/notifications") };
 			id_range.set_range(uri);
-			return __api_request(uri, web::http::methods::GET)
-				.then([](const web::json::value& v) {
+			return __api_request_paged(uri, web::http::methods::GET)
+				.then([](const std::tuple<web::json::value, std::optional<range>> & res) {
 				auto&& result = std::vector<Notifications>{};
-				for (const auto& relation : v.as_array())
+				for (const auto& relation : std::get<0>(res).as_array())
 				{
 					result.emplace_back(relation);
 				}
-				return result;
+				return std::make_tuple(result, std::get<1>(res));
 			});
 		}
 

@@ -7,7 +7,7 @@ using namespace Platform;
 client::TootListModelView::TootListModelView() : statuses_current_max_id(0), notifications_current_max_id(0)
 {
 	_timeline = ref new DeferredTimeline();
-	_notifications = ref new Collections::Vector<Notification^>();
+	_notifications = ref new DeferredNotifications();
 	refresh();
 	SetTimer();
 }
@@ -101,7 +101,7 @@ concurrency::task<void> client::TootListModelView::fetchNotifications(const Mast
 		toastNotifier->Show(notif);
 
 	};
-	for (const auto& n : notifications)
+	for (const auto& n : std::get<0>(notifications))
 	{
 		if (n.id <= lastId)
 			continue;
@@ -116,12 +116,11 @@ concurrency::task<void> client::TootListModelView::fetchNotifications(const Mast
 			auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 			const auto& lastId = localSettings->Values->Insert("last_notification", newLastId);
 		}
-		for (const auto& n : notifications)
+		for (const auto& n : std::get<0>(notifications))
 		{
 			_notifications->Append(ref new Notification(n));
 			notifications_current_max_id = std::max<int>(notifications_current_max_id, n.id);
 		}
-		//PropertyChanged(this, ref new Windows::UI::Xaml::Data::PropertyChangedEventArgs("Notifications"));
 	}));
 }
 

@@ -438,6 +438,14 @@ namespace client
 				return notification.type == Mastodon::NotificationType::follow;
 			}
 		}
+
+		property int Id
+		{
+			int get()
+			{
+				return notification.id;
+			}
+		}
 	};
 }
 
