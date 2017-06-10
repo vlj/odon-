@@ -162,7 +162,7 @@ Windows::Foundation::IAsyncOperation<Windows::UI::Xaml::Data::LoadMoreItemsResul
 	const auto& f = Util::getInstance().timeline_home(Mastodon::range{ std::make_optional<int>(), nextMinTarget })
 		.then([this](const std::tuple<std::vector<Mastodon::Status>, std::optional<Mastodon::range>>& timelineresult)
 		{
-			nextMinTarget = std::get<1>(timelineresult).value().max_id;
+			nextMinTarget = std::get<1>(timelineresult).value().since_id;
 			const auto& statuses = std::get<0>(timelineresult);
 			Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
 				Windows::UI::Core::CoreDispatcherPriority::Low,
