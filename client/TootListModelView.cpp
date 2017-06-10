@@ -43,8 +43,6 @@ concurrency::task<void> client::TootListModelView::fetchStatuses(const Mastodon:
 		unsigned int position = 0;
 		for (const auto& toot : std::get<0>(statuses))
 		{
-			_timeline->MaxId = std::max<int>(_timeline->MaxId, toot.id);
-			_timeline->MinId = std::min<int>(_timeline->MinId, toot.id);
 			_timeline->InsertAt(position++, ref new Toot(toot));
 		}
 		//PropertyChanged(this, ref new Windows::UI::Xaml::Data::PropertyChangedEventArgs("TimelineToots"));
@@ -145,7 +143,8 @@ client::DeferredList::DeferredList()
 	_internalVector = ref new Collections::Vector<Platform::Object^>();
 	_internalVector->VectorChanged += ref new Windows::Foundation::Collections::VectorChangedEventHandler<Platform::Object^>(
 		this, &DeferredList::OnVectorChanged);
-	currentMaxId = -1;
+	currentMaxId = std::numeric_limits<int>::min();
+	currentMinId = std::numeric_limits<int>::max();
 }
 
 void client::DeferredList::OnVectorChanged(Windows::Foundation::Collections::IObservableVector<Platform::Object^>^ sender, Windows::Foundation::Collections::IVectorChangedEventArgs ^ e)
@@ -155,37 +154,28 @@ void client::DeferredList::OnVectorChanged(Windows::Foundation::Collections::IOb
 
 bool client::DeferredList::HasMoreItems::get()
 {
-	if (currentMinId.has_value()) return *currentMinId;
-	return true;
+	return currentMinId > 0;
 }
 
 Windows::Foundation::IAsyncOperation<Windows::UI::Xaml::Data::LoadMoreItemsResult> ^ client::DeferredList::LoadMoreItemsAsync(unsigned int count)
 {
-	const auto& f = Util::getInstance().timeline_home(Mastodon::range{ std::make_optional<int>(), currentMinId })
+	const auto& f = Util::getInstance().timeline_home(Mastodon::range{ std::make_optional<int>(), nextMinTarget })
 		.then([this](const std::tuple<std::vector<Mastodon::Status>, std::optional<Mastodon::range>>& timelineresult)
 		{
+			nextMinTarget = std::get<1>(timelineresult).value().max_id;
+			const auto& statuses = std::get<0>(timelineresult);
 			Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
 				Windows::UI::Core::CoreDispatcherPriority::Low,
 				ref new Windows::UI::Core::DispatchedHandler([=]()
 			{
-				const auto& statuses = std::get<0>(timelineresult);
-				currentMinId = std::get<1>(timelineresult).value().max_id.value();
 				for (const auto& toot : statuses)
 				{
-					const auto& already_here = [&]() {
-						for (auto&& i = 0u; i < Size; ++i)
-						{
-							if (dynamic_cast<Toot^>(GetAt(i))->Id == toot.id) return true;
-						}
-						return false;
-					}();
-					if (already_here) continue;
 					Append(ref new Toot(toot));
 				}
 			}));
 
 			Windows::UI::Xaml::Data::LoadMoreItemsResult res;
-			res.Count = 0;// statuses.size();
+			res.Count = statuses.size();
 			return res;
 		});
 	return concurrency::create_async([f]() {return f.get(); });

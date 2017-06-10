@@ -10,7 +10,8 @@ namespace client
 	private:
 		Platform::Collections::Vector<Platform::Object^>^ _internalVector;
 		int currentMaxId;
-		std::optional<int> currentMinId;
+		int currentMinId;
+		std::optional<int> nextMinTarget;
 	public:
 		DeferredList();
 
@@ -20,24 +21,13 @@ namespace client
 			{
 				return currentMaxId;
 			}
-
-			void set(int v)
-			{
-				currentMaxId = v;
-			}
 		}
 
 		property int MinId
 		{
 			int get()
 			{
-				if (currentMinId.has_value()) return 0x8FFF;
-				return *currentMinId;
-			}
-
-			void set(int v)
-			{
-				currentMinId = v;
+				return currentMinId;
 			}
 		}
 
@@ -77,6 +67,10 @@ namespace client
 
 		virtual void InsertAt(unsigned int index, Platform::Object ^value)
 		{
+			auto toot = dynamic_cast<client::Toot^>(value);
+			if (toot->Id < currentMaxId && toot->Id > currentMinId) return;
+			currentMinId = std::min<int>(currentMinId, toot->Id);
+			currentMaxId = std::max<int>(currentMaxId, toot->Id);
 			_internalVector->InsertAt(index, value);
 		}
 
@@ -88,6 +82,10 @@ namespace client
 
 		virtual void Append(Platform::Object ^value)
 		{
+			auto toot = dynamic_cast<client::Toot^>(value);
+			if (toot->Id <= currentMaxId && toot->Id >= currentMinId) return;
+			currentMinId = std::min<int>(currentMinId, toot->Id);
+			currentMaxId = std::max<int>(currentMaxId, toot->Id);
 			_internalVector->Append(value);
 		}
 
