@@ -1,6 +1,5 @@
 ﻿//
 // MainPage.xaml.cpp
-// Implémentation de la classe MainPage.
 //
 
 #include "pch.h"
@@ -24,8 +23,6 @@ using namespace Windows::UI::Xaml::Data;
 using namespace Windows::UI::Xaml::Input;
 using namespace Windows::UI::Xaml::Media;
 using namespace Windows::UI::Xaml::Navigation;
-
-// Pour plus d'informations sur le modèle d'élément Page vierge, consultez la page https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 MainPage::MainPage()
 {

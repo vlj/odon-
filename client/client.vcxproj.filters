@@ -75,6 +75,9 @@
     <ClInclude Include="Toot.h">
       <Filter>Data</Filter>
     </ClInclude>
+    <ClInclude Include="DeferredList.h">
+      <Filter>ModelView</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />

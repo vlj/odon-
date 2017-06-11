@@ -154,6 +154,7 @@
     <ClInclude Include="DataTemplates.xaml.h">
       <DependentUpon>DataTemplates.xaml</DependentUpon>
     </ClInclude>
+    <ClInclude Include="DeferredList.h" />
     <ClInclude Include="FocusedToot.xaml.h">
       <DependentUpon>FocusedToot.xaml</DependentUpon>
     </ClInclude>
