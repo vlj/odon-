@@ -43,9 +43,6 @@
     <ClCompile Include="Search.xaml.cpp" />
     <ClCompile Include="Profile.xaml.cpp" />
     <ClCompile Include="FocusedToot.xaml.cpp" />
-    <ClCompile Include="toot.cpp">
-      <Filter>Data</Filter>
-    </ClCompile>
     <ClCompile Include="TootListModelView.cpp">
       <Filter>ModelView</Filter>
     </ClCompile>
@@ -53,6 +50,9 @@
     <ClCompile Include="Settings.xaml.cpp" />
     <ClCompile Include="DataTemplates.xaml.cpp" />
     <ClCompile Include="TootViewer.xaml.cpp" />
+    <ClCompile Include="Toot.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -65,9 +65,6 @@
     <ClInclude Include="Profile.xaml.h" />
     <ClInclude Include="FocusedToot.xaml.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="toot.h">
-      <Filter>Data</Filter>
-    </ClInclude>
     <ClInclude Include="TootListModelView.h">
       <Filter>ModelView</Filter>
     </ClInclude>
@@ -75,6 +72,9 @@
     <ClInclude Include="Settings.xaml.h" />
     <ClInclude Include="DataTemplates.xaml.h" />
     <ClInclude Include="TootViewer.xaml.h" />
+    <ClInclude Include="Toot.h">
+      <Filter>Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />

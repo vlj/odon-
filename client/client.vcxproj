@@ -180,7 +180,7 @@
     <ClInclude Include="Timeline.xaml.h">
       <DependentUpon>Timeline.xaml</DependentUpon>
     </ClInclude>
-    <ClInclude Include="toot.h" />
+    <ClInclude Include="Toot.h" />
     <ClInclude Include="TootListModelView.h" />
     <ClInclude Include="TootViewer.xaml.h">
       <DependentUpon>TootViewer.xaml</DependentUpon>
@@ -273,7 +273,7 @@
     <ClCompile Include="Timeline.xaml.cpp">
       <DependentUpon>Timeline.xaml</DependentUpon>
     </ClCompile>
-    <ClCompile Include="toot.cpp" />
+    <ClCompile Include="Toot.cpp" />
     <ClCompile Include="TootListModelView.cpp" />
     <ClCompile Include="TootViewer.xaml.cpp">
       <DependentUpon>TootViewer.xaml</DependentUpon>
