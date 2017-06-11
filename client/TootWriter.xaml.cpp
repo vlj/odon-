@@ -31,9 +31,10 @@ concurrency::task<void> client::TootWriter::SendStatus()
 {
 	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 	auto access_token = dynamic_cast<String^>(localSettings->Values->Lookup("access_token"));
+	auto instance_url = dynamic_cast<String^>(localSettings->Values->Lookup("instance_url"));
 
 	auto client = ref new Windows::Web::Http::HttpClient();
-	auto uri = ref new Windows::Foundation::Uri("https://oc.todon.fr/api/v1/media");
+	auto uri = ref new Windows::Foundation::Uri(instance_url + "/api/v1/media");
 
 	auto media_ids = std::vector<int>();
 	for (const auto& media : medias)

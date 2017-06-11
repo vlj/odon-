@@ -39,7 +39,8 @@ concurrency::task<void> client::ConnectedPage::login()
 
 	try
 	{
-		auto token = co_await Mastodon::TokenRetrieval::log_in(username->Text->Data(), password->Text->Data(), U("https://oc.todon.fr"),
+		const auto& InstanceUrl = std::wstring{ dynamic_cast<String^>(localSettings->Values->Lookup("instance_url"))->Data() };
+		auto token = co_await Mastodon::TokenRetrieval::log_in(username->Text->Data(), password->Password->Data(), InstanceUrl,
 			dynamic_cast<String^>(localSettings->Values->Lookup("client_id"))->Data(),
 			dynamic_cast<String^>(localSettings->Values->Lookup("client_secret"))->Data());
 

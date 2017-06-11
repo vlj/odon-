@@ -29,16 +29,7 @@ Settings::Settings()
 
 void client::Settings::Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
-	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-
-	if (localSettings->Values->Lookup("client_id") == nullptr ||
-		localSettings->Values->Lookup("client_secret") == nullptr ||
-		localSettings->Values->Lookup("access_token") == nullptr)
-		return;
-
-	auto&& instance = Mastodon::InstanceConnexion(U("https://oc.todon.fr"), dynamic_cast<String^>(localSettings->Values->Lookup("access_token"))->Data());
-
-	instance.update_account({ DisplayName->Text->Data() }, std::make_optional<utility::string_t>());
+	Util::getInstance().update_account({ DisplayName->Text->Data() }, std::make_optional<utility::string_t>());
 }
 
 
@@ -70,6 +61,7 @@ void client::Settings::Button_Click_2(Platform::Object^ sender, Windows::UI::Xam
 				auto buffer = bufferOp.get();
 				auto encoded_buffer = Windows::Security::Cryptography::CryptographicBuffer::EncodeToBase64String(buffer);
 				auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
+				auto instance_url = dynamic_cast<String^>(localSettings->Values->Lookup("instance_url"));
 
 				auto upload_pic = ref new Windows::Web::Http::HttpMultipartFormDataContent();
 				upload_pic->Add(ref new Windows::Web::Http::HttpStringContent("data:image/png;base64," + encoded_buffer), "avatar");
@@ -79,7 +71,7 @@ void client::Settings::Button_Click_2(Platform::Object^ sender, Windows::UI::Xam
 				auto client = ref new Windows::Web::Http::HttpClient();
 				auto request = ref new Windows::Web::Http::HttpRequestMessage(
 				ref new Windows::Web::Http::HttpMethod("PATCH"),
-				ref new Windows::Foundation::Uri("https://oc.todon.fr/api/v1/accounts/update_credentials"));
+				ref new Windows::Foundation::Uri(instance_url + "/api/v1/accounts/update_credentials"));
 				request->Content = upload_pic;
 				client->SendRequestAsync(request);
 			}

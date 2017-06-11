@@ -39,10 +39,7 @@ namespace client
 		Account(const Mastodon::Account& v) : _account(v)
 		{
 			_onClick = ref new Delegate([=]() {
-				auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-				auto&& instance = Mastodon::InstanceConnexion(U("https://oc.todon.fr/"), dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data());
-
-				instance.account_follow(_account.id);
+				Util::getInstance().account_follow(_account.id);
 			});
 		}
 
@@ -179,13 +176,10 @@ namespace client
 			});
 
 			_favourite = ref new Delegate([=]() {
-				auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-				auto&& instance = Mastodon::InstanceConnexion(U("https://oc.todon.fr/"), dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data());
-
 				const auto& httprequest = [&]() {
 					if (status.favourited)
-						return instance.status_unfavourite(status.id);
-					return instance.status_favourite(status.id);
+						return Util::getInstance().status_unfavourite(status.id);
+					return Util::getInstance().status_favourite(status.id);
 				};
 
 				httprequest().then([&](const Mastodon::Status& newStatus) {
@@ -197,13 +191,10 @@ namespace client
 			});
 
 			_reblog = ref new Delegate([=]() {
-				auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-				auto&& instance = Mastodon::InstanceConnexion(U("https://oc.todon.fr/"), dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data());
-
 				const auto& httprequest = [&]() {
 					if (status.reblogged)
-						return instance.status_unreblog(status.id);
-					return instance.status_reblog(status.id);
+						return Util::getInstance().status_unreblog(status.id);
+					return Util::getInstance().status_reblog(status.id);
 				};
 
 				httprequest().then([&](const Mastodon::Status& newStatus) {

@@ -81,10 +81,12 @@ Mastodon::InstanceConnexion client::Util::getInstance()
 {
 	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 
-	if (localSettings->Values->Lookup("client_id") == nullptr ||
+	if (localSettings->Values->Lookup("instance_url") == nullptr ||
+		localSettings->Values->Lookup("client_id") == nullptr ||
 		localSettings->Values->Lookup("client_secret") == nullptr ||
 		localSettings->Values->Lookup("access_token") == nullptr)
 		throw ref new Platform::FailureException("Not logged properly");
 
-	return Mastodon::InstanceConnexion{U("https://oc.todon.fr"), dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data()};
+	const auto& instance_url = std::wstring{ dynamic_cast<Platform::String^>(localSettings->Values->Lookup("instance_url"))->Data() };
+	return Mastodon::InstanceConnexion{ instance_url, dynamic_cast<Platform::String^>(localSettings->Values->Lookup("access_token"))->Data()};
 }

@@ -31,12 +31,14 @@ Login::Login()
 void client::Login::Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
 	InstanceTokenRing->IsActive = true;
-	Mastodon::TokenRetrieval::create_app(U("odon++client"), U("https://oc.todon.fr"))
-		.then([this](const std::tuple<utility::string_t, utility::string_t>& id_secret)
+	const auto& instance_url = std::wstring{ InstanceUrl->Text->Data() };
+	Mastodon::TokenRetrieval::create_app(U("odon++client"), instance_url)
+		.then([this, instance_url](const std::tuple<utility::string_t, utility::string_t>& id_secret)
 	{
 		auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings->Values;
 		localSettings->Insert("client_id", PropertyValue::CreateString(ref new String(std::get<0>(id_secret).c_str())));
 		localSettings->Insert("client_secret", PropertyValue::CreateString(ref new String(std::get<1>(id_secret).c_str())));
+		localSettings->Insert("instance_url", PropertyValue::CreateString(ref new String(instance_url.c_str())));
 		this->Dispatcher->RunAsync(Windows::UI::Core::CoreDispatcherPriority::Low,
 			ref new Windows::UI::Core::DispatchedHandler([this, id_secret]() {
 			this->Frame->Navigate(Interop::TypeName(ConnectedPage::typeid), nullptr);

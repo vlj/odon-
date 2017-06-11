@@ -16,12 +16,18 @@
     </Page.Transitions>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <StackPanel>
-            <TextBlock x:Name="Token" />
-            <TextBox x:Name="username" Header="Id (email)" InputScope="EmailSmtpAddress" />
-            <TextBox x:Name="password" Header="Password" InputScope="Password" />
-            <ProgressRing x:Name="ring" />
-            <Button Content="Validate" HorizontalAlignment="Center" Click="Button_Click" />
-        </StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <TextBox x:Name="username" Header="Id (email)" InputScope="EmailSmtpAddress" MinWidth="255" />
+        <PasswordBox x:Name="password" Header="Password" Grid.Row="1" MinWidth="255" />
+        <ProgressRing x:Name="ring" Grid.Row="2" />
+        <Button Content="Validate" HorizontalAlignment="Center" Click="Button_Click" Grid.Row="3" />
     </Grid>
 </Page>

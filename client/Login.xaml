@@ -7,9 +7,17 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <StackPanel>
-        <TextBox Header="Url" InputScope="Url" />
-        <ProgressRing x:Name="InstanceTokenRing"/>
-        <Button Content="Validate" Click="Button_Click" />
-    </StackPanel>
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <TextBox x:Name="InstanceUrl" Header="Url" InputScope="Url" MinWidth="255" />
+        <Button Content="Validate" Click="Button_Click" Grid.Row="1" />
+        <ProgressRing x:Name="InstanceTokenRing" Grid.Row="2"/>
+    </Grid>
 </Page>
