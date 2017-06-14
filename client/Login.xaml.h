@@ -19,6 +19,7 @@ namespace client
 		Login();
 
 	private:
+		concurrency::task<void> getTokens();
 		void Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
 	};
 }
