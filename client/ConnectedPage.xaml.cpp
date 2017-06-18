@@ -51,6 +51,7 @@ concurrency::task<void> client::ConnectedPage::login()
 	catch (...)
 	{
 		ring->IsActive = false;
+		FlyoutBase::ShowAttachedFlyout(ConnectedPageId);
 	}
 }
 

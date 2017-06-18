@@ -15,7 +15,7 @@
         </TransitionCollection>
     </Page.Transitions>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" HorizontalAlignment="Center" VerticalAlignment="Center">
+    <Grid x:Name="ConnectedPageId" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" HorizontalAlignment="Center" VerticalAlignment="Center">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
@@ -25,6 +25,12 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
+        <FlyoutBase.AttachedFlyout>
+            <Flyout>
+                <TextBlock>Cannot login with given username and password.</TextBlock>
+            </Flyout>
+        </FlyoutBase.AttachedFlyout>
+        
         <TextBox x:Name="username" Header="Id (email)" InputScope="EmailSmtpAddress" MinWidth="255" />
         <PasswordBox x:Name="password" Header="Password" Grid.Row="1" MinWidth="255" />
         <ProgressRing x:Name="ring" Grid.Row="2" />

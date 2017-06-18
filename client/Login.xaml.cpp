@@ -45,6 +45,7 @@ concurrency::task<void> client::Login::getTokens()
 	catch (...)
 	{
 		InstanceTokenRing->IsActive = false;
+		FlyoutBase::ShowAttachedFlyout(LoginPageGrid);
 	}
 }
 
