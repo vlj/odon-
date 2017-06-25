@@ -40,11 +40,19 @@ void client::Search::displaySearch_ItemClick(Platform::Object^ sender, Windows::
 
 concurrency::task<void> client::Search::getSearchResults(const std::wstring& SearchTerm)
 {
-	const auto& results = co_await Util::getInstance().account_search(SearchTerm);
-	auto list = ref new Platform::Collections::Vector<Account^>();
-	for (const auto& acc : results)
+	try
 	{
-		list->Append(ref new Account(acc));
+		const auto& results = co_await Util::getInstance().account_search(SearchTerm);
+		auto list = ref new Platform::Collections::Vector<Account^>();
+		for (const auto& acc : results)
+		{
+			list->Append(ref new Account(acc));
+		}
+		displaySearch->DataContext = list;
 	}
-	displaySearch->DataContext = list;
+	catch (...)
+	{
+		ErrorText->Visibility = Windows::UI::Xaml::Visibility::Visible;
+	}
+
 }

@@ -15,7 +15,7 @@
         </TransitionCollection>
     </Page.Transitions>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" HorizontalAlignment="Center" VerticalAlignment="Center">
         <ListView x:Name="displaySearch" ItemsSource="{Binding}" ItemClick="displaySearch_ItemClick" IsItemClickEnabled="True">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="local:Account">
@@ -27,5 +27,6 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        <TextBlock x:Name="ErrorText" Visibility="Collapsed">Sorry, you need to be logged to search data.</TextBlock>
     </Grid>
 </Page>
