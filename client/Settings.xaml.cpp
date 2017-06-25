@@ -29,7 +29,12 @@ Settings::Settings()
 
 void client::Settings::Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
-	Util::getInstance().update_account({ DisplayName->Text->Data() }, std::make_optional<utility::string_t>());
+	try
+	{
+		Util::getInstance().update_account({ DisplayName->Text->Data() }, std::make_optional<utility::string_t>());
+	}
+	catch (...)
+	{ }
 }
 
 
