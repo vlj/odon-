@@ -27,6 +27,16 @@ using namespace Windows::UI::Xaml::Navigation;
 MainPage::MainPage()
 {
 	InitializeComponent();
+	SetHomePage();
+
+	Windows::UI::Core::SystemNavigationManager::GetForCurrentView()->BackRequested +=
+		ref new Windows::Foundation::EventHandler<Windows::UI::Core::BackRequestedEventArgs^>(this, &MainPage::onBack);
+	Windows::UI::Core::SystemNavigationManager::GetForCurrentView()->AppViewBackButtonVisibility =
+		Windows::UI::Core::AppViewBackButtonVisibility::Visible;
+}
+
+void client::MainPage::SetHomePage()
+{
 	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
 	if (localSettings->Values->Lookup("client_id") == nullptr)
 		contentFrame->Navigate(Windows::UI::Xaml::Interop::TypeName(Login::typeid), nullptr);
@@ -34,11 +44,6 @@ MainPage::MainPage()
 		contentFrame->Navigate(Windows::UI::Xaml::Interop::TypeName(ConnectedPage::typeid), nullptr);
 	else
 		contentFrame->Navigate(Windows::UI::Xaml::Interop::TypeName(Timeline::typeid), nullptr);
-
-	Windows::UI::Core::SystemNavigationManager::GetForCurrentView()->BackRequested +=
-		ref new Windows::Foundation::EventHandler<Windows::UI::Core::BackRequestedEventArgs^>(this, &MainPage::onBack);
-	Windows::UI::Core::SystemNavigationManager::GetForCurrentView()->AppViewBackButtonVisibility =
-		Windows::UI::Core::AppViewBackButtonVisibility::Visible;
 }
 
 void client::MainPage::Button_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
@@ -69,5 +74,5 @@ void client::MainPage::AppBarButton_Click_3(Platform::Object^ sender, Windows::U
 
 void client::MainPage::AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
-	contentFrame->Navigate(Windows::UI::Xaml::Interop::TypeName(Timeline::typeid), nullptr);
+	SetHomePage();
 }
