@@ -33,105 +33,112 @@ void client::TootListModelView::SuspendTimer()
 	periodicTimer = nullptr;
 }
 
-concurrency::task<void> client::TootListModelView::fetchStatuses(const Mastodon::InstanceConnexion instance)
+concurrency::task<void> client::TootListModelView::fetchStatuses()
 {
-	const auto& statuses = co_await instance.timeline_home(Mastodon::range{}.set_min(_timeline->MaxId));
-	Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
-		Windows::UI::Core::CoreDispatcherPriority::Low,
-		ref new Windows::UI::Core::DispatchedHandler([this, statuses]()
+	try
 	{
-		unsigned int position = 0;
-		for (const auto& toot : std::get<0>(statuses))
+		const auto& instance = Util::getInstance();
+		const auto& statuses = co_await instance.timeline_home(Mastodon::range{});
+		Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
+			Windows::UI::Core::CoreDispatcherPriority::Low,
+			ref new Windows::UI::Core::DispatchedHandler([this, statuses]()
 		{
-			_timeline->InsertAt(position++, ref new Toot(toot));
-		}
-	}));
+			unsigned int position = 0;
+			for (const auto& toot : std::get<0>(statuses))
+			{
+				_timeline->InsertAt(position++, ref new Toot(toot));
+			}
+		}));
+	}
+	catch(...)
+	{ }
 }
 
-concurrency::task<void> client::TootListModelView::fetchNotifications(const Mastodon::InstanceConnexion instance)
+concurrency::task<void> client::TootListModelView::fetchNotifications()
 {
-	auto notifications = co_await instance.notifications(Mastodon::range{}.set_min(notifications_current_max_id));
-
-	auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-	auto ptrvalue = localSettings->Values->Lookup("last_notification");
-	const auto& lastId = ptrvalue == nullptr ? 0 : (int)ptrvalue;
-	auto newLastId = lastId;
-
-	auto toastNotifier = Windows::UI::Notifications::ToastNotificationManager::CreateToastNotifier();
-	const auto notify = [&](const auto& n)
+	try
 	{
-		const auto& removeHtml = [](const auto& content)
-		{
-			return std::wstring{
-				Windows::Data::Html::HtmlUtilities::ConvertToText(
-					ref new Platform::String(content.data())
-				)->Data() };
-		};
+		const auto& instance = Util::getInstance();
+		auto notifications = co_await instance.notifications(Mastodon::range{}.set_min(notifications_current_max_id));
 
-		std::wstring&& toastVisual =
-			LR"(<toast launch="app-defined-string"><visual>
+		auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
+		auto ptrvalue = localSettings->Values->Lookup("last_notification");
+		const auto& lastId = ptrvalue == nullptr ? 0 : (int)ptrvalue;
+		auto newLastId = lastId;
+
+		auto toastNotifier = Windows::UI::Notifications::ToastNotificationManager::CreateToastNotifier();
+		const auto notify = [&](const auto& n)
+		{
+			const auto& removeHtml = [](const auto& content)
+			{
+				return std::wstring{
+					Windows::Data::Html::HtmlUtilities::ConvertToText(
+						ref new Platform::String(content.data())
+					)->Data() };
+			};
+
+			std::wstring&& toastVisual =
+				LR"(<toast launch="app-defined-string"><visual>
 			<binding template='ToastGeneric'>
 			<text>Mastoduck</text>
 			<text>)";
-		if (n.type == Mastodon::NotificationType::favourite)
-		{
-			toastVisual += n.account.display_name + LR"( has favorited your toot :</text>)";
-			toastVisual += LR"(<text>)" + removeHtml(n.status->content) + LR"(</text>)";
-		}
-		else if (n.type == Mastodon::NotificationType::reblog)
-		{
-			toastVisual += n.account.display_name + LR"( has reblogged your toot :</text>)";
-			toastVisual += LR"(<text>)" + removeHtml(n.status->content) + LR"(</text>)";
-		}
-		else if (n.type == Mastodon::NotificationType::mention)
-		{
-			toastVisual += n.account.display_name + LR"( has mentioned you :</text>)";
-			toastVisual += LR"(<text>)" + removeHtml(n.status->content) + LR"(</text>)";
-		}
-		else if (n.type == Mastodon::NotificationType::follow)
-		{
-			toastVisual += n.account.display_name + LR"( has followed you</text>)";
-		}
-		toastVisual += LR"(</binding>
+			if (n.type == Mastodon::NotificationType::favourite)
+			{
+				toastVisual += n.account.display_name + LR"( has favorited your toot :</text>)";
+				toastVisual += LR"(<text>)" + removeHtml(n.status->content) + LR"(</text>)";
+			}
+			else if (n.type == Mastodon::NotificationType::reblog)
+			{
+				toastVisual += n.account.display_name + LR"( has reblogged your toot :</text>)";
+				toastVisual += LR"(<text>)" + removeHtml(n.status->content) + LR"(</text>)";
+			}
+			else if (n.type == Mastodon::NotificationType::mention)
+			{
+				toastVisual += n.account.display_name + LR"( has mentioned you :</text>)";
+				toastVisual += LR"(<text>)" + removeHtml(n.status->content) + LR"(</text>)";
+			}
+			else if (n.type == Mastodon::NotificationType::follow)
+			{
+				toastVisual += n.account.display_name + LR"( has followed you</text>)";
+			}
+			toastVisual += LR"(</binding>
 			</visual></toast>)";
-		auto xml = ref new Windows::Data::Xml::Dom::XmlDocument();
-		xml->LoadXml(ref new Platform::String(toastVisual.data()));
-		auto notif = ref new Windows::UI::Notifications::ToastNotification(xml);
-		toastNotifier->Show(notif);
+			auto xml = ref new Windows::Data::Xml::Dom::XmlDocument();
+			xml->LoadXml(ref new Platform::String(toastVisual.data()));
+			auto notif = ref new Windows::UI::Notifications::ToastNotification(xml);
+			toastNotifier->Show(notif);
 
-	};
-	for (const auto& n : std::get<0>(notifications))
-	{
-		if (n.id <= lastId)
-			continue;
-		newLastId = std::max<int>(newLastId, n.id);
-		notify(n);
-	}
-	Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
-		Windows::UI::Core::CoreDispatcherPriority::Low,
-		ref new Windows::UI::Core::DispatchedHandler([this, lastId, newLastId, notifications]() {
-		if (lastId != newLastId)
-		{
-			auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
-			const auto& lastId = localSettings->Values->Insert("last_notification", newLastId);
-		}
+		};
 		for (const auto& n : std::get<0>(notifications))
 		{
-			_notifications->Append(ref new Notification(n));
-			notifications_current_max_id = std::max<int>(notifications_current_max_id, n.id);
+			if (n.id <= lastId)
+				continue;
+			newLastId = std::max<int>(newLastId, n.id);
+			notify(n);
 		}
-	}));
+		Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
+			Windows::UI::Core::CoreDispatcherPriority::Low,
+			ref new Windows::UI::Core::DispatchedHandler([this, lastId, newLastId, notifications]() {
+			if (lastId != newLastId)
+			{
+				auto localSettings = Windows::Storage::ApplicationData::Current->LocalSettings;
+				const auto& lastId = localSettings->Values->Insert("last_notification", newLastId);
+			}
+			for (const auto& n : std::get<0>(notifications))
+			{
+				_notifications->Append(ref new Notification(n));
+				notifications_current_max_id = std::max<int>(notifications_current_max_id, n.id);
+			}
+		}));
+	}
+	catch (...)
+	{
+
+	}
 }
 
 void client::TootListModelView::refresh()
 {
-	try {
-		const auto& instance = Util::getInstance();
-		fetchStatuses(instance);
-		fetchNotifications(instance);
-	}
-	catch (...)
-	{
-		return;
-	}
+	fetchStatuses();
+	fetchNotifications();
 }

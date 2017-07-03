@@ -119,7 +119,7 @@ namespace client
 		DeferredTimeline^ _timeline;
 		DeferredNotifications^ _notifications;
 
-		concurrency::task<void> fetchStatuses(const Mastodon::InstanceConnexion instance);
-		concurrency::task<void> fetchNotifications(const Mastodon::InstanceConnexion instance);
+		concurrency::task<void> fetchStatuses();
+		concurrency::task<void> fetchNotifications();
 	};
 }
